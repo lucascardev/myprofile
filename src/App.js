@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
-// import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, MeshBasicMaterial, BoxGeometry } from 'three';
+import Pacman3D from './components/Pacman3D';
 
 import {
 	FaGithub,
@@ -38,69 +37,6 @@ import {
 
 import API from './services/api'
 
-// const scene = new Scene();
-// const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-// const renderer = new WebGLRenderer();
-// renderer.setSize( window.innerWidth, window.innerHeight );
-// document.body.appendChild( renderer.domElement );
-
-// const geometry = new BoxGeometry();
-// const material = new MeshBasicMaterial( { color: 0x00ff00 } );
-// const cube = new Mesh( geometry, material );
-
-// //create a smiling face with 3D library
-// const faceGeometry = new BoxGeometry(0.5, 0.5, 0.5);
-// const faceMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const face = new Mesh(faceGeometry, faceMaterial);
-
-// //create a head with 3D library
-// const headGeometry = new BoxGeometry(1, 1, 1);
-// const headMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const head = new Mesh(headGeometry, headMaterial);
-
-// //create a body with 3D library
-// const bodyGeometry = new BoxGeometry(1, 1, 1);
-// const bodyMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const body = new Mesh(bodyGeometry, bodyMaterial);
-
-// //create a left arm with 3D library
-// const leftArmGeometry = new BoxGeometry(1, 1, 1);
-// const leftArmMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const leftArm = new Mesh(leftArmGeometry, leftArmMaterial);
-
-// //create a right arm with 3D library
-// const rightArmGeometry = new BoxGeometry(1, 1, 1);
-// const rightArmMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const rightArm = new Mesh(rightArmGeometry, rightArmMaterial);
-
-// //create a left leg with 3D library
-// const leftLegGeometry = new BoxGeometry(1, 1, 1);
-// const leftLegMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const leftLeg = new Mesh(leftLegGeometry, leftLegMaterial);
-
-// //create a right leg with 3D library
-// const rightLegGeometry = new BoxGeometry(1, 1, 1);
-// const rightLegMaterial = new MeshBasicMaterial({ color: 0xffff00 });
-// const rightLeg = new Mesh(rightLegGeometry, rightLegMaterial);
-
-// scene.add( face, body, head, leftArm, rightArm, leftLeg, rightLeg );
-
-// //set position of objects
-// face.position.set(40, 0, 0);
-// head.position.set(40, 0, 0);
-// body.position.set(30, 0, 0);
-// leftArm.position.set(30, 30, 0);
-// rightArm.position.set(30, -30, 0);
-
-// camera.position.z = 5;
-
-// function animate() {
-// 	requestAnimationFrame( animate );
-// 	renderer.render( scene, camera );
-//   //show the face
-// }
-// animate();
 
 function App() {
 	const [avatarimg, setAvatarimg] = useState('')
@@ -111,7 +47,6 @@ function App() {
 	useEffect(() => {
 		async function getmyprofile() {
 			const response = await API.get('users/lucascardev')
-			// console.log(response);
 			const repos_response = await API.get('users/lucascardev/repos')
 			setRepos(repos_response.data)
 			setAvatarimg(response.data.avatar_url)
@@ -121,26 +56,23 @@ function App() {
 	}, [])
 
 	useEffect(() => {
-		// Função para verificar e definir o idioma com base na localização do navegador
 		const detectLanguage = () => {
 			const userLanguage = navigator.language || navigator.userLanguage
 			if (userLanguage.startsWith('pt')) {
-				setLanguage('pt') // Define o idioma como português se a localização do navegador for 'pt' ou 'pt-BR'
+				setLanguage('pt')
 			} else {
-				setLanguage('en') // Caso contrário, define o idioma como inglês
+				setLanguage('en')
 			}
 		}
 
-		detectLanguage() // Chamada da função ao montar o componente
+		detectLanguage()
 
-		// Adiciona um event listener para detectar mudanças na localização do navegador
 		window.addEventListener('languagechange', detectLanguage)
 
-		// Remove o event listener ao desmontar o componente para evitar vazamento de memória
 		return () => {
 			window.removeEventListener('languagechange', detectLanguage)
 		}
-	}, []) // A função é chamada apenas uma vez após a montagem do componente
+	}, [])
 
 	return (
 		<Container>
@@ -166,7 +98,7 @@ function App() {
 								@{username}
 							</a>
 						</Username>
-						<p>
+						<p className='github-hint'>
 							<FaHandPointUp /> Veja meu github acima{' '}
 							<FaHandPointUp />
 						</p>
@@ -201,23 +133,18 @@ function App() {
 					<Main>
 						<h1>Hello there. I'm lucascardev.</h1>
 						<p>
-							Certainly! Here’s the rephrased version of your text
-							in English: "I’m a programming enthusiast dedicated
-							to following best practices for web development.
-							With a passion for creating innovative solutions, I
-							maintain several projects on my GitHub. One of them
-							is a dental appointment scheduling application that
-							I hope will become a standout product. I’m
-							constantly seeking improvement and remain committed
-							to my journey of continuous learning. I actively
-							look for opportunities to broaden my horizons and
-							deepen my understanding of programming complexities.
-							With an unwavering commitment to personal and
-							professional growth, I’m determined to reach new
-							levels of excellence.
+							I'm a programming enthusiast dedicated to following best practices for web
+							development. With a passion for creating innovative solutions, I maintain
+							several projects on my GitHub. I have **over 6 years of programming experience**
+							and hold a degree from **Estácio University**. One of my standout projects
+							is a dental appointment scheduling application. I’m constantly seeking
+							improvement, committed to continuous learning, and actively look for opportunities
+							to broaden my horizons and deepen my understanding of programming complexities.
+							With an unwavering commitment to personal and professional growth, I’m determined
+							to reach new levels of excellence.
 						</p>
 						<hr />
-						<p> Keep contact with me on my social media. </p>
+						<p className='social-media-text'> Keep contact with me on my social media. </p>
 						<div className='linkholder'>
 							<a href='https://www.instagram.com/lucas_mtheus/'>
 								<FaInstagram />
@@ -231,7 +158,7 @@ function App() {
 							</a>
 						</div>
 
-						<p> Im also a dentistry</p>
+						<p className='dentistry-text'> Im also a dentistry</p>
 						<div
 							className='linkholder'
 							style={{ marginBottom: 30 }}
@@ -242,10 +169,10 @@ function App() {
 						</div>
 						<Repos>
 							{repos.map((repo) => (
-								<Repo>
-									<h3>Repo - {repo.description}</h3>
-									<p key={repo.id}>
-										<a href={repo.html_url}>
+								<Repo key={repo.id}> {/* Adicionado key aqui */}
+									<h3>Repo - {repo.description || repo.name}</h3> {/* Adicionado fallback para description */}
+									<p>
+										<a href={repo.html_url} target='_blank' rel='noreferrer'>
 											{repo.full_name}
 										</a>
 									</p>
@@ -253,38 +180,40 @@ function App() {
 									<Info>
 										<Count>
 											<SiTrailforks />
-											{repo.forks}
+											{repo.forks_count} {/* Usar forks_count */}
 										</Count>{' '}
 										<Count>
 											<FaEye />
-											{repo.watchers}
+											{repo.watchers_count} {/* Usar watchers_count */}
 										</Count>
 									</Info>
 								</Repo>
 							))}
 						</Repos>
+						  {/* AQUI VOCÊ ADICIONA O COMPONENTE 3D */}
+                        <h2>3D Pac-Man Demo</h2>
+                        <p>A small demonstration using Three.js:</p>
+                        <Pacman3D /> {/* O componente 3D */}
+                        <hr />
+                        {/* ... Restante do conteúdo em inglês ... */}
 					</Main>
 				)}
 				{language === 'pt' && (
 					<Main>
 						<h1>Olá! Eu sou o lucascardev.</h1>
 						<p>
-							Sou um entusiasta da programação que adora seguir as
-							melhores práticas para o desenvolvimento web. Tenho
-							uma paixão por criar soluções inovadoras e mantenho
-							vários projetos no meu GitHub. Um deles é um
-							aplicativo de agendamento odontológico que espero
-							que se torne um produto de destaque. Estou sempre em
-							busca de aprimoramento e continuo minha jornada de
-							aprendizado. Busco constantemente oportunidades para
-							expandir meus horizontes e aprofundar minha
-							compreensão das complexidades da programação. Com um
-							compromisso inabalável com o crescimento pessoal e
-							profissional, estou determinado a alcançar novos
-							patamares de excelência.
+							Sou um entusiasta da programação que adora seguir as melhores práticas para o
+							desenvolvimento web. Tenho uma paixão por criar soluções inovadoras e mantenho
+							vários projetos no meu GitHub. Possuo **mais de 6 anos de experiência em programação**
+							e sou formado pela **Faculdade Estácio**. Um dos meus projetos de destaque
+							é um aplicativo de agendamento odontológico. Estou sempre em busca de aprimoramento
+							e continuo minha jornada de aprendizado. Busco constantemente oportunidades
+							para expandir meus horizontes e aprofundar minha compreensão das complexidades
+							da programação. Com um compromisso inabalável com o crescimento pessoal e
+							profissional, estou determinado a alcançar novos patamares de excelência.
 						</p>
 						<hr />
-						<p> Me siga nas redes sociais </p>
+						<p className='social-media-text'> Me siga nas redes sociais </p>
 						<div className='linkholder'>
 							<a href='https://www.instagram.com/lightup.marketingdigital/'>
 								<FaInstagram />
@@ -298,7 +227,7 @@ function App() {
 							</a>
 						</div>
 						<hr />
-						{/* <p> Também sou dentista</p>
+						{/* <p className='dentistry-text'> Também sou dentista</p>
 						<div
 							className='linkholder'
 							style={{ marginBottom: 30 }}
@@ -309,10 +238,10 @@ function App() {
 						</div> */}
 						<Repos>
 							{repos.map((repo) => (
-								<Repo>
-									<h3>Repo - {repo.description}</h3>
-									<p key={repo.id}>
-										<a href={repo.html_url}>
+								<Repo key={repo.id}> {/* Adicionado key aqui */}
+									<h3>Repo - {repo.description || repo.name}</h3> {/* Adicionado fallback para description */}
+									<p>
+										<a href={repo.html_url} target='_blank' rel='noreferrer'>
 											{repo.full_name}
 										</a>
 									</p>
@@ -320,16 +249,22 @@ function App() {
 									<Info>
 										<Count>
 											<SiTrailforks />
-											{repo.forks}
+											{repo.forks_count} {/* Usar forks_count */}
 										</Count>{' '}
 										<Count>
 											<FaEye />
-											{repo.watchers}
+											{repo.watchers_count} {/* Usar watchers_count */}
 										</Count>
 									</Info>
 								</Repo>
 							))}
 						</Repos>
+						 {/* AQUI VOCÊ ADICIONA O COMPONENTE 3D */}
+                        <h2>Demonstração 3D Pac-Man</h2>
+                        <p>Uma pequena demonstração utilizando Three.js:</p>
+                        <Pacman3D /> {/* O componente 3D */}
+                        <hr />
+                        {/* ... Restante do conteúdo em português ... */}
 					</Main>
 				)}
 			</PageHolder>
