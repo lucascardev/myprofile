@@ -29,29 +29,48 @@ export default function MatrixRain3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // === Create Matrix Texture (Glyph Map) ===
-    // We create a canvas texture containing characters to render them in 3D
-    const glyphCanvas = document.createElement('canvas');
-    glyphCanvas.width = 128;
-    glyphCanvas.height = 128;
-    const gCtx = glyphCanvas.getContext('2d');
-    gCtx.fillStyle = '#000000';
-    gCtx.fillRect(0, 0, 128, 128);
-    gCtx.fillStyle = '#ffffff';
-    gCtx.font = 'bold 90px monospace';
-    gCtx.textAlign = 'center';
-    gCtx.textBaseline = 'middle';
-    gCtx.fillText('1', 64, 64); // Render a '1' or binary code symbol
-    const glyphTexture = new THREE.CanvasTexture(glyphCanvas);
+    // === Create Matrix Textures (Glyph Maps) ===
+    // Canvas for '1'
+    const glyphCanvas1 = document.createElement('canvas');
+    glyphCanvas1.width = 128;
+    glyphCanvas1.height = 128;
+    const gCtx1 = glyphCanvas1.getContext('2d');
+    gCtx1.fillStyle = '#000000';
+    gCtx1.fillRect(0, 0, 128, 128);
+    gCtx1.fillStyle = '#ffffff';
+    gCtx1.font = 'bold 90px monospace';
+    gCtx1.textAlign = 'center';
+    gCtx1.textBaseline = 'middle';
+    gCtx1.fillText('1', 64, 64);
+    const glyphTexture1 = new THREE.CanvasTexture(glyphCanvas1);
+
+    // Canvas for '0'
+    const glyphCanvas0 = document.createElement('canvas');
+    glyphCanvas0.width = 128;
+    glyphCanvas0.height = 128;
+    const gCtx0 = glyphCanvas0.getContext('2d');
+    gCtx0.fillStyle = '#000000';
+    gCtx0.fillRect(0, 0, 128, 128);
+    gCtx0.fillStyle = '#ffffff';
+    gCtx0.font = 'bold 90px monospace';
+    gCtx0.textAlign = 'center';
+    gCtx0.textBaseline = 'middle';
+    gCtx0.fillText('0', 64, 64);
+    const glyphTexture0 = new THREE.CanvasTexture(glyphCanvas0);
 
     // === Particle Setup (Digital Rain Streams) ===
     const streamCount = 120;
     const particlesPerStream = 20;
-    const particleCount = streamCount * particlesPerStream;
+    const halfStreamCount = streamCount / 2;
+    const particleCountHalf = halfStreamCount * particlesPerStream;
     
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-    const sizes = new Float32Array(particleCount);
+    // Arrays for '1'
+    const positions1 = new Float32Array(particleCountHalf * 3);
+    const colors1 = new Float32Array(particleCountHalf * 3);
+    
+    // Arrays for '0'
+    const positions0 = new Float32Array(particleCountHalf * 3);
+    const colors0 = new Float32Array(particleCountHalf * 3);
 
     const streams = [];
 
@@ -62,8 +81,6 @@ export default function MatrixRain3D() {
       const speed = Math.random() * 0.4 + 0.1;
       const length = particlesPerStream;
       const spacing = Math.random() * 1.5 + 0.8;
-      
-      // Starting head position (above screen)
       const headY = Math.random() * 80 + 30;
 
       streams.push({
@@ -73,35 +90,45 @@ export default function MatrixRain3D() {
         speed,
         length,
         spacing,
+        charType: i % 2 // Alternating streams render '0' or '1'
       });
     }
 
-    // Geometry & Material
-    const geometry = new THREE.BufferGeometry();
-    
-    const material = new THREE.PointsMaterial({
+    // Geometries & Materials
+    const geometry1 = new THREE.BufferGeometry();
+    const material1 = new THREE.PointsMaterial({
       size: 1.8,
-      map: glyphTexture,
+      map: glyphTexture1,
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       vertexColors: true,
     });
+    const points1 = new THREE.Points(geometry1, material1);
+    scene.add(points1);
 
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
+    const geometry0 = new THREE.BufferGeometry();
+    const material0 = new THREE.PointsMaterial({
+      size: 1.8,
+      map: glyphTexture0,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      vertexColors: true,
+    });
+    const points0 = new THREE.Points(geometry0, material0);
+    scene.add(points0);
 
     // Camera target for mouse movement
     let targetX = 0;
     let targetY = 0;
 
     const handleMouseMove = (e) => {
-      // Normalize mouse positions between -1 and 1
       const rect = container.getBoundingClientRect();
       const mouseX = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
       const mouseY = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
       
-      targetX = mouseX * 25; // camera movement bounds
+      targetX = mouseX * 25;
       targetY = mouseY * 15;
     };
 
@@ -109,52 +136,57 @@ export default function MatrixRain3D() {
 
     // Update positions & colors in buffer
     const updateParticles = () => {
-      let idx = 0;
+      let idx0 = 0;
+      let idx1 = 0;
       
       streams.forEach((stream) => {
-        // Update stream head position
         stream.headY -= stream.speed;
         
-        // Reset stream if the entire tail goes below screen
         if (stream.headY - (stream.length * stream.spacing) < -50) {
           stream.headY = 50 + Math.random() * 20;
           stream.x = (Math.random() - 0.5) * 120;
           stream.z = (Math.random() - 0.5) * 80 - 10;
         }
 
-        // Place each particle in the stream
+        const isOne = stream.charType === 1;
+        const positions = isOne ? positions1 : positions0;
+        const colors = isOne ? colors1 : colors0;
+        const currentIdx = isOne ? idx1 : idx0;
+
         for (let j = 0; j < stream.length; j++) {
           const y = stream.headY - (j * stream.spacing);
+          const pIdx = currentIdx + j * 3;
           
-          positions[idx * 3] = stream.x;
-          positions[idx * 3 + 1] = y;
-          positions[idx * 3 + 2] = stream.z;
+          positions[pIdx] = stream.x;
+          positions[pIdx + 1] = y;
+          positions[pIdx + 2] = stream.z;
 
-          // Color calculation: Head is bright white/green, tail fades out
           const tailFade = 1.0 - (j / stream.length);
-          
-          // Add some sparkle/glitch to random tail positions
           const glitched = Math.random() < 0.05;
           const greenIntensity = glitched ? 1.0 : tailFade;
-          const redBlueIntensity = j === 0 ? 0.8 : (glitched ? 0.4 : 0.0); // white head, green tail
+          const redBlueIntensity = j === 0 ? 0.8 : (glitched ? 0.4 : 0.0);
 
-          colors[idx * 3] = redBlueIntensity; // Red
-          colors[idx * 3 + 1] = greenIntensity; // Green
-          colors[idx * 3 + 2] = redBlueIntensity; // Blue
+          colors[pIdx] = redBlueIntensity;
+          colors[pIdx + 1] = greenIntensity;
+          colors[pIdx + 2] = redBlueIntensity;
+        }
 
-          sizes[idx] = j === 0 ? 2.5 : 1.5 * tailFade;
-
-          idx++;
+        if (isOne) {
+          idx1 += stream.length * 3;
+        } else {
+          idx0 += stream.length * 3;
         }
       });
 
-      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      // Note: PointsMaterial size can't be set per-vertex easily in older Three versions 
-      // without shaders, but vertex colors work perfectly to fade particles out.
-      
-      geometry.attributes.position.needsUpdate = true;
-      geometry.attributes.color.needsUpdate = true;
+      geometry1.setAttribute('position', new THREE.BufferAttribute(positions1, 3));
+      geometry1.setAttribute('color', new THREE.BufferAttribute(colors1, 3));
+      geometry1.attributes.position.needsUpdate = true;
+      geometry1.attributes.color.needsUpdate = true;
+
+      geometry0.setAttribute('position', new THREE.BufferAttribute(positions0, 3));
+      geometry0.setAttribute('color', new THREE.BufferAttribute(colors0, 3));
+      geometry0.attributes.position.needsUpdate = true;
+      geometry0.attributes.color.needsUpdate = true;
     };
 
     // Animation Loop
@@ -162,10 +194,9 @@ export default function MatrixRain3D() {
     const animate = () => {
       animationId = requestAnimationFrame(animate);
 
-      // Smooth camera interpolation (ease mouse tilt)
       camera.position.x += (targetX - camera.position.x) * 0.05;
       camera.position.y += (targetY - camera.position.y) * 0.05;
-      camera.lookAt(0, 0, -20); // Look at mid-depth
+      camera.lookAt(0, 0, -20);
 
       updateParticles();
 
@@ -193,9 +224,14 @@ export default function MatrixRain3D() {
         container.removeChild(renderer.domElement);
       }
       
-      geometry.dispose();
-      material.dispose();
-      glyphTexture.dispose();
+      geometry1.dispose();
+      material1.dispose();
+      glyphTexture1.dispose();
+
+      geometry0.dispose();
+      material0.dispose();
+      glyphTexture0.dispose();
+
       renderer.dispose();
     };
   }, []);
