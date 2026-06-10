@@ -217,7 +217,7 @@ export const Contact = styled.div`
 
 export const PageHolder = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 0.7fr 1.3fr;
   gap: 24px;
   padding: 24px;
   flex: 1;

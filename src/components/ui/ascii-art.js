@@ -19,7 +19,7 @@ export function AsciiArt({
   const [error, setError] = useState(false);
   
   const stateRef = useRef({
-    grid: [],
+    originalGrid: [],
     width: 0,
     height: 0,
     animationFrameId: null,
@@ -30,7 +30,7 @@ export function AsciiArt({
     inverted,
   });
 
-  // Keep ref up to date with latest color and style props to avoid react re-render cycles in animation
+  // Keep ref up to date with latest props
   stateRef.current.color = color;
   stateRef.current.animationStyle = animationStyle;
   stateRef.current.inverted = inverted;
@@ -64,8 +64,8 @@ export function AsciiArt({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const { grid, cols, rows, color: renderColor, animationStyle: renderStyle } = stateRef.current;
-      if (!grid || grid.length === 0) return;
+      const { originalGrid, cols, rows, color: renderColor, animationStyle: renderStyle } = stateRef.current;
+      if (!originalGrid || originalGrid.length === 0) return;
 
       // Make canvas display-density aware (HDPI)
       const dpr = window.devicePixelRatio || 1;
@@ -97,18 +97,56 @@ export function AsciiArt({
       ctx.shadowColor = renderColor;
       ctx.shadowBlur = 4;
 
+      // Animation parameters
+      const time = performance.now() * 0.003;
+      const smileFactor = (Math.sin(time) + 1) / 2; // Pulsating value from 0 to 1 for smile morph
+      const breathe = Math.sin(time * 0.5) * 0.015; // Slow breathing size pulse
+
       // Draw grid
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const cell = grid[r][c];
-          
-          // Skip drawing if pixel is dark (space character)
-          if (cell.brightness < 15) continue;
+          // Calculate normalized coordinates
+          const u = c / cols;
+          const v = r / rows;
+
+          // Mouth coordinates in standard profile avatar
+          const mx = 0.5;
+          const my = 0.70; // Position of mouth
+          const rx = u - mx;
+          const ry = v - my;
+          const dist = Math.sqrt(rx * rx + ry * ry);
+
+          let sampleU = u;
+          let sampleV = v;
+
+          // Apply a smooth facial smile warp (distort coordinates near the mouth)
+          if (dist < 0.22) {
+            const strength = Math.pow(1.0 - dist / 0.22, 1.5); // Falloff
+            
+            // Stretch mouth horizontally (widen)
+            sampleU = u - rx * 0.16 * strength * smileFactor;
+            
+            // Curve mouth corners upwards
+            sampleV = v + Math.abs(rx) * 0.18 * strength * smileFactor;
+            
+            // Add a small lift to the center bottom lip
+            sampleV = sampleV - breathe * 0.1 * strength;
+          }
+
+          // Apply generic head breathing effect (pulse head scale slowly)
+          sampleU = mx + (sampleU - mx) * (1.0 + breathe);
+          sampleV = my + (sampleV - my) * (1.0 + breathe);
+
+          // Bound coordinates
+          const sampleC = Math.min(Math.max(0, Math.round(sampleU * (cols - 1))), cols - 1);
+          const sampleR = Math.min(Math.max(0, Math.round(sampleV * (rows - 1))), rows - 1);
+
+          const cell = originalGrid[sampleR][sampleC];
+          if (!cell || cell.brightness < 15) continue;
 
           // Matrix Shimmer Effect
           if (renderStyle === 'matrix') {
             if (Math.random() < cell.changeThreshold) {
-              // Brighter pixels get shinier matrix characters
               cell.char = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
             }
           }
@@ -132,9 +170,7 @@ export function AsciiArt({
         ctx.fillRect(0, y, targetWidth, 1);
       }
 
-      if (renderStyle === 'matrix') {
-        stateRef.current.animationFrameId = requestAnimationFrame(render);
-      }
+      stateRef.current.animationFrameId = requestAnimationFrame(render);
     };
 
     render();
@@ -203,7 +239,7 @@ export function AsciiArt({
         grid.push(row);
       }
 
-      stateRef.current.grid = grid;
+      stateRef.current.originalGrid = grid;
       stateRef.current.cols = cols;
       stateRef.current.rows = rows;
       stateRef.current.imageLoaded = true;
