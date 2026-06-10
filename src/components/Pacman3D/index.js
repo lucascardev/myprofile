@@ -1,6 +1,7 @@
 // src/components/Pacman3D/index.js
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
+import { DpadContainer, DpadButton } from '../../style/global.style';
 
 const Pacman3D = () => {
     const mountRef = useRef(null);
@@ -661,72 +662,38 @@ const Pacman3D = () => {
         }
     };
 
-    const dpadButtonStyle = {
-        width: '38px',
-        height: '38px',
-        borderRadius: '50%',
-        border: '1px solid #00ff41',
-        background: 'rgba(0, 15, 2, 0.75)',
-        color: '#00ff41',
-        fontSize: '1em',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        userSelect: 'none',
-        boxShadow: '0 0 6px rgba(0, 255, 65, 0.4)',
-        outline: 'none',
-        padding: 0,
-        fontWeight: 'bold',
-        WebkitTapHighlightColor: 'transparent'
-    };
-
     return (
         <div style={{ position: 'relative', width: '100%', margin: '12px 0' }}>
-            {/* 3D Canvas Mount */}
-            <div ref={mountRef} style={{ width: '100%', height: '420px', borderRadius: '4px', overflow: 'hidden', border: '1px solid #00ff41' }}></div>
+            {/* 3D Canvas Mount - height scaled responsively */}
+            <div ref={mountRef} style={{ width: '100%', height: isMobile ? '280px' : '400px', borderRadius: '4px', overflow: 'hidden', border: '1px solid #00ff41' }}></div>
             
             {/* On-screen Mobile D-pad */}
             {isMobile && gameState === 'PLAYING' && (
-                <div style={{
-                    position: 'absolute',
-                    bottom: '60px',
-                    right: '16px',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 38px)',
-                    gridTemplateRows: 'repeat(3, 38px)',
-                    gap: '4px',
-                    pointerEvents: 'auto',
-                    zIndex: 10
-                }}>
+                <DpadContainer>
                     <div></div>
-                    <button 
+                    <DpadButton 
                         onTouchStart={(e) => { e.preventDefault(); handleMobileDir(0, -1); }}
                         onClick={() => handleMobileDir(0, -1)}
-                        style={dpadButtonStyle}
-                    >▲</button>
+                    >▲</DpadButton>
                     <div></div>
                     
-                    <button 
+                    <DpadButton 
                         onTouchStart={(e) => { e.preventDefault(); handleMobileDir(-1, 0); }}
                         onClick={() => handleMobileDir(-1, 0)}
-                        style={dpadButtonStyle}
-                    >◀</button>
+                    >◀</DpadButton>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00ff41', fontSize: '0.55em', opacity: 0.5, fontFamily: "'Share Tech Mono', monospace", pointerEvents: 'none' }}>CTRL</div>
-                    <button 
+                    <DpadButton 
                         onTouchStart={(e) => { e.preventDefault(); handleMobileDir(1, 0); }}
                         onClick={() => handleMobileDir(1, 0)}
-                        style={dpadButtonStyle}
-                    >▶</button>
+                    >▶</DpadButton>
                     
                     <div></div>
-                    <button 
+                    <DpadButton 
                         onTouchStart={(e) => { e.preventDefault(); handleMobileDir(0, 1); }}
                         onClick={() => handleMobileDir(0, 1)}
-                        style={dpadButtonStyle}
-                    >▼</button>
+                    >▼</DpadButton>
                     <div></div>
-                </div>
+                </DpadContainer>
             )}
             
             {/* HUD Status line overlay */}

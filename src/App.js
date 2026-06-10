@@ -63,6 +63,11 @@ import {
   ClaraFeatureList,
   ClaraButtonList,
   ClaraButton,
+  HeaderTechs,
+  ClaraChatWindow,
+  ClaraChatHeader,
+  ClaraChatBody,
+  ClaraChatMessage,
 } from './style/global.style';
 
 import API from './services/api';
@@ -108,6 +113,73 @@ function TypingText({ text, speed = 25 }) {
   }, [text, speed]);
 
   return <span>{displayedText}</span>;
+}
+
+function ClaraChatSimulator({ language }) {
+  const [messages, setMessages] = useState([]);
+  
+  const scriptPT = [
+    { sender: 'patient', text: 'Olá! Gostaria de agendar uma consulta com o Dr. Lucas.' },
+    { sender: 'clara', text: 'Olá! Claro, posso te ajudar. Temos horários livres nesta quinta às 14h ou sexta às 10h. Qual prefere?' },
+    { sender: 'patient', text: 'Quero na sexta às 10h, por favor!' },
+    { sender: 'clara', text: 'Perfeito! Agendamento confirmado para sexta às 10:00. Já sincronizei com Clinicorp e enviei seu lembrete. Até logo! 📅' }
+  ];
+
+  const scriptEN = [
+    { sender: 'patient', text: 'Hello! I would like to book an appointment with Dr. Lucas.' },
+    { sender: 'clara', text: 'Hi! Sure, I can help you. We have openings this Thursday at 2 PM or Friday at 10 AM. Which one do you prefer?' },
+    { sender: 'patient', text: 'Friday at 10 AM, please!' },
+    { sender: 'clara', text: 'Excellent! Appointment confirmed for Friday at 10:00 AM. Synced with Clinicorp and calendar invitation sent. See you soon! 📅' }
+  ];
+
+  const script = language === 'pt' ? scriptPT : scriptEN;
+
+  useEffect(() => {
+    setMessages([]);
+    let currentMsgIndex = 0;
+    
+    const timer1 = setTimeout(() => {
+      setMessages([script[0]]);
+      currentMsgIndex = 1;
+      
+      const interval = setInterval(() => {
+        if (currentMsgIndex < script.length) {
+          setMessages(prev => [...prev, script[currentMsgIndex]]);
+          currentMsgIndex++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            setMessages([]);
+          }, 3000);
+        }
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    }, 1000);
+
+    return () => clearTimeout(timer1);
+  }, [language, script]);
+
+  return (
+    <ClaraChatWindow>
+      <ClaraChatHeader>
+        CLARA_IA_ROUTING_NODE
+      </ClaraChatHeader>
+      <ClaraChatBody>
+        {messages.length === 0 && (
+          <div style={{ color: '#005e0d', fontStyle: 'italic', fontSize: '0.85em', textAlign: 'center', margin: 'auto' }}>
+            {language === 'pt' ? 'ESTABELECENDO CANAL SEGURO...' : 'ESTABLISHING SECURE CHANNEL...'}
+          </div>
+        )}
+        {messages.map((msg, index) => (
+          <ClaraChatMessage key={index} className={msg.sender}>
+            <strong>{msg.sender === 'patient' ? (language === 'pt' ? 'Paciente: ' : 'Patient: ') : 'Clara AI: '}</strong>
+            {msg.text}
+          </ClaraChatMessage>
+        ))}
+      </ClaraChatBody>
+    </ClaraChatWindow>
+  );
 }
 
 function App() {
@@ -457,7 +529,7 @@ function App() {
           </p>
         </Contact>
 
-        <div className="techs" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', padding: 0, border: 'none', background: 'transparent' }}>
+        <HeaderTechs>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <TechsMarqueeContainer>
               <TechsTrack>
@@ -489,7 +561,7 @@ function App() {
             <TypingText text={getStatusText()} />
             <BlinkingCursor />
           </TechExperienceDisplay>
-        </div>
+        </HeaderTechs>
       </Header>
 
       <PageHolder>
@@ -507,24 +579,23 @@ function App() {
                 {h.text}
               </CommandRow>
             ))}
-            
-            {showPacman && (
-              <div style={{ marginTop: '15px', border: '1px solid #00ff41', padding: '10px', borderRadius: '4px', background: '#000' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8em', color: '#00ff41' }}>
-                  <span>SIMULADOR_3D_PACMAN.EXE (MATRIX WIREFRAME EDITION)</span>
-                  <button 
-                    onClick={() => setShowPacman(false)}
-                    style={{ background: 'transparent', border: '1px solid #00ff41', color: '#00ff41', fontSize: '0.8em', cursor: 'pointer', padding: '2px 6px' }}
-                  >
-                    STOP
-                  </button>
-                </div>
-                <Pacman3D />
-              </div>
-            )}
-            
             <div ref={historyEndRef} />
           </CommandHistory>
+
+          {showPacman && (
+            <div style={{ marginTop: '15px', border: '1px solid #00ff41', padding: '10px', borderRadius: '4px', background: '#000', position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8em', color: '#00ff41', padding: '0 4px' }}>
+                <span>SIMULADOR_3D_PACMAN.EXE (MATRIX WIREFRAME EDITION)</span>
+                <button 
+                  onClick={() => setShowPacman(false)}
+                  style={{ background: 'transparent', border: '1px solid #00ff41', color: '#00ff41', fontSize: '0.8em', cursor: 'pointer', padding: '2px 6px' }}
+                >
+                  STOP
+                </button>
+              </div>
+              <Pacman3D />
+            </div>
+          )}
 
           <TerminalInputLine onSubmit={handleCommandSubmit}>
             <PromptLabel>lucascardev@system:~$</PromptLabel>
@@ -604,6 +675,8 @@ function App() {
                   {language === 'pt' ? 'Testar IA' : 'Test AI'}
                 </ClaraButton>
               </ClaraButtonList>
+              
+              <ClaraChatSimulator language={language} />
             </ClaraShowcase>
           </TerminalWrapper>
 
@@ -633,14 +706,16 @@ function App() {
         </p>
       </Footer>
       
-      <FloatingWhatsApp 
-        href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." 
-        target="_blank" 
-        rel="noreferrer"
-        title={language === 'pt' ? 'Fale Comigo no WhatsApp' : 'Chat with me on WhatsApp'}
-      >
-        <FaWhatsapp />
-      </FloatingWhatsApp>
+      {!showPacman && (
+        <FloatingWhatsApp 
+          href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." 
+          target="_blank" 
+          rel="noreferrer"
+          title={language === 'pt' ? 'Fale Comigo no WhatsApp' : 'Chat with me on WhatsApp'}
+        >
+          <FaWhatsapp />
+        </FloatingWhatsApp>
+      )}
 
       <style>{`
         @keyframes scanline {
