@@ -37,3 +37,42 @@ code {
   background: #00ff41;
   box-shadow: 0 0 10px #00ff41;
 }
+
+/* Layout Utilities */
+.w-full {
+  width: 100%;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.block {
+  display: block;
+}
+
+.max-w-full {
+  max-width: 100%;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rounded {
+  border-radius: 4px;
+}
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.border {
+  border: 1px solid;
+}
+
+.border-green-950 {
+  border-color: #003b00;
+}
+

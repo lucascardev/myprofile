@@ -98,9 +98,11 @@ export function AsciiArt({
       ctx.shadowBlur = 4;
 
       // Animation parameters
-      const time = performance.now() * 0.003;
+      const time = performance.now() * 0.002; // Slower speed for natural organic animation
       const smileFactor = (Math.sin(time) + 1) / 2; // Pulsating value from 0 to 1 for smile morph
-      const breathe = Math.sin(time * 0.5) * 0.015; // Slow breathing size pulse
+      const breathe = Math.sin(time * 0.6) * 0.012; // Slow breathing size pulse
+      const swayX = Math.sin(time * 0.4) * 0.015; // Slow horizontal head bobbing/sway
+      const swayY = Math.cos(time * 0.3) * 0.010; // Slow vertical head bobbing/sway
 
       // Draw grid
       for (let r = 0; r < rows; r++) {
@@ -109,9 +111,9 @@ export function AsciiArt({
           const u = c / cols;
           const v = r / rows;
 
-          // Mouth coordinates in standard profile avatar
-          const mx = 0.5;
-          const my = 0.70; // Position of mouth
+          // Mouth coordinates in user's profile photo (analyzed at mx=0.58, my=0.46)
+          const mx = 0.58;
+          const my = 0.46;
           const rx = u - mx;
           const ry = v - my;
           const dist = Math.sqrt(rx * rx + ry * ry);
@@ -120,22 +122,23 @@ export function AsciiArt({
           let sampleV = v;
 
           // Apply a smooth facial smile warp (distort coordinates near the mouth)
-          if (dist < 0.22) {
-            const strength = Math.pow(1.0 - dist / 0.22, 1.5); // Falloff
+          if (dist < 0.18) {
+            const strength = Math.pow(1.0 - dist / 0.18, 1.8); // Smooth falloff
             
             // Stretch mouth horizontally (widen)
-            sampleU = u - rx * 0.16 * strength * smileFactor;
+            sampleU = u - rx * 0.22 * strength * smileFactor;
             
-            // Curve mouth corners upwards
-            sampleV = v + Math.abs(rx) * 0.18 * strength * smileFactor;
-            
-            // Add a small lift to the center bottom lip
-            sampleV = sampleV - breathe * 0.1 * strength;
+            // Curve mouth corners upwards (lift)
+            sampleV = v + Math.abs(rx) * 0.25 * strength * smileFactor;
           }
 
           // Apply generic head breathing effect (pulse head scale slowly)
           sampleU = mx + (sampleU - mx) * (1.0 + breathe);
           sampleV = my + (sampleV - my) * (1.0 + breathe);
+
+          // Apply slow head bobbing/sway
+          sampleU += swayX;
+          sampleV += swayY;
 
           // Bound coordinates
           const sampleC = Math.min(Math.max(0, Math.round(sampleU * (cols - 1))), cols - 1);
