@@ -732,3 +732,46 @@ export const FloatingWhatsApp = styled.a`
     filter: brightness(1.1);
   }
 `;
+
+const blink = keyframes`
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+`;
+
+export const BlinkingCursor = styled.span`
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background-color: ${colors.primary};
+  margin-left: 4px;
+  animation: ${blink} 1s step-end infinite;
+`;
+
+export const TechExperienceDisplay = styled.div`
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75em;
+  color: ${colors.primary};
+  text-shadow: 0 0 5px ${colors.primary};
+  background: rgba(0, 20, 5, 0.4);
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  padding: 4px 10px;
+  border-radius: 3px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  width: 380px;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  
+  @media (max-width: 992px) {
+    width: 280px;
+  }
+  
+  &::before {
+    content: "> ";
+    color: ${colors.amber};
+    margin-right: 4px;
+    font-weight: bold;
+  }
+`;

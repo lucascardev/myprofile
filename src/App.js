@@ -44,6 +44,8 @@ import {
   TechItem,
   TechTooltip,
   FloatingWhatsApp,
+  TechExperienceDisplay,
+  BlinkingCursor,
 } from './style/global.style';
 
 import API from './services/api';
@@ -60,6 +62,30 @@ const ICON_MAP = {
   git: FaGit,
 };
 
+function TypingText({ text, speed = 25 }) {
+  const [displayedText, setDisplayedText] = useState('');
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedText('');
+    
+    const interval = setInterval(() => {
+      setDisplayedText((prev) => {
+        const nextChar = text.charAt(index);
+        index++;
+        if (index >= text.length) {
+          clearInterval(interval);
+        }
+        return prev + nextChar;
+      });
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return <span>{displayedText}</span>;
+}
+
 function App() {
   const [avatarimg] = useState('https://i.ibb.co/XkvSFmbh/E2-B95-B01-6545-426-C-9850-B00-D20-F701-E3.jpg');
   const [username, setUsername] = useState('lucascardev');
@@ -68,8 +94,26 @@ function App() {
   const [terminalInput, setTerminalInput] = useState('');
   const [history, setHistory] = useState([]);
   const [showPacman, setShowPacman] = useState(false);
+  const [hoveredTech, setHoveredTech] = useState(null);
 
   const historyEndRef = useRef(null);
+
+  const getStatusText = () => {
+    if (!hoveredTech) {
+      return language === 'pt'
+        ? 'DETECTOR_DE_EXPERIENCIA: AGUARDANDO_SELECAO...'
+        : 'EXPERIENCE_DETECTOR: STANDBY_INPUT...';
+    }
+    const years = parseInt(hoveredTech.experience);
+    const yearsText = language === 'pt' 
+      ? `${years} ${years === 1 ? 'ANO' : 'ANOS'}`
+      : `${years} ${years === 1 ? 'YEAR' : 'YEARS'}`;
+      
+    if (language === 'pt') {
+      return `DECRIPTANDO: ${hoveredTech.name.toUpperCase()} -> ${yearsText} DE EXPERIENCIA`;
+    }
+    return `DECRYPTING: ${hoveredTech.name.toUpperCase()} -> ${yearsText} OF EXPERIENCE`;
+  };
 
   useEffect(() => {
     async function getmyprofile() {
@@ -347,28 +391,38 @@ function App() {
           </p>
         </Contact>
 
-        <div className="techs" style={{ padding: 0, border: 'none', background: 'transparent' }}>
-          <TechsMarqueeContainer>
-            <TechsTrack>
-              {[...techsData, ...techsData].map((tech, index) => {
-                const IconComponent = ICON_MAP[tech.id];
-                if (!IconComponent) return null;
-                return (
-                  <TechItem key={`${tech.id}-${index}`}>
-                    <IconComponent />
-                    <TechTooltip className="tech-tooltip">
-                      {tech.name}: {tech.experience}
-                    </TechTooltip>
-                  </TechItem>
-                );
-              })}
-            </TechsTrack>
-          </TechsMarqueeContainer>
-          <FaGlobe 
-            title={language === 'en' ? 'Switch to Portuguese' : 'Mudar para Inglês'} 
-            onClick={toggleLanguage} 
-            style={{ marginLeft: '16px', color: '#ffb000', cursor: 'pointer', fontSize: '1.3em' }}
-          />
+        <div className="techs" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', padding: 0, border: 'none', background: 'transparent' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <TechsMarqueeContainer>
+              <TechsTrack>
+                {[...techsData, ...techsData].map((tech, index) => {
+                  const IconComponent = ICON_MAP[tech.id];
+                  if (!IconComponent) return null;
+                  return (
+                    <TechItem 
+                      key={`${tech.id}-${index}`}
+                      onMouseEnter={() => setHoveredTech(tech)}
+                      onMouseLeave={() => setHoveredTech(null)}
+                    >
+                      <IconComponent />
+                      <TechTooltip className="tech-tooltip">
+                        {tech.name}: {tech.experience}
+                      </TechTooltip>
+                    </TechItem>
+                  );
+                })}
+              </TechsTrack>
+            </TechsMarqueeContainer>
+            <FaGlobe 
+              title={language === 'en' ? 'Switch to Portuguese' : 'Mudar para Inglês'} 
+              onClick={toggleLanguage} 
+              style={{ marginLeft: '16px', color: '#ffb000', cursor: 'pointer', fontSize: '1.3em' }}
+            />
+          </div>
+          <TechExperienceDisplay>
+            <TypingText text={getStatusText()} />
+            <BlinkingCursor />
+          </TechExperienceDisplay>
         </div>
       </Header>
 
