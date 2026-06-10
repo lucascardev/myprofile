@@ -1059,3 +1059,154 @@ export const ClaraChatMessage = styled.div`
     to { opacity: 1; transform: translateY(0); }
   }
 `;
+
+// GitHub contributions calendar styled-components
+export const ContributionsWrapper = styled.div`
+  border: 1px solid ${colors.glassBorder};
+  background: ${colors.terminalBg};
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+  position: relative;
+  margin: 24px auto;
+  max-width: 1400px;
+  width: calc(100% - 48px);
+  box-sizing: border-box;
+
+  &::before {
+    content: "${props => props.title || 'GITHUB_CONTRIBUTIONS'}";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: ${colors.background};
+    color: ${colors.primary};
+    font-size: 0.75em;
+    padding: 0 8px;
+    border: 1px solid ${colors.glassBorder};
+    border-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    width: calc(100% - 32px);
+    margin: 16px auto;
+    padding: 12px;
+  }
+`;
+
+export const ContributionsTitle = styled.h3`
+  color: ${colors.text};
+  font-size: 0.95em;
+  margin: 0 0 16px 0;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-family: 'Share Tech Mono', monospace;
+  
+  span {
+    color: ${colors.primary};
+    text-shadow: 0 0 8px ${colors.glow};
+  }
+`;
+
+export const CalendarContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  padding-bottom: 8px;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.secondary};
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: ${colors.primary};
+  }
+`;
+
+export const CalendarGrid = styled.div`
+  display: grid;
+  grid-template-rows: repeat(7, 10px);
+  grid-auto-flow: column;
+  grid-gap: 3px;
+  align-items: center;
+  margin: 4px auto 0 auto;
+  width: max-content;
+  position: relative;
+  padding-left: 28px; /* Space for weekday labels */
+`;
+
+export const WeekdayLabels = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  grid-template-rows: repeat(7, 10px);
+  grid-gap: 3px;
+  font-size: 7px;
+  color: ${colors.mutedText};
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  pointer-events: none;
+  
+  div {
+    display: flex;
+    align-items: center;
+    height: 10px;
+  }
+`;
+
+export const MonthLabelsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(53, 13px); /* 10px size + 3px gap */
+  margin: 0 auto;
+  width: max-content;
+  padding-left: 28px; /* Align with Grid */
+  font-size: 8px;
+  color: ${colors.mutedText};
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  pointer-events: none;
+`;
+
+export const CalendarCell = styled.div`
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: ${props => {
+    switch (props.level) {
+      case 1: return '#003b00'; // dark green
+      case 2: return '#005e0d'; // medium green
+      case 3: return '#008f11'; // command green
+      case 4: return '#00ff41'; // neon green
+      default: return 'rgba(0, 255, 65, 0.04)'; // base empty cell
+    }
+  }};
+  border: 1px solid ${props => props.level > 0 ? 'rgba(0, 255, 65, 0.25)' : 'rgba(0, 255, 65, 0.03)'};
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.3);
+    border-color: ${colors.primary};
+    box-shadow: 0 0 5px ${colors.glow};
+    z-index: 5;
+  }
+`;
+
+export const CalendarLegend = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  color: ${colors.mutedText};
+  margin-top: 8px;
+  padding-right: 12px;
+  font-family: 'Share Tech Mono', monospace;
+`;

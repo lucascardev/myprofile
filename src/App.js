@@ -68,6 +68,14 @@ import {
   ClaraChatHeader,
   ClaraChatBody,
   ClaraChatMessage,
+  ContributionsWrapper,
+  ContributionsTitle,
+  CalendarContainer,
+  CalendarGrid,
+  WeekdayLabels,
+  MonthLabelsContainer,
+  CalendarCell,
+  CalendarLegend,
 } from './style/global.style';
 
 import API from './services/api';
@@ -191,8 +199,89 @@ function App() {
   const [history, setHistory] = useState([]);
   const [showPacman, setShowPacman] = useState(false);
   const [hoveredTech, setHoveredTech] = useState(null);
+  const [contributions, setContributions] = useState([]);
+  const [totalContributions, setTotalContributions] = useState(0);
 
   const historyEndRef = useRef(null);
+
+  const techProjectCounts = React.useMemo(() => {
+    const counts = {
+      typescript: 0,
+      javascript: 0,
+      html5: 0,
+      css3: 0,
+      docker: 0,
+      react: 0,
+      nodejs: 0,
+      git: repos.length,
+      kubernetes: 0,
+      oraclecloud: 0,
+      gcp: 0,
+      digitalocean: 0,
+      antigravity: 0,
+      iadeveloper: 0,
+      automation: 0
+    };
+
+    repos.forEach((r) => {
+      const name = (r.name || '').toLowerCase();
+      const desc = (r.description || '').toLowerCase();
+      const lang = (r.language || '').toLowerCase();
+
+      if (lang === 'typescript') counts.typescript++;
+      if (lang === 'javascript') counts.javascript++;
+      if (lang === 'html') counts.html5++;
+      if (lang === 'css') counts.css3++;
+
+      if (name.includes('docker') || desc.includes('docker') || name.includes('container') || desc.includes('container')) counts.docker++;
+      if (name.includes('react') || desc.includes('react') || name.includes('nextjs') || desc.includes('nextjs') || name.includes('next.js') || desc.includes('next.js')) counts.react++;
+      if (name.includes('node') || desc.includes('node') || name.includes('backend') || desc.includes('backend') || name.includes('express') || desc.includes('express')) counts.nodejs++;
+      if (name.includes('kubernetes') || desc.includes('kubernetes') || name.includes('k8s') || desc.includes('k8s')) counts.kubernetes++;
+      if (name.includes('gcp') || desc.includes('gcp') || name.includes('google cloud') || desc.includes('google cloud') || name.includes('firebase') || desc.includes('firebase') || name.includes('vertex') || desc.includes('vertex')) counts.gcp++;
+      if (name.includes('oracle') || desc.includes('oracle') || name.includes('oci') || desc.includes('oci')) counts.oraclecloud++;
+      if (name.includes('digital') || desc.includes('digital') || name.includes('digitalocean') || desc.includes('digitalocean')) counts.digitalocean++;
+      if (name.includes('antigravity') || desc.includes('antigravity') || name.includes('gemini') || desc.includes('gemini') || name.includes('agentic') || desc.includes('agentic')) counts.antigravity++;
+      if (name.includes('ai') || desc.includes('ai') || name.includes('ia') || desc.includes('ia') || name.includes('chatbot') || desc.includes('chatbot') || name.includes('clara') || desc.includes('clara') || name.includes('gpt') || desc.includes('gpt') || name.includes('gemini') || desc.includes('gemini') || name.includes('vertex') || desc.includes('vertex')) counts.iadeveloper++;
+      if (name.includes('automation') || desc.includes('automation') || name.includes('task') || desc.includes('task') || name.includes('cron') || desc.includes('cron') || name.includes('sync') || desc.includes('sync') || name.includes('script') || desc.includes('script') || name.includes('workflow') || desc.includes('workflow')) counts.automation++;
+    });
+
+    return counts;
+  }, [repos]);
+
+  const getDynamicBio = (lang) => {
+    const totalRepos = repos.length;
+    const tsRepos = repos.filter(r => r.language === 'TypeScript').length;
+    const jsRepos = repos.filter(r => r.language === 'JavaScript').length;
+    
+    if (lang === 'pt') {
+      return [
+        'Nome: Lucas Matheus Cardoso',
+        'Grau: Bacharel em Sistemas de Informação - Estácio de Sá',
+        `Projetos Públicos no GitHub: ${totalRepos} repositórios`,
+        `Foco Tecnológico: TypeScript (${tsRepos} projetos) & JavaScript (${jsRepos} projetos)`,
+        'Biografia:',
+        '  Desenvolvedor Fullstack com +6 anos de experiência consolidada criando aplicações',
+        '  web escaláveis e de alta performance. Especialista no ecossistema JavaScript/TypeScript,',
+        '  com foco em arquiteturas robustas em React/Next.js no frontend e Node.js no backend.',
+        '  Proficiente em modelagem de APIs multi-tenant, integração de microsserviços e',
+        '  sistemas inteligentes como a assistente Clara IA (clara-ia.online). Praticante de',
+        '  Clean Code, DevOps (Kubernetes/Cloud) e metodologias ágeis.'
+      ];
+    }
+    return [
+      'Name: Lucas Matheus Cardoso',
+      'Degree: Bachelor of Information Systems - Estácio University',
+      `Public GitHub Projects: ${totalRepos} repositories`,
+      `Core Tech Stack: TypeScript (${tsRepos} projects) & JavaScript (${jsRepos} projects)`,
+      'Biography:',
+      '  Fullstack Software Engineer with +6 years of professional experience building',
+      '  scalable, high-performance web applications. Specialized in the JavaScript/TypeScript',
+      '  ecosystem, designing robust architectures with React/Next.js on the frontend',
+      '  and Node.js on the backend. Experienced in multi-tenant system design, microservices',
+      '  integration, and intelligent automation systems like Clara IA (clara-ia.online).',
+      '  Dedicated to Clean Code principles, DevOps, and agile practices.'
+    ];
+  };
 
   const getStatusText = () => {
     if (!hoveredTech) {
@@ -204,11 +293,16 @@ function App() {
     const yearsText = language === 'pt' 
       ? `${years} ${years === 1 ? 'ANO' : 'ANOS'}`
       : `${years} ${years === 1 ? 'YEAR' : 'YEARS'}`;
+    
+    const count = techProjectCounts[hoveredTech.id] || 0;
+    const projectText = language === 'pt'
+      ? `${count} ${count === 1 ? 'PROJETO DETECTADO' : 'PROJETOS DETECTADOS'}`
+      : `${count} ${count === 1 ? 'PROJECT DETECTED' : 'PROJECTS DETECTED'}`;
       
     if (language === 'pt') {
-      return `DECRIPTANDO: ${hoveredTech.name.toUpperCase()} -> ${yearsText} DE EXPERIENCIA`;
+      return `DECRIPTANDO: ${hoveredTech.name.toUpperCase()} -> ${yearsText} DE EXP. // ${projectText}`;
     }
-    return `DECRYPTING: ${hoveredTech.name.toUpperCase()} -> ${yearsText} OF EXPERIENCE`;
+    return `DECRYPTING: ${hoveredTech.name.toUpperCase()} -> ${yearsText} OF EXP. // ${projectText}`;
   };
 
   useEffect(() => {
@@ -222,8 +316,115 @@ function App() {
         console.error('Error fetching data from github API', e);
       }
     }
+    async function getContributions() {
+      try {
+        const response = await fetch('https://github-contributions-api.jogruber.de/v4/lucascardev');
+        const data = await response.json();
+        setContributions(data.contributions || []);
+        if (data.contributions) {
+          const lastYearCount = data.contributions.slice(-365).reduce((sum, day) => sum + day.count, 0);
+          setTotalContributions(lastYearCount);
+        }
+      } catch (e) {
+        console.error('Error fetching contribution calendar', e);
+      }
+    }
     getmyprofile();
+    getContributions();
   }, []);
+
+  const renderContributionsGrid = () => {
+    if (!contributions || contributions.length === 0) {
+      return (
+        <div style={{ color: '#008f11', fontStyle: 'italic', textAlign: 'center', fontSize: '0.9em', padding: '20px 0' }}>
+          {language === 'pt' ? 'CARREGANDO DADOS DE CONTRIBUIÇÃO...' : 'LOADING CONTRIBUTION STREAM...'}
+        </div>
+      );
+    }
+
+    let targetLength = 371;
+    let sliceConts = contributions;
+    if (contributions.length > targetLength) {
+      sliceConts = contributions.slice(-targetLength);
+    } else if (contributions.length < targetLength) {
+      const padding = Array.from({ length: targetLength - contributions.length }, () => ({
+        date: '',
+        count: 0,
+        level: 0
+      }));
+      sliceConts = [...padding, ...contributions];
+    }
+
+    const weeks = [];
+    for (let i = 0; i < sliceConts.length; i += 7) {
+      weeks.push(sliceConts.slice(i, i + 7));
+    }
+
+    const monthHeaders = [];
+    let prevMonth = '';
+    
+    weeks.forEach((week, weekIdx) => {
+      const firstDayWithDate = week.find(d => d.date);
+      if (firstDayWithDate) {
+        const parts = firstDayWithDate.date.split('-');
+        if (parts.length === 3) {
+          const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          const monthName = dateObj.toLocaleString(language === 'pt' ? 'pt-BR' : 'en-US', { month: 'short' });
+          if (monthName !== prevMonth) {
+            monthHeaders.push(
+              <div 
+                key={weekIdx} 
+                style={{ 
+                  gridColumnStart: weekIdx + 1, 
+                  gridColumnEnd: weekIdx + 3,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {monthName}
+              </div>
+            );
+            prevMonth = monthName;
+          }
+        }
+      }
+    });
+
+    return (
+      <CalendarContainer>
+        <MonthLabelsContainer>
+          {monthHeaders}
+        </MonthLabelsContainer>
+        
+        <CalendarGrid>
+          <WeekdayLabels>
+            <div></div>
+            <div>Mon</div>
+            <div></div>
+            <div>Wed</div>
+            <div></div>
+            <div>Fri</div>
+            <div></div>
+          </WeekdayLabels>
+          
+          {weeks.map((week, weekIdx) => 
+            week.map((day, dayIdx) => {
+              const tooltipText = day.date
+                ? `${day.count} ${day.count === 1 ? (language === 'pt' ? 'contribuição em' : 'contribution on') : (language === 'pt' ? 'contribuições em' : 'contributions on')} ${day.date}`
+                : (language === 'pt' ? 'Sem dados' : 'No data');
+                
+              return (
+                <CalendarCell 
+                  key={`${weekIdx}-${dayIdx}`} 
+                  level={day.level} 
+                  title={tooltipText}
+                />
+              );
+            })
+          )}
+        </CalendarGrid>
+      </CalendarContainer>
+    );
+  };
 
   // Detect and set browser language
   useEffect(() => {
@@ -307,27 +508,7 @@ function App() {
         '  clear | limpar     - Clear the terminal console.'
       ];
     } else if (cleaned === 'bio' || cleaned === 'sobre') {
-      outputLines = language === 'pt' ? [
-        'Nome: Lucas Matheus Cardoso',
-        'Grau: Bacharel em Sistemas de Informação - Estácio de Sá',
-        'Experiência: +6 anos de desenvolvimento web',
-        'Biografia:',
-        '  Sou um programador apaixonado por resolver desafios complexos e projetar',
-        '  arquiteturas robustas. Crio soluções completas do front ao back-end,',
-        '  seguindo sempre as melhores práticas de Clean Code, Git Flow e DevOps.',
-        '  Com olhar crítico para design e usabilidade, foco em criar interfaces',
-        '  limpas, fluidas e de alta performance.'
-      ] : [
-        'Name: Lucas Matheus Cardoso',
-        'Degree: Bachelor of Information Systems - Estácio University',
-        'Experience: +6 years of professional web development',
-        'Biography:',
-        '  I am a software engineering enthusiast dedicated to solving complex problems',
-        '  and structuring robust software architectures. I design modern applications',
-        '  from UI components to backend services, matching clean code principles.',
-        '  With a critical eye for design and usability, I focus on creating clean,',
-        '  fluid, and high-performance user interfaces.'
-      ];
+      outputLines = getDynamicBio(language);
     } else if (cleaned === 'clara' || cleaned === 'clara-ia') {
       outputLines = language === 'pt' ? [
         'PROJETO DESTACADO: CLARA IA (clara-ia.online)',
@@ -544,7 +725,7 @@ function App() {
                     >
                       <IconComponent />
                       <TechTooltip className="tech-tooltip">
-                        {tech.name}: {tech.experience}
+                        {tech.name}: {tech.experience} ({techProjectCounts[tech.id] || 0} {language === 'pt' ? 'repos' : 'repos'})
                       </TechTooltip>
                     </TechItem>
                   );
@@ -695,6 +876,32 @@ function App() {
           </TerminalWrapper>
         </SidePanel>
       </PageHolder>
+
+      <ContributionsWrapper title="GITHUB_CONTRIBUTIONS_STREAM">
+        <ContributionsTitle>
+          <span>{totalContributions}</span> {language === 'pt' ? 'contribuições no último ano' : 'contributions in the last year'}
+        </ContributionsTitle>
+        {renderContributionsGrid()}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', flexWrap: 'wrap', gap: '8px' }}>
+          <a 
+            href="https://github.com/lucascardev" 
+            target="_blank" 
+            rel="noreferrer" 
+            style={{ fontSize: '9px', color: '#008f11', textDecoration: 'underline', fontFamily: "'Share Tech Mono', monospace" }}
+          >
+            {language === 'pt' ? 'Saiba como as contribuições são contadas' : 'Learn how we count contributions'}
+          </a>
+          <CalendarLegend style={{ margin: 0, padding: 0 }}>
+            <span>{language === 'pt' ? 'Menos' : 'Less'}</span>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'rgba(0, 255, 65, 0.04)', border: '1px solid rgba(0, 255, 65, 0.03)' }}></div>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#003b00' }}></div>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#005e0d' }}></div>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#008f11' }}></div>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#00ff41' }}></div>
+            <span>{language === 'pt' ? 'Mais' : 'More'}</span>
+          </CalendarLegend>
+        </div>
+      </ContributionsWrapper>
 
       <Footer>
         <p>
