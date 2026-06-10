@@ -612,3 +612,123 @@ export const ModeSelector = styled.div`
   gap: 8px;
   margin-bottom: 8px;
 `;
+
+const marqueeAnim = keyframes`
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+`;
+
+export const TechsMarqueeContainer = styled.div`
+  overflow: hidden;
+  width: 380px;
+  mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+  border: 1px solid ${colors.glassBorder};
+  background: ${colors.background};
+  padding: 8px 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  
+  @media (max-width: 992px) {
+    width: 280px;
+    margin: 10px 0;
+  }
+`;
+
+export const TechsTrack = styled.div`
+  display: flex;
+  width: max-content;
+  animation: ${marqueeAnim} 20s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+`;
+
+export const TechItem = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 16px;
+  cursor: pointer;
+
+  svg {
+    font-size: 1.4em;
+    color: ${colors.secondary};
+    transition: all 0.25s ease;
+
+    &:hover {
+      color: ${colors.primary};
+      transform: scale(1.2) translateY(-2px);
+      filter: drop-shadow(0 0 5px ${colors.primary});
+    }
+  }
+
+  &:hover .tech-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+`;
+
+export const TechTooltip = styled.div`
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: ${colors.background};
+  color: ${colors.primary};
+  border: 1px solid ${colors.primary};
+  box-shadow: 0 0 10px ${colors.glow};
+  padding: 4px 8px;
+  font-size: 0.75em;
+  font-family: 'Share Tech Mono', monospace;
+  white-space: nowrap;
+  border-radius: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 1000;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 4px;
+    border-style: solid;
+    border-color: ${colors.primary} transparent transparent transparent;
+  }
+`;
+
+export const FloatingWhatsApp = styled.a`
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #25d366;
+  color: #fff !important;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  z-index: 9999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  text-decoration: none;
+
+  &:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 25px #25d366, 0 0 40px rgba(37, 211, 102, 0.6);
+    filter: brightness(1.1);
+  }
+`;

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "typescript",
+    "name": "TypeScript",
+    "experience": "4 years"
+  },
+  {
+    "id": "css3",
+    "name": "CSS3",
+    "experience": "6 years"
+  },
+  {
+    "id": "docker",
+    "name": "Docker",
+    "experience": "3 years"
+  },
+  {
+    "id": "html5",
+    "name": "HTML5",
+    "experience": "6 years"
+  },
+  {
+    "id": "react",
+    "name": "React",
+    "experience": "5 years"
+  },
+  {
+    "id": "nodejs",
+    "name": "Node.js",
+    "experience": "4 years"
+  },
+  {
+    "id": "javascript",
+    "name": "JavaScript",
+    "experience": "6 years"
+  },
+  {
+    "id": "git",
+    "name": "Git",
+    "experience": "6 years"
+  }
+]

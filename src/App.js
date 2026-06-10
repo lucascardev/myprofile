@@ -16,6 +16,7 @@ import {
   FaGit,
   FaTerminal,
   FaGlobe,
+  FaWhatsapp,
 } from 'react-icons/fa';
 
 import { SiTypescript } from 'react-icons/si';
@@ -38,9 +39,26 @@ import {
   PromptLabel,
   TerminalInputLine,
   CustomInput,
+  TechsMarqueeContainer,
+  TechsTrack,
+  TechItem,
+  TechTooltip,
+  FloatingWhatsApp,
 } from './style/global.style';
 
 import API from './services/api';
+import techsData from './services/techs.json';
+
+const ICON_MAP = {
+  typescript: SiTypescript,
+  css3: FaCss3,
+  docker: FaDocker,
+  html5: FaHtml5,
+  react: FaReact,
+  nodejs: FaNodeJs,
+  javascript: FaJsSquare,
+  git: FaGit,
+};
 
 function App() {
   const [avatarimg, setAvatarimg] = useState('');
@@ -228,13 +246,23 @@ function App() {
       }
     } else if (cleaned === 'contact' || cleaned === 'contato') {
       outputLines = [
-        'CONTACT_NODES // OPEN CHANNELS:',
-        '---------------------------------------',
-        '  Email:       lucasmatheussc97@gmail.com',
-        '  Phone/Wpp:   +55 (71) 99293-1330',
-        '  LinkedIn:    https://www.linkedin.com/in/lucascardev',
-        '  Instagram:   @lucas_mtheus',
-        '               @lightup.marketingdigital'
+        { type: 'output', text: 'CONTACT_NODES // OPEN CHANNELS:' },
+        { type: 'output', text: '---------------------------------------' },
+        { type: 'output', text: '  Email:       lucasmatheussc97@gmail.com' },
+        {
+          type: 'output',
+          text: (
+            <span>
+              {language === 'pt' ? '  WhatsApp:    ' : '  WhatsApp:    '}
+              <a href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>
+                +55 (71) 99293-1330
+              </a>
+            </span>
+          )
+        },
+        { type: 'output', text: '  LinkedIn:    https://www.linkedin.com/in/lucascardev' },
+        { type: 'output', text: '  Instagram:   @lucas_mtheus' },
+        { type: 'output', text: '               @lightup.marketingdigital' }
       ];
     } else if (cleaned === 'pacman' || cleaned === 'play' || cleaned === 'jogar') {
       setShowPacman(true);
@@ -318,26 +346,34 @@ function App() {
 
         <Contact>
           <p>
-            <b>TEL:</b> <a href="tel:+5571992931330">+55(71)99293-1330</a>
+            <b>WPP:</b> <a href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." target="_blank" rel="noreferrer">+55(71)99293-1330</a>
           </p>
           <p>
             <b>EMAIL:</b> <a href="mailto:lucasmatheussc97@gmail.com">lucasmatheussc97@gmail.com</a>
           </p>
         </Contact>
 
-        <div className="techs">
-          <SiTypescript title="TypeScript" />
-          <FaCss3 title="CSS3" />
-          <FaDocker title="Docker" />
-          <FaHtml5 title="HTML5" />
-          <FaReact title="React" />
-          <FaNodeJs title="NodeJS" />
-          <FaJsSquare title="JavaScript" />
-          <FaGit title="Git" />
+        <div className="techs" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+          <TechsMarqueeContainer>
+            <TechsTrack>
+              {[...techsData, ...techsData].map((tech, index) => {
+                const IconComponent = ICON_MAP[tech.id];
+                if (!IconComponent) return null;
+                return (
+                  <TechItem key={`${tech.id}-${index}`}>
+                    <IconComponent />
+                    <TechTooltip className="tech-tooltip">
+                      {tech.name}: {tech.experience}
+                    </TechTooltip>
+                  </TechItem>
+                );
+              })}
+            </TechsTrack>
+          </TechsMarqueeContainer>
           <FaGlobe 
             title={language === 'en' ? 'Switch to Portuguese' : 'Mudar para Inglês'} 
             onClick={toggleLanguage} 
-            style={{ marginLeft: '12px', color: '#ffb000' }}
+            style={{ marginLeft: '16px', color: '#ffb000', cursor: 'pointer', fontSize: '1.3em' }}
           />
         </div>
       </Header>
@@ -428,6 +464,15 @@ function App() {
         </p>
       </Footer>
       
+      <FloatingWhatsApp 
+        href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." 
+        target="_blank" 
+        rel="noreferrer"
+        title={language === 'pt' ? 'Fale Comigo no WhatsApp' : 'Chat with me on WhatsApp'}
+      >
+        <FaWhatsapp />
+      </FloatingWhatsApp>
+
       <style>{`
         @keyframes scanline {
           0% { top: 0%; }
