@@ -61,7 +61,7 @@ const ICON_MAP = {
 };
 
 function App() {
-  const [avatarimg, setAvatarimg] = useState('');
+  const [avatarimg] = useState('https://i.ibb.co/XkvSFmbh/E2-B95-B01-6545-426-C-9850-B00-D20-F701-E3.jpg');
   const [username, setUsername] = useState('lucascardev');
   const [repos, setRepos] = useState([]);
   const [language, setLanguage] = useState('en');
@@ -77,15 +77,9 @@ function App() {
         const response = await API.get('users/lucascardev');
         const repos_response = await API.get('users/lucascardev/repos');
         setRepos(repos_response.data);
-        if (response.data.avatar_url) {
-          setAvatarimg(response.data.avatar_url);
-        } else {
-          setAvatarimg('https://avatars.githubusercontent.com/u/35515714?v=4');
-        }
         setUsername(response.data.login || 'lucascardev');
       } catch (e) {
         console.error('Error fetching data from github API', e);
-        setAvatarimg('https://avatars.githubusercontent.com/u/35515714?v=4');
       }
     }
     getmyprofile();
