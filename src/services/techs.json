@@ -38,5 +38,40 @@
     "id": "git",
     "name": "Git",
     "experience": "6 years"
+  },
+  {
+    "id": "kubernetes",
+    "name": "Kubernetes",
+    "experience": "3 years"
+  },
+  {
+    "id": "oraclecloud",
+    "name": "Oracle Cloud",
+    "experience": "3 years"
+  },
+  {
+    "id": "gcp",
+    "name": "Google Cloud",
+    "experience": "4 years"
+  },
+  {
+    "id": "digitalocean",
+    "name": "Digital Ocean",
+    "experience": "4 years"
+  },
+  {
+    "id": "antigravity",
+    "name": "Antigravity Kit",
+    "experience": "1 year"
+  },
+  {
+    "id": "iadeveloper",
+    "name": "AI Developer",
+    "experience": "3 years"
+  },
+  {
+    "id": "automation",
+    "name": "Automation Tasks",
+    "experience": "5 years"
   }
 ]

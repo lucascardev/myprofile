@@ -17,9 +17,18 @@ import {
   FaTerminal,
   FaGlobe,
   FaWhatsapp,
+  FaBrain,
+  FaRobot,
+  FaRocket,
 } from 'react-icons/fa';
 
-import { SiTypescript } from 'react-icons/si';
+import { 
+  SiTypescript,
+  SiKubernetes,
+  SiGooglecloud,
+  SiDigitalocean,
+  SiOracle,
+} from 'react-icons/si';
 
 import {
   Container,
@@ -46,6 +55,14 @@ import {
   FloatingWhatsApp,
   TechExperienceDisplay,
   BlinkingCursor,
+  ClaraShowcase,
+  ClaraTitle,
+  ClaraTag,
+  ClaraBadgeList,
+  ClaraBadge,
+  ClaraFeatureList,
+  ClaraButtonList,
+  ClaraButton,
 } from './style/global.style';
 
 import API from './services/api';
@@ -60,6 +77,13 @@ const ICON_MAP = {
   nodejs: FaNodeJs,
   javascript: FaJsSquare,
   git: FaGit,
+  kubernetes: SiKubernetes,
+  oraclecloud: SiOracle,
+  gcp: SiGooglecloud,
+  digitalocean: SiDigitalocean,
+  antigravity: FaRocket,
+  iadeveloper: FaBrain,
+  automation: FaRobot,
 };
 
 function TypingText({ text, speed = 25 }) {
@@ -191,6 +215,7 @@ function App() {
         'Comandos Disponíveis:',
         '  ajuda | help       - Exibe este menu de ajuda.',
         '  sobre | bio        - Imprime minha biografia e trajetória.',
+        '  clara | clara-ia   - Detalhes do meu projeto principal, Clara IA.',
         '  projetos | ls      - Lista os projetos e repositórios do GitHub.',
         '  projetos -a        - Lista todos os projetos disponíveis.',
         '  contato | contact  - Mostra meus canais de contato e e-mail.',
@@ -201,6 +226,7 @@ function App() {
         'Available Commands:',
         '  help | ajuda       - Display this help menu.',
         '  bio | sobre        - Show my professional biography.',
+        '  clara | clara-ia   - Show specs of my featured project, Clara IA.',
         '  projects | ls      - List GitHub repositories & stars.',
         '  projects -a        - List all available repositories.',
         '  contact | contato  - Display contact channels and email.',
@@ -229,6 +255,46 @@ function App() {
         '  from UI components to backend services, matching clean code principles.',
         '  With a critical eye for design and usability, I focus on creating clean,',
         '  fluid, and high-performance user interfaces.'
+      ];
+    } else if (cleaned === 'clara' || cleaned === 'clara-ia') {
+      outputLines = language === 'pt' ? [
+        'PROJETO DESTACADO: CLARA IA (clara-ia.online)',
+        '------------------------------------------------------------',
+        'Descrição: Recepcionista e Assistente Virtual inteligente com IA para WhatsApp.',
+        'Funcionalidades Principais:',
+        '  * Atendimento inteligente e agendamentos automáticos 24 horas por dia.',
+        '  * Lembretes ativos de presença que reduzem o no-show de pacientes.',
+        '  * Sincronização em tempo real com Clinicorp e Google Calendar.',
+        'Ações Disponíveis:',
+        { type: 'output', text: (
+          <span>
+            * Abrir Website Oficial: <a href="https://clara-ia.online" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>https://clara-ia.online</a>
+          </span>
+        )},
+        { type: 'output', text: (
+          <span>
+            * Testar Clara no WhatsApp: <a href="https://wa.me/5571987632774?text=Olá!%20Gostaria%20de%20testar%20a%20Clara!" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>wa.me/5571987632774</a>
+          </span>
+        )}
+      ] : [
+        'FEATURED PROJECT: CLARA IA (clara-ia.online)',
+        '------------------------------------------------------------',
+        'Description: Intelligent virtual receptionist and AI scheduling assistant for WhatsApp.',
+        'Core Features:',
+        '  * Real-time automated scheduling and natural chats 24/7.',
+        '  * Active reminders sent on WhatsApp reducing patient no-shows.',
+        '  * Secure, real-time sync with Clinicorp and Google Calendar.',
+        'Available Actions:',
+        { type: 'output', text: (
+          <span>
+            * Open Official Website: <a href="https://clara-ia.online" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>https://clara-ia.online</a>
+          </span>
+        )},
+        { type: 'output', text: (
+          <span>
+            * Demo Clara on WhatsApp: <a href="https://wa.me/5571987632774?text=Hello!%20I%20would%20like%20to%20test%20Clara." target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>wa.me/5571987632774</a>
+          </span>
+        )}
       ];
     } else if (cleaned === 'projects' || cleaned === 'ls' || cleaned === 'projetos') {
       if (repos.length === 0) {
@@ -484,6 +550,61 @@ function App() {
               animateOnView={false}
               className="aspect-square w-full mx-auto rounded border border-green-950"
             />
+          </TerminalWrapper>
+
+          <TerminalWrapper title="FEATURED_PROJECT: CLARA_IA">
+            <ClaraShowcase>
+              <ClaraTitle>
+                CLARA IA
+                <ClaraTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ClaraTag>
+              </ClaraTitle>
+              <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
+                {language === 'pt' 
+                  ? 'Recepcionista e Assistente Virtual inteligente integrada ao WhatsApp para Clínicas e Consultórios.' 
+                  : 'Intelligent AI-powered virtual receptionist and scheduling assistant integrated with WhatsApp for health clinics.'}
+              </p>
+              <ClaraBadgeList>
+                <ClaraBadge>WhatsApp API</ClaraBadge>
+                <ClaraBadge>Clinicorp Sync</ClaraBadge>
+                <ClaraBadge>Google Calendar</ClaraBadge>
+                <ClaraBadge>AI Scheduling</ClaraBadge>
+              </ClaraBadgeList>
+              <ClaraFeatureList>
+                <li>
+                  {language === 'pt' 
+                    ? 'Agendamentos inteligentes via WhatsApp 24h' 
+                    : 'Smart 24/7 client booking on WhatsApp'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Confirmação ativa de presença reduz faltas' 
+                    : 'Active attendance confirmations reduces no-shows'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Sincronização Clinicorp e Google Agenda' 
+                    : 'Clinicorp and Google Calendar sync'}
+                </li>
+              </ClaraFeatureList>
+              <ClaraButtonList>
+                <ClaraButton 
+                  href="https://clara-ia.online" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="secondary"
+                >
+                  {language === 'pt' ? 'Ver Site' : 'View Site'}
+                </ClaraButton>
+                <ClaraButton 
+                  href="https://wa.me/5571987632774?text=Olá!%20Gostaria%20de%20testar%20a%20Clara!" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="primary"
+                >
+                  {language === 'pt' ? 'Testar IA' : 'Test AI'}
+                </ClaraButton>
+              </ClaraButtonList>
+            </ClaraShowcase>
           </TerminalWrapper>
 
           <TerminalWrapper title="SOCIAL_LINKS">

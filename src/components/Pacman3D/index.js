@@ -11,6 +11,7 @@ const Pacman3D = () => {
     const [score, setScore] = useState(0);
     const [lives, setLives] = useState(3);
     const [gameState, setGameState] = useState('PLAYING'); // 'PLAYING', 'GAME_OVER', 'VICTORY'
+    const [isMobile, setIsMobile] = useState(false);
 
     // High performance refs for the Three.js loop
     const scoreRef = useRef(0);
@@ -21,6 +22,28 @@ const Pacman3D = () => {
     const desiredDirRef = useRef(new THREE.Vector3(1, 0, 0));
     const isMovingRef = useRef(true);
     const restartTriggerRef = useRef(null);
+
+    // Detect mobile viewport or touch input
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(
+                window.innerWidth < 768 || 
+                ('ontouchstart' in window) || 
+                (navigator.maxTouchPoints > 0)
+            );
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const handleMobileDir = (x, z) => {
+        if (gameStateRef.current !== 'PLAYING') return;
+        isManualModeRef.current = true;
+        isMovingRef.current = true;
+        desiredDirRef.current.set(x, 0, z);
+        soundRef.current('chomp');
+    };
 
     // 8-bit retro sound synthesizer using Web Audio API
     const playGameSound = useCallback((type) => {
@@ -638,10 +661,73 @@ const Pacman3D = () => {
         }
     };
 
+    const dpadButtonStyle = {
+        width: '38px',
+        height: '38px',
+        borderRadius: '50%',
+        border: '1px solid #00ff41',
+        background: 'rgba(0, 15, 2, 0.75)',
+        color: '#00ff41',
+        fontSize: '1em',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        userSelect: 'none',
+        boxShadow: '0 0 6px rgba(0, 255, 65, 0.4)',
+        outline: 'none',
+        padding: 0,
+        fontWeight: 'bold',
+        WebkitTapHighlightColor: 'transparent'
+    };
+
     return (
         <div style={{ position: 'relative', width: '100%', margin: '12px 0' }}>
             {/* 3D Canvas Mount */}
             <div ref={mountRef} style={{ width: '100%', height: '420px', borderRadius: '4px', overflow: 'hidden', border: '1px solid #00ff41' }}></div>
+            
+            {/* On-screen Mobile D-pad */}
+            {isMobile && gameState === 'PLAYING' && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: '60px',
+                    right: '16px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 38px)',
+                    gridTemplateRows: 'repeat(3, 38px)',
+                    gap: '4px',
+                    pointerEvents: 'auto',
+                    zIndex: 10
+                }}>
+                    <div></div>
+                    <button 
+                        onTouchStart={(e) => { e.preventDefault(); handleMobileDir(0, -1); }}
+                        onClick={() => handleMobileDir(0, -1)}
+                        style={dpadButtonStyle}
+                    >▲</button>
+                    <div></div>
+                    
+                    <button 
+                        onTouchStart={(e) => { e.preventDefault(); handleMobileDir(-1, 0); }}
+                        onClick={() => handleMobileDir(-1, 0)}
+                        style={dpadButtonStyle}
+                    >◀</button>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00ff41', fontSize: '0.55em', opacity: 0.5, fontFamily: "'Share Tech Mono', monospace", pointerEvents: 'none' }}>CTRL</div>
+                    <button 
+                        onTouchStart={(e) => { e.preventDefault(); handleMobileDir(1, 0); }}
+                        onClick={() => handleMobileDir(1, 0)}
+                        style={dpadButtonStyle}
+                    >▶</button>
+                    
+                    <div></div>
+                    <button 
+                        onTouchStart={(e) => { e.preventDefault(); handleMobileDir(0, 1); }}
+                        onClick={() => handleMobileDir(0, 1)}
+                        style={dpadButtonStyle}
+                    >▼</button>
+                    <div></div>
+                </div>
+            )}
             
             {/* HUD Status line overlay */}
             <div style={{
@@ -677,7 +763,12 @@ const Pacman3D = () => {
                 letterSpacing: '1px'
             }}>
                 {gameState === 'PLAYING' && (
-                    <span>[ USE ARROWS OR WASD TO DRIVE PACMAN (STARTS IN AUTOPLAY DEMO) ]</span>
+                    <span>
+                        {isMobile 
+                            ? '[ TAP THE DPAD OVERLAY TO TAKE CONTROL AND STEER ]' 
+                            : '[ USE ARROWS OR WASD TO DRIVE PACMAN (STARTS IN AUTOPLAY DEMO) ]'
+                        }
+                    </span>
                 )}
             </div>
 

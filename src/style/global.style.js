@@ -244,6 +244,11 @@ export const Main = styled.main`
   position: relative;
   min-height: 550px;
 
+  @media (max-width: 768px) {
+    padding: 16px;
+    min-height: 420px;
+  }
+
   &::before {
     content: "CONSOLE // SESSION_ACTIVE";
     position: absolute;
@@ -439,6 +444,10 @@ export const SidePanel = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: 992px) {
+    order: -1;
+  }
 `;
 
 export const TerminalWrapper = styled.div`
@@ -473,6 +482,10 @@ export const CommandHistory = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (max-width: 768px) {
+    max-height: 240px;
+  }
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -632,8 +645,12 @@ export const TechsMarqueeContainer = styled.div`
   position: relative;
   
   @media (max-width: 992px) {
-    width: 280px;
+    width: 240px;
     margin: 10px 0;
+  }
+
+  @media (max-width: 480px) {
+    width: 180px;
   }
 `;
 
@@ -765,7 +782,12 @@ export const TechExperienceDisplay = styled.div`
   box-sizing: border-box;
   
   @media (max-width: 992px) {
-    width: 280px;
+    width: 240px;
+  }
+
+  @media (max-width: 480px) {
+    width: 180px;
+    font-size: 0.65em;
   }
   
   &::before {
@@ -773,5 +795,130 @@ export const TechExperienceDisplay = styled.div`
     color: ${colors.amber};
     margin-right: 4px;
     font-weight: bold;
+  }
+`;
+
+// ClaraIA Showcase Addon styled-components
+export const ClaraShowcase = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: 'Share Tech Mono', monospace;
+`;
+
+export const ClaraTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25em;
+  color: ${colors.primary};
+  text-shadow: 0 0 8px ${colors.glow};
+  font-weight: bold;
+  letter-spacing: 1px;
+`;
+
+export const ClaraTag = styled.span`
+  background: rgba(0, 255, 65, 0.12);
+  border: 1px solid ${colors.primary};
+  color: ${colors.primary};
+  font-size: 0.6em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-shadow: none;
+  letter-spacing: 1px;
+  animation: ${textGlow} 2s infinite ease-in-out;
+`;
+
+export const ClaraBadgeList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0;
+`;
+
+export const ClaraBadge = styled.span`
+  font-size: 0.65em;
+  padding: 2px 6px;
+  background: rgba(255, 176, 0, 0.08);
+  border: 1px solid rgba(255, 176, 0, 0.25);
+  color: ${colors.amber};
+  border-radius: 2px;
+`;
+
+export const ClaraFeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85em;
+  color: ${colors.text};
+  
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.35;
+    
+    &::before {
+      content: "*";
+      color: ${colors.primary};
+      font-weight: bold;
+    }
+  }
+`;
+
+export const ClaraButtonList = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ClaraButton = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 3px;
+  transition: all 0.25s ease;
+  letter-spacing: 1px;
+  text-align: center;
+  box-sizing: border-box;
+  
+  &.primary {
+    background: ${colors.primary};
+    color: ${colors.background};
+    border: 1px solid ${colors.primary};
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.25);
+    
+    &:hover {
+      background: #fff;
+      border-color: #fff;
+      color: ${colors.background};
+      box-shadow: 0 0 20px ${colors.primary};
+    }
+  }
+  
+  &.secondary {
+    background: transparent;
+    color: ${colors.amber};
+    border: 1px solid ${colors.amber};
+    box-shadow: 0 0 5px rgba(255, 176, 0, 0.12);
+    
+    &:hover {
+      background: ${colors.amber};
+      color: ${colors.background};
+      box-shadow: 0 0 15px ${colors.amber};
+    }
   }
 `;
