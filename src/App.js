@@ -80,6 +80,7 @@ import {
 
 import API from './services/api';
 import techsData from './services/techs.json';
+import contributionsData from './services/contributions.json';
 
 const ICON_MAP = {
   typescript: SiTypescript,
@@ -199,8 +200,8 @@ function App() {
   const [history, setHistory] = useState([]);
   const [showPacman, setShowPacman] = useState(false);
   const [hoveredTech, setHoveredTech] = useState(null);
-  const [contributions, setContributions] = useState([]);
-  const [totalContributions, setTotalContributions] = useState(0);
+  const contributions = contributionsData.contributions || [];
+  const totalContributions = contributionsData.total || 0;
 
   const historyEndRef = useRef(null);
 
@@ -316,21 +317,7 @@ function App() {
         console.error('Error fetching data from github API', e);
       }
     }
-    async function getContributions() {
-      try {
-        const response = await fetch('https://github-contributions-api.jogruber.de/v4/lucascardev');
-        const data = await response.json();
-        setContributions(data.contributions || []);
-        if (data.contributions) {
-          const lastYearCount = data.contributions.slice(-365).reduce((sum, day) => sum + day.count, 0);
-          setTotalContributions(lastYearCount);
-        }
-      } catch (e) {
-        console.error('Error fetching contribution calendar', e);
-      }
-    }
     getmyprofile();
-    getContributions();
   }, []);
 
   const renderContributionsGrid = () => {
