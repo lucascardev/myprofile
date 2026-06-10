@@ -7,7 +7,6 @@ import {
   FaGithub,
   FaInstagram,
   FaLinkedin,
-  FaTooth,
   FaHtml5,
   FaCss3,
   FaReact,
@@ -39,9 +38,6 @@ import {
   PromptLabel,
   TerminalInputLine,
   CustomInput,
-  ControlPanel,
-  CyberButton,
-  ModeSelector,
 } from './style/global.style';
 
 import API from './services/api';
@@ -54,12 +50,6 @@ function App() {
   const [terminalInput, setTerminalInput] = useState('');
   const [history, setHistory] = useState([]);
   const [showPacman, setShowPacman] = useState(false);
-  const [activeTab, setActiveTab] = useState('ascii'); // ascii | photo
-  
-  // ASCII configurations
-  const [asciiRes, setAsciiRes] = useState(70);
-  const [asciiColor, setAsciiColor] = useState('#00ff41');
-  const [asciiInverted, setAsciiInverted] = useState(false);
 
   const historyEndRef = useRef(null);
 
@@ -77,7 +67,6 @@ function App() {
         setUsername(response.data.login || 'lucascardev');
       } catch (e) {
         console.error('Error fetching data from github API', e);
-        // Fallbacks
         setAvatarimg('https://avatars.githubusercontent.com/u/35515714?v=4');
       }
     }
@@ -116,7 +105,7 @@ function App() {
           { type: 'info', text: 'ESTADO: SEGURO // PORTA: 443 // IP: 127.0.0.1' },
           { type: 'info', text: 'Digite "ajuda" para listar os comandos disponíveis.' },
           { type: 'output', text: '------------------------------------------------------------' },
-          { type: 'output', text: 'LUCAS MATHEUS // CIRURGIÃO-DENTISTA & DESENVOLVEDOR FULLSTACK' },
+          { type: 'output', text: 'LUCAS MATHEUS // DESENVOLVEDOR FULLSTACK' },
           { type: 'output', text: 'Mais de 6 anos de experiência codificando soluções inovadoras.' },
           { type: 'output', text: '------------------------------------------------------------' },
         ]
@@ -125,7 +114,7 @@ function App() {
           { type: 'info', text: 'STATUS: SECURE // PORT: 443 // IP: 127.0.0.1' },
           { type: 'info', text: 'Type "help" to list all available commands.' },
           { type: 'output', text: '------------------------------------------------------------' },
-          { type: 'output', text: 'LUCAS MATHEUS // DENTIST & FULLSTACK SOFTWARE DEVELOPER' },
+          { type: 'output', text: 'LUCAS MATHEUS // FULLSTACK SOFTWARE DEVELOPER' },
           { type: 'output', text: 'Over 6 years of experience coding innovative digital systems.' },
           { type: 'output', text: '------------------------------------------------------------' },
         ];
@@ -141,15 +130,14 @@ function App() {
     let outputLines = [];
     let isError = false;
 
-    // Toggle Portuguese/English commands support
     if (cleaned === 'help' || cleaned === 'ajuda') {
       outputLines = language === 'pt' ? [
         'Comandos Disponíveis:',
         '  ajuda | help       - Exibe este menu de ajuda.',
         '  sobre | bio        - Imprime minha biografia e trajetória.',
         '  projetos | ls      - Lista os projetos e repositórios do GitHub.',
+        '  projetos -a        - Lista todos os projetos disponíveis.',
         '  contato | contact  - Mostra meus canais de contato e e-mail.',
-        '  odonto | teeth     - Exibe detalhes sobre minha atuação como dentista.',
         '  jogar | pacman     - Inicia a simulação 3D Pacman.',
         '  sistema | specs    - Exibe informações técnicas da aplicação.',
         '  limpar | clear     - Limpa o console de comando.'
@@ -158,8 +146,8 @@ function App() {
         '  help | ajuda       - Display this help menu.',
         '  bio | sobre        - Show my professional biography.',
         '  projects | ls      - List GitHub repositories & stars.',
+        '  projects -a        - List all available repositories.',
         '  contact | contato  - Display contact channels and email.',
-        '  teeth | odonto     - Database records of my dentistry practice.',
         '  pacman | play      - Boot up the interactive 3D Pacman game.',
         '  specs | sistema    - Display application technical specs.',
         '  clear | limpar     - Clear the terminal console.'
@@ -173,8 +161,8 @@ function App() {
         '  Sou um programador apaixonado por resolver desafios complexos e projetar',
         '  arquiteturas robustas. Crio soluções completas do front ao back-end,',
         '  seguindo sempre as melhores práticas de Clean Code, Git Flow e DevOps.',
-        '  Com olhar crítico para design, também opero na odontologia, unindo a',
-        '  precisão de consultório clínico com a exatidão digital.'
+        '  Com olhar crítico para design e usabilidade, foco em criar interfaces',
+        '  limpas, fluidas e de alta performance.'
       ] : [
         'Name: Lucas Matheus Cardoso',
         'Degree: Bachelor of Information Systems - Estácio University',
@@ -183,21 +171,60 @@ function App() {
         '  I am a software engineering enthusiast dedicated to solving complex problems',
         '  and structuring robust software architectures. I design modern applications',
         '  from UI components to backend services, matching clean code principles.',
-        '  Holding a parallel path in dentistry, I combine clinical medical precision',
-        '  with software engineering accuracy.'
+        '  With a critical eye for design and usability, I focus on creating clean,',
+        '  fluid, and high-performance user interfaces.'
       ];
     } else if (cleaned === 'projects' || cleaned === 'ls' || cleaned === 'projetos') {
       if (repos.length === 0) {
-        outputLines = ['[!] Connecting to GitHub servers...', 'No repositories found.'];
+        outputLines = [
+          { type: 'output', text: '[!] Connecting to GitHub servers...' },
+          { type: 'output', text: 'No repositories found.' }
+        ];
+      } else {
+        const slicedRepos = repos.slice(0, 8);
+        outputLines = [
+          { type: 'output', text: `FOUND ${repos.length} REPOSITORIES AT GITHUB://LUCASCARDEV:` },
+          { type: 'output', text: '------------------------------------------------------------' },
+          ...slicedRepos.map((r) => ({
+            type: 'output',
+            text: (
+              <span>
+                * [{r.language || 'HTML/JS'}]{' '}
+                <a href={r.html_url} target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>
+                  {r.name}
+                </a>{' '}
+                - ⭐ {r.stargazers_count} | Forks: {r.forks_count}
+              </span>
+            )
+          })),
+          repos.length > 8 
+            ? { type: 'output', text: `... and ${repos.length - 8} more. Type 'projects -a' to see all.` }
+            : null
+        ].filter(Boolean);
+      }
+    } else if (cleaned === 'projects -a' || cleaned === 'projetos -a' || cleaned === 'ls -a') {
+      if (repos.length === 0) {
+        outputLines = [
+          { type: 'output', text: '[!] Connecting to GitHub servers...' },
+          { type: 'output', text: 'No repositories found.' }
+        ];
       } else {
         outputLines = [
-          `FOUND ${repos.length} REPOSITORIES AT GITHUB://LUCASCARDEV:`,
-          '------------------------------------------------------------',
-          ...repos.slice(0, 8).map(
-            (r) => `* [${r.language || 'HTML/JS'}] ${r.name} - ⭐ ${r.stargazers_count} | Forks: ${r.forks_count}`
-          ),
-          repos.length > 8 ? `... and ${repos.length - 8} more. Type 'projects -a' to see all on GitHub.` : ''
-        ].filter(Boolean);
+          { type: 'output', text: `FOUND ALL ${repos.length} REPOSITORIES AT GITHUB://LUCASCARDEV:` },
+          { type: 'output', text: '------------------------------------------------------------' },
+          ...repos.map((r) => ({
+            type: 'output',
+            text: (
+              <span>
+                * [{r.language || 'HTML/JS'}]{' '}
+                <a href={r.html_url} target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>
+                  {r.name}
+                </a>{' '}
+                - ⭐ {r.stargazers_count} | Forks: {r.forks_count}
+              </span>
+            )
+          }))
+        ];
       }
     } else if (cleaned === 'contact' || cleaned === 'contato') {
       outputLines = [
@@ -208,27 +235,6 @@ function App() {
         '  LinkedIn:    https://www.linkedin.com/in/lucascardev',
         '  Instagram:   @lucas_mtheus',
         '               @lightup.marketingdigital'
-      ];
-    } else if (cleaned === 'teeth' || cleaned === 'odonto' || cleaned === 'dentistry') {
-      outputLines = language === 'pt' ? [
-        'CADASTRO CLÍNICO // DR. LUCAS MATHEUS CARDOSO',
-        '---------------------------------------',
-        '  Área: Cirurgião-dentista',
-        '  Registro: CRO ativo',
-        '  Foco: Reabilitação oral, estética e precisão diagnóstica.',
-        '  Instagram Odonto: @dr.lucasmscardoso',
-        '  Nota de Desenvolvimento:',
-        '    Desenvolvi sistemas de agendamento clínico integrados para otimizar',
-        '    o atendimento odontológico e prontuário digital.'
-      ] : [
-        'CLINICAL REGISTRY // DR. LUCAS MATHEUS CARDOSO',
-        '---------------------------------------',
-        '  Practice: Dentistry & Oral Health',
-        '  Instagram Profile: @dr.lucasmscardoso',
-        '  Focus: Oral surgery, dental aesthetics, clinical diagnostics.',
-        '  Engineering Node:',
-        '    Created tailored dental appointment engines and digital clinical',
-        '    chart database schemes to optimize patient flow.'
       ];
     } else if (cleaned === 'pacman' || cleaned === 'play' || cleaned === 'jogar') {
       setShowPacman(true);
@@ -255,7 +261,7 @@ function App() {
         '            \\        \\  ThreeJS: v0.139.2',
         '             \\      /   Styled-Components: v5.3.11',
         '              \\    /    Language Node: ' + language.toUpperCase(),
-        '               \\  /     ASCII decoder: ACTIVE',
+        '               \\  /     ASCII decoder: ACTIVE (res=50)',
         '                \\/      ',
       ];
     } else {
@@ -265,13 +271,18 @@ function App() {
         : [`Command not recognized: "${command}". Type "help" for a list of commands.`];
     }
 
-    setHistory([
-      ...newHistory,
-      ...outputLines.map((line) => ({
+    // Adapt output to state history array (handles both elements and string structures)
+    const formattedOutputs = outputLines.map((line) => {
+      if (typeof line === 'object' && line.text !== undefined) {
+        return line; // Already formatted { type, text }
+      }
+      return {
         type: isError ? 'error' : 'output',
         text: line,
-      })),
-    ]);
+      };
+    });
+
+    setHistory([...newHistory, ...formattedOutputs]);
     setTerminalInput('');
   };
 
@@ -288,7 +299,6 @@ function App() {
   return (
     <Container>
       <Scanlines />
-      {/* 3D background digital rain */}
       <MatrixRain3D />
 
       <Header>
@@ -352,7 +362,12 @@ function App() {
               <div style={{ marginTop: '15px', border: '1px solid #00ff41', padding: '10px', borderRadius: '4px', background: '#000' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8em', color: '#00ff41' }}>
                   <span>SIMULADOR_3D_PACMAN.EXE (MATRIX WIREFRAME EDITION)</span>
-                  <CyberButton onClick={() => setShowPacman(false)}>STOP</CyberButton>
+                  <button 
+                    onClick={() => setShowPacman(false)}
+                    style={{ background: 'transparent', border: '1px solid #00ff41', color: '#00ff41', fontSize: '0.8em', cursor: 'pointer', padding: '2px 6px' }}
+                  >
+                    STOP
+                  </button>
                 </div>
                 <Pacman3D />
               </div>
@@ -373,120 +388,18 @@ function App() {
           </TerminalInputLine>
         </Main>
 
-        {/* Right Side: ASCII Photo and Decryption Controls */}
+        {/* Right Side: ASCII Photo only (toggles and controls removed, photo max-width increased) */}
         <SidePanel>
           <TerminalWrapper title="AVATAR_IMAGE_DECODER">
-            <ModeSelector>
-              <CyberButton 
-                className={activeTab === 'ascii' ? 'active' : ''} 
-                onClick={() => setActiveTab('ascii')}
-              >
-                ASCII Art
-              </CyberButton>
-              <CyberButton 
-                className={activeTab === 'photo' ? 'active' : ''} 
-                onClick={() => setActiveTab('photo')}
-              >
-                Original Photo
-              </CyberButton>
-            </ModeSelector>
-
-            {activeTab === 'ascii' ? (
-              <AsciiArt
-                src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'}
-                resolution={asciiRes}
-                color={asciiColor}
-                animationStyle="matrix"
-                inverted={asciiInverted}
-                animateOnView={false}
-                className="aspect-square w-full max-w-md mx-auto rounded border border-green-950"
-              />
-            ) : (
-              <div className="relative aspect-square w-full max-w-md mx-auto bg-black flex items-center justify-center border border-green-950 rounded overflow-hidden">
-                <img 
-                  src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'} 
-                  alt="Original Avatar" 
-                  className="w-full h-full object-cover grayscale"
-                  style={{ filter: 'contrast(1.2) brightness(0.9) sepia(1) hue-rotate(85deg)' }} // Matrix color tint
-                />
-                {/* scanning green line overlay */}
-                <div 
-                  className="absolute left-0 w-full bg-green-500 opacity-20 pointer-events-none"
-                  style={{
-                    height: '2px',
-                    top: '0',
-                    boxShadow: '0 0 10px #00ff41',
-                    animation: 'scanline 4s linear infinite',
-                  }}
-                />
-              </div>
-            )}
-
-            <ControlPanel>
-              <h4>DECODER STREAMS</h4>
-              
-              <div className="control-row">
-                <span>Resolution / Resolução: {asciiRes}</span>
-                <input
-                  type="range"
-                  min="40"
-                  max="110"
-                  step="5"
-                  value={asciiRes}
-                  onChange={(e) => setAsciiRes(parseInt(e.target.value))}
-                />
-              </div>
-
-              <div className="control-row">
-                <span>Color / Cor:</span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <span 
-                    onClick={() => setAsciiColor('#00ff41')}
-                    style={{ 
-                      width: '18px', 
-                      height: '18px', 
-                      background: '#00ff41', 
-                      borderRadius: '50%', 
-                      cursor: 'pointer',
-                      border: asciiColor === '#00ff41' ? '2px solid white' : '1px solid #333'
-                    }}
-                  />
-                  <span 
-                    onClick={() => setAsciiColor('#ffb000')}
-                    style={{ 
-                      width: '18px', 
-                      height: '18px', 
-                      background: '#ffb000', 
-                      borderRadius: '50%', 
-                      cursor: 'pointer',
-                      border: asciiColor === '#ffb000' ? '2px solid white' : '1px solid #333'
-                    }}
-                  />
-                  <span 
-                    onClick={() => setAsciiColor('#ffffff')}
-                    style={{ 
-                      width: '18px', 
-                      height: '18px', 
-                      background: '#ffffff', 
-                      borderRadius: '50%', 
-                      cursor: 'pointer',
-                      border: asciiColor === '#ffffff' ? '2px solid white' : '1px solid #333'
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="control-row">
-                <span>Invert Character Map:</span>
-                <CyberButton 
-                  className={asciiInverted ? 'active' : ''}
-                  onClick={() => setAsciiInverted(!asciiInverted)}
-                  style={{ fontSize: '0.8em', padding: '3px 8px' }}
-                >
-                  {asciiInverted ? 'ON' : 'OFF'}
-                </CyberButton>
-              </div>
-            </ControlPanel>
+            <AsciiArt
+              src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'}
+              resolution={50}
+              color="#00ff41"
+              animationStyle="matrix"
+              inverted={false}
+              animateOnView={false}
+              className="aspect-square w-full mx-auto rounded border border-green-950"
+            />
           </TerminalWrapper>
 
           <TerminalWrapper title="SOCIAL_LINKS">
@@ -499,9 +412,6 @@ function App() {
               </a>
               <a href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer" title="Instagram Developer">
                 <FaInstagram />
-              </a>
-              <a href="https://www.instagram.com/dr.lucasmscardoso/" target="_blank" rel="noreferrer" title="Instagram Dentistry" style={{ color: '#ffb000' }}>
-                <FaTooth />
               </a>
             </div>
           </TerminalWrapper>
