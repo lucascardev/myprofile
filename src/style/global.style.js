@@ -1,370 +1,614 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components';
 
-// Definição das cores e fontes para uso global
+// Matrix Theme Tokens
 const colors = {
-    primaryBackground: '#1a1a2e', // Darker background
-    secondaryBackground: '#2c3e50', // Lighter dark for cards/sections
-    primaryText: '#e0e0e0', // Light text
-    accent: '#00bcd4', // Modern accent color (cyan/light blue)
-    softGray: '#cccccc', // For subtle elements
+  background: '#020603', // Obsidian black-green
+  terminalBg: 'rgba(2, 12, 4, 0.82)', // Translucent dark terminal
+  primary: '#00ff41', // Intense Matrix neon green
+  secondary: '#008f11', // Mid-tone command green
+  darkGreen: '#003b00', // Deep border green
+  amber: '#ffb000', // Alert/highlight amber
+  text: '#d2f8d2', // Soft minty green text
+  mutedText: '#005e0d', // Muted green text
+  glassBorder: 'rgba(0, 255, 65, 0.25)',
+  glow: 'rgba(0, 255, 65, 0.4)',
 };
 
 const fontSizes = {
-    h1: '2.5em',
-    h2: '1.8em',
-    h3: '1.4em',
-    body: '1em',
-    small: '0.8em',
+  h1: '2.2em',
+  h2: '1.6em',
+  h3: '1.2em',
+  body: '1em',
+  small: '0.85em',
 };
 
+// Keyframes for cyber effects
 
-export const Count = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center; /* Alinha ícone e texto */
-	width: auto; /* Deixa o width dinâmico */
-	font-size: ${fontSizes.small}; /* Tamanho menor para os números */
-    color: ${colors.softGray}; /* Cor mais suave para os contadores */
-    svg {
-        margin-right: 5px;
-        color: ${colors.accent};
-    }
-`
+const crtFlicker = keyframes`
+  0% { opacity: 0.985; }
+  50% { opacity: 0.995; }
+  100% { opacity: 0.985; }
+`;
 
-export const Repos = styled.div`
-	display: flex;
-	width: 100%;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 20px; /* Espaçamento entre os cards */
-	flex: 1;
-	background-color: ${colors.primaryBackground}; /* Fundo escuro */
-	color: ${colors.primaryText}; /* Texto branco */
-	margin-top: 30px; /* Mais espaço */
-	border-radius: 8px;
-	padding: 20px; 
-`
+const textGlow = keyframes`
+  0% { text-shadow: 0 0 4px rgba(0, 255, 65, 0.3); }
+  50% { text-shadow: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.2); }
+  100% { text-shadow: 0 0 4px rgba(0, 255, 65, 0.3); }
+`;
 
-export const Repo = styled.div`
-	display: flex;
-	width: 30%; /* Mantido, mas com gap ele funciona melhor */
-	min-width: 300px; /* Ajustado para telas menores, um pouco menos rígido */
-	flex-direction: column;
-	justify-content: space-between; /* Melhor para distribuir conteúdo */
-	background-color: ${colors.secondaryBackground}; /* Fundo ligeiramente mais claro */
-	color: ${colors.primaryText};
-	margin-bottom: 0; /* Removido, já temos gap */
-	border-radius: 8px; /* Bordas mais arredondadas */
-	padding: 20px; /* Mais padding */
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
-	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-	&:hover {
-		transform: translateY(-5px); /* Pequena animação ao passar o mouse */
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-	}
-
-	h3 {
-		margin-top: 0;
-		margin-bottom: 10px;
-		color: ${colors.accent};
-	}
-
-	p {
-		margin-top: 5px;
-		margin-bottom: 5px;
-		color: ${colors.softGray}; /* Texto mais suave para detalhes */
-		a {
-			color: ${colors.accent}; /* Link do repo */
-            text-decoration: none;
-			&:hover {
-				color: ${colors.primaryText};
-                text-decoration: underline;
-			}
-		}
-	}
-`
-
-export const Info = styled.div`
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start; /* Alinhar à esquerda */
-	margin-top: 15px; /* Espaço do conteúdo */
-	border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separador sutil */
-	padding-top: 10px;
-
-	${Count} { /* Estilizando o Count dentro do Info */
-		margin-right: 20px; /* Espaço entre as contagens */
-	}
-`
+export const Scanlines = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.06),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 6px 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.8;
+`;
 
 export const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	background-color: ${colors.primaryBackground}; /* Fundo principal escuro */
-	min-height: 100vh; /* Garante que o fundo cubra toda a altura */
-    font-family: 'Arial', sans-serif; /* Uma fonte padrão mais profissional */
-`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: ${colors.background};
+  color: ${colors.text};
+  font-family: 'Share Tech Mono', 'Fira Code', monospace;
+  position: relative;
+  overflow-x: hidden;
+  animation: ${crtFlicker} 0.15s infinite;
+
+  &::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 3px 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+`;
 
 export const Header = styled.header`
-	@media only screen and (max-width: 600px) {
-		flex-direction: column;
-		justify-content: center;
-		flex: 1;
-		padding: 8px 10px;
-	}
-	@media only screen and (max-width: 800px) {
-		flex-wrap: wrap;
-	}
-	flex: 1;
-	background-color: ${colors.secondaryBackground}; /* Fundo ligeiramente mais claro que o principal */
-	display: flex;
-	flex-direction: row;
-	overflow: hidden;
-	padding: 15px 20px; /* Mais padding */
-	justify-content: space-between;
-	align-items: center; /* Alinha itens verticalmente no centro */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: rgba(2, 8, 3, 0.95);
+  border-bottom: 1px solid ${colors.glassBorder};
+  box-shadow: 0 4px 20px rgba(0, 255, 65, 0.1);
+  z-index: 10;
+  position: relative;
 
-	.techs {
-		@media only screen and (max-width: 600px) {
-			font-size: 6vw;
-			justify-content: center; /* Centralizar os ícones */
-			margin-top: 15px; /* Mais espaço */
-		}
-		background: ${colors.primaryBackground}; /* Fundo escuro para os ícones */
-		border-radius: 5px; /* Bordas mais arredondadas */
-		display: flex;
-		align-items: center;
-		flex-direction: row;
-		font-size: 2.8vw; /* Ajustado para um tamanho bom em desktop */
-		color: ${colors.accent}; /* Cor de destaque para os ícones */
-		padding: 10px 15px; /* Mais padding */
-		margin-top: 0;
-		
-		svg {
-			margin: 0 8px; /* Espaço entre os ícones */
-			transition: transform 0.2s ease-in-out, color 0.2s ease-in-out; /* Animação ao passar o mouse */
-			&:hover {
-				transform: scale(1.1);
-				color: ${colors.primaryText}; /* Ícone fica branco no hover */
-			}
-		}
-	}
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
 
-    .github-hint {
-        color: ${colors.softGray}; /* Cor mais suave para a dica do GitHub */
-        font-size: ${fontSizes.small};
-        display: flex;
-        align-items: center;
-        margin-top: 5px;
-        svg {
-            margin: 0 5px;
-            color: ${colors.accent};
-        }
+  .techs {
+    display: flex;
+    align-items: center;
+    background: ${colors.background};
+    border: 1px solid ${colors.glassBorder};
+    padding: 6px 12px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.05);
+
+    svg {
+      margin: 0 8px;
+      font-size: 1.3em;
+      color: ${colors.secondary};
+      transition: all 0.25s ease;
+      cursor: pointer;
+
+      &:hover {
+        color: ${colors.primary};
+        transform: scale(1.2) translateY(-2px);
+        filter: drop-shadow(0 0 5px ${colors.primary});
+      }
     }
-`
+  }
+
+  .github-hint {
+    font-size: ${fontSizes.small};
+    color: ${colors.mutedText};
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
+
+    svg {
+      color: ${colors.secondary};
+      margin: 0 4px;
+    }
+  }
+`;
 
 export const Gitinfo = styled.div`
-	@media only screen and (max-width: 600px) {
-		flex-direction: row;
-	}
-	display: flex;
-	align-self: center;
-	flex-direction: row;
-`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
 
 export const Avatar = styled.img`
-	@media only screen and (max-width: 600px) {
-		width: 60px;
-		height: 60px;
-	}
-	width: 60px;
-	align-self: center;
-	height: 60px;
-	border-radius: 50%;
-	display: flex;
-    border: 2px solid ${colors.accent}; /* Borda de destaque no avatar */
-`
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  border: 1px solid ${colors.primary};
+  box-shadow: 0 0 10px ${colors.glassBorder};
+  background-color: #000;
+  transition: all 0.3s ease;
 
-export const Contact = styled.div`
-	@media only screen and (max-width: 600px) {
-		font-size: ${fontSizes.body};
-		padding: 8px;
-		text-align: center;
-        align-items: center; /* Centraliza os itens em mobile */
-	}
-	align-self: center;
-	font-size: ${fontSizes.h3};
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end; /* Alinha os contatos à direita */
-
-
-	p {
-		color: ${colors.primaryText};
-		display: flex;
-		margin-top: 5px;
-		align-items: center;
-        b {
-            color: ${colors.accent}; /* Negrito na cor de destaque */
-        }
-	}
-	a {
-		color: ${colors.primaryText};
-		transition: color 0.2s, background 0.2s;
-		display: flex;
-		text-decoration: none;
-		background: ${colors.accent};
-		padding: 6px 10px;
-		border-radius: 5px;
-		margin-left: 10px;
-		&:hover {
-			background: ${colors.primaryBackground}; /* Fundo escuro no hover */
-			color: ${colors.accent}; /* Texto de destaque no hover */
-		}
-	}
-`
+  &:hover {
+    transform: rotate(3deg) scale(1.05);
+    box-shadow: 0 0 15px ${colors.primary};
+  }
+`;
 
 export const Username = styled.h1`
-	@media only screen and (max-width: 600px) {
-		align-self: center;
-		font-size: ${fontSizes.h2};
-		margin-top: 10px;
-	}
-	color: ${colors.accent};
-	font-size: ${fontSizes.h1};
-	align-self: center;
-	padding: 0 20px;
-	display: flex;
-	a {
-		color: ${colors.primaryText};
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-	a:hover {
-		color: ${colors.accent};
-		text-decoration: underline;
-	}
-`
+  font-size: ${fontSizes.h2};
+  margin: 0;
+  
+  a {
+    color: ${colors.primary};
+    text-decoration: none;
+    animation: ${textGlow} 3s infinite ease-in-out;
+    letter-spacing: 1px;
+    font-weight: 700;
+
+    &:hover {
+      color: #fff;
+      text-shadow: 0 0 15px ${colors.primary}, 0 0 30px ${colors.primary};
+    }
+  }
+`;
+
+export const Contact = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: ${fontSizes.small};
+
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+
+  p {
+    margin: 2px 0;
+    color: ${colors.text};
+    display: flex;
+    align-items: center;
+
+    b {
+      color: ${colors.secondary};
+      margin-right: 6px;
+    }
+  }
+
+  a {
+    color: ${colors.background};
+    background: ${colors.primary};
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: bold;
+    margin-left: 6px;
+    box-shadow: 0 0 5px ${colors.glassBorder};
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #fff;
+      color: ${colors.background};
+      box-shadow: 0 0 15px ${colors.primary};
+    }
+  }
+`;
 
 export const PageHolder = styled.div`
-	@media only screen and (max-width: 600px) {
-		align-self: center;
-		flex: 1;
-	}
-	display: flex;
-	padding: 16px;
-`
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  padding: 24px;
+  flex: 1;
+  z-index: 5;
+  position: relative;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 
-export const Main = styled.div`
-	@media only screen and (max-width: 600px) {
-		padding: 15px;
-	}
-	display: flex;
-	flex: 1;
-	padding: 40px;
-	background-color: ${colors.secondaryBackground};
-	color: ${colors.primaryText};
-	border-radius: 8px;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-	flex-direction: column;
-	
-	h1 {
-		display: flex;
-		margin-bottom: 20px;
-		color: ${colors.accent};
-		font-size: ${fontSizes.h1};
-	}
-	h3 {
-		margin-top: 10px;
-		margin-bottom: 10px;
-		color: ${colors.accent};
-	}
-	hr {
-		border: none;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		margin: 20px 0;
-	}
-	p {
-		margin-top: 10px;
-		text-align: left;
-		margin-bottom: 10px;
-		display: flex;
-		flex-direction: column;
-		line-height: 1.6;
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+`;
 
-		strong {
-			color: ${colors.accent};
-			font-weight: 600;
-			margin: 5px 0;
-		}
+export const Main = styled.main`
+  display: flex;
+  flex-direction: column;
+  background: ${colors.terminalBg};
+  border: 1px solid ${colors.glassBorder};
+  border-radius: 4px;
+  padding: 24px;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.15), inset 0 0 20px rgba(0, 255, 65, 0.05);
+  position: relative;
+  min-height: 550px;
 
-		a {
-			color: ${colors.accent};
-			transition: color 0.2s;
-			text-decoration: none;
-			&:hover {
-				text-decoration: underline;
-				color: ${colors.primaryText};
-			}
-		}
+  &::before {
+    content: "CONSOLE // SESSION_ACTIVE";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: ${colors.background};
+    color: ${colors.primary};
+    font-size: 0.75em;
+    padding: 0 8px;
+    border: 1px solid ${colors.glassBorder};
+    border-radius: 2px;
+  }
 
-		&.social-media-text, &.dentistry-text {
-            text-align: center; /* Centralizar esses parágrafos específicos */
-            margin-top: 20px;
-            margin-bottom: 10px;
-            color: ${colors.softGray};
-        }
-	}
-	.linkholder {
-		background: ${colors.primaryBackground};
-		border-radius: 8px;
-		display: flex;
-		justify-content: center;
-		flex-direction: row;
-		padding: 15px;
-		margin-top: 20px;
-		margin-bottom: 20px;
+  h1 {
+    color: ${colors.primary};
+    font-size: ${fontSizes.h1};
+    margin-top: 0;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px dashed ${colors.glassBorder};
+    padding-bottom: 10px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px ${colors.glow};
+  }
 
-		a {
-			@media only screen and (max-width: 600px) {
-				font-size: 10vw;
-			}
-			display: flex;
-			font-size: 3.5vw;
-			color: ${colors.accent};
-			transition: color 0.2s, transform 0.2s;
-			padding: 10px 15px;
-			align-items: center;
-			&:hover {
-				color: ${colors.primaryText};
-				transform: translateY(-3px);
-			}
-		}
-	}
-`
+  h2 {
+    color: ${colors.amber};
+    font-size: ${fontSizes.h2};
+    margin-top: 24px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 176, 0, 0.2);
+    padding-bottom: 4px;
+  }
+
+  h3 {
+    color: ${colors.primary};
+    font-size: ${fontSizes.h3};
+    margin: 12px 0 6px 0;
+  }
+
+  p {
+    line-height: 1.6;
+    margin-bottom: 16px;
+    color: ${colors.text};
+
+    strong {
+      color: ${colors.amber};
+      font-weight: normal;
+    }
+
+    a {
+      color: ${colors.primary};
+      text-decoration: underline;
+      
+      &:hover {
+        color: #fff;
+        text-shadow: 0 0 5px ${colors.primary};
+      }
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid ${colors.glassBorder};
+    margin: 20px 0;
+  }
+
+  .linkholder {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0 24px 0;
+    justify-content: flex-start;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      border: 1px solid ${colors.glassBorder};
+      background: rgba(0, 0, 0, 0.4);
+      color: ${colors.primary};
+      font-size: 1.5em;
+      border-radius: 4px;
+      transition: all 0.25s ease;
+
+      &:hover {
+        background: ${colors.primary};
+        color: ${colors.background};
+        box-shadow: 0 0 15px ${colors.primary};
+        transform: translateY(-3px);
+      }
+    }
+  }
+`;
+
+export const Repos = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+`;
+
+export const Repo = styled.div`
+  background: rgba(0, 15, 2, 0.6);
+  border: 1px solid ${colors.glassBorder};
+  border-radius: 4px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: ${colors.primary};
+    box-shadow: 0 5px 15px rgba(0, 255, 65, 0.2);
+  }
+
+  h3 {
+    margin-top: 0;
+    color: ${colors.primary};
+    font-size: 1.1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    font-size: 0.9em;
+    color: ${colors.text};
+    margin: 8px 0;
+    line-height: 1.4;
+
+    a {
+      color: ${colors.amber};
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        color: #fff;
+      }
+    }
+  }
+`;
+
+export const Info = styled.div`
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid rgba(0, 255, 65, 0.1);
+  padding-top: 8px;
+  margin-top: auto;
+  font-size: 0.85em;
+`;
+
+export const Count = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${colors.mutedText};
+  gap: 4px;
+
+  svg {
+    color: ${colors.secondary};
+  }
+`;
 
 export const Footer = styled.footer`
-	background-color: ${colors.secondaryBackground};
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	padding: 20px;
-	justify-content: center;
-	text-align: center;
-	margin-top: 30px;
-	box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+  background-color: rgba(2, 8, 3, 0.95);
+  border-top: 1px solid ${colors.glassBorder};
+  text-align: center;
+  z-index: 10;
+  position: relative;
+  font-size: ${fontSizes.small};
+  color: ${colors.mutedText};
 
-	p {
-		color: ${colors.softGray};
-		font-size: ${fontSizes.small};
-		a {
-			color: ${colors.accent};
-			text-decoration: none;
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
-`
+  a {
+    color: ${colors.primary};
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline;
+      text-shadow: 0 0 5px ${colors.primary};
+    }
+  }
+`;
+
+// Additional Cyber-Terminal components
+export const SidePanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+export const TerminalWrapper = styled.div`
+  border: 1px solid ${colors.glassBorder};
+  background: ${colors.terminalBg};
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+  position: relative;
+
+  &::before {
+    content: "${props => props.title || 'TERMINAL'}";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: ${colors.background};
+    color: ${colors.primary};
+    font-size: 0.75em;
+    padding: 0 8px;
+    border: 1px solid ${colors.glassBorder};
+    border-radius: 2px;
+  }
+`;
+
+export const CommandHistory = styled.div`
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+  max-height: 350px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.secondary};
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: ${colors.primary};
+  }
+`;
+
+export const CommandRow = styled.div`
+  margin: 2px 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  
+  &.input {
+    color: ${colors.primary};
+    display: flex;
+    align-items: flex-start;
+  }
+  &.output {
+    color: ${colors.text};
+    padding-left: 14px;
+    border-left: 1px solid ${colors.darkGreen};
+  }
+  &.error {
+    color: #ff5555;
+    padding-left: 14px;
+    border-left: 1px solid rgba(255, 85, 85, 0.4);
+  }
+  &.info {
+    color: ${colors.amber};
+  }
+`;
+
+export const PromptLabel = styled.span`
+  color: ${colors.primary};
+  margin-right: 8px;
+  user-select: none;
+  font-weight: bold;
+`;
+
+export const TerminalInputLine = styled.form`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-top: 1px dashed rgba(0, 255, 65, 0.15);
+  padding-top: 10px;
+`;
+
+export const CustomInput = styled.input`
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95em;
+  outline: none;
+  caret-color: ${colors.primary};
+  text-shadow: 0 0 5px ${colors.primary};
+`;
+
+export const ControlPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  background: rgba(0, 15, 2, 0.5);
+  border: 1px solid ${colors.darkGreen};
+  padding: 14px;
+  border-radius: 4px;
+
+  h4 {
+    margin: 0 0 8px 0;
+    color: ${colors.amber};
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+
+    span {
+      color: ${colors.text};
+    }
+  }
+
+  input[type="range"] {
+    width: 60%;
+    accent-color: ${colors.primary};
+    background: ${colors.darkGreen};
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+  }
+`;
+
+export const CyberButton = styled.button`
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid ${colors.primary};
+  color: ${colors.primary};
+  font-family: 'Share Tech Mono', monospace;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:hover {
+    background: ${colors.primary};
+    color: ${colors.background};
+    box-shadow: 0 0 12px ${colors.primary};
+  }
+
+  &.active {
+    background: ${colors.primary};
+    color: ${colors.background};
+    box-shadow: 0 0 10px ${colors.glassBorder};
+  }
+`;
+
+export const ModeSelector = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+`;

@@ -12,7 +12,7 @@ const Pacman3D = () => {
 
         // === Scene ===
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a1a2e);
+        scene.background = new THREE.Color(0x000000);
 
         // === Camera ===
         // Visão mais de cima, para simular o jogo
@@ -45,19 +45,18 @@ const Pacman3D = () => {
         scene.add(directionalLight);
 
         // Chão para as sombras
-        const groundGeometry = new THREE.PlaneGeometry(50, 50);
-        const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x111122 });
+        const groundGeometry = new THREE.PlaneGeometry(50, 50, 25, 25);
+        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x001500, wireframe: true });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = -Math.PI / 2;
         ground.position.y = -0.1;
-        ground.receiveShadow = true;
         scene.add(ground);
 
         // === Labirinto ===
         const WALL_SIZE = 1;
         const MAZE_WIDTH = 21;
         const MAZE_HEIGHT = 21;
-        const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x0000aa }); // Azul escuro
+        const wallMaterial = new THREE.MeshBasicMaterial({ color: 0x008f11, wireframe: true }); // Verde Matrix escuro/médio
         const wallGeometry = new THREE.BoxGeometry(WALL_SIZE, WALL_SIZE * 1.5, WALL_SIZE); // Paredes mais altas
 
         // Representação do labirinto (simplificado, mas mais complexo que antes)
@@ -88,7 +87,7 @@ const Pacman3D = () => {
         const MAZE_OFFSET_Z = -(MAZE_HEIGHT * WALL_SIZE) / 2 + WALL_SIZE / 2;
 
         const dots = []; // Array para as pastilhas
-        const dotMaterial = new THREE.MeshPhongMaterial({ color: 0xeeeeee }); // Branco
+        const dotMaterial = new THREE.MeshBasicMaterial({ color: 0x39ff14 }); // Verde néon brilhante
         const dotGeometry = new THREE.SphereGeometry(0.1, 16, 16);
 
         for (let row = 0; row < maze.length; row++) {
@@ -113,42 +112,41 @@ const Pacman3D = () => {
         }
 
         // === Pac-Man ===
-        const pacmanMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00, side: THREE.DoubleSide }); // Amarelo, DoubleSide para a boca
-        const pacmanGeometry = new THREE.SphereGeometry(WALL_SIZE * 0.4, 32, 32);
+        const pacmanMaterial = new THREE.MeshBasicMaterial({ color: 0x39ff14, wireframe: true, side: THREE.DoubleSide }); // Verde néon, wireframe
+        const pacmanGeometry = new THREE.SphereGeometry(WALL_SIZE * 0.4, 16, 16);
         const pacman = new THREE.Mesh(pacmanGeometry, pacmanMaterial);
         pacman.position.set(MAZE_OFFSET_X + WALL_SIZE * 1, WALL_SIZE * 0.25, MAZE_OFFSET_Z + WALL_SIZE * 1); // Posição inicial
-        pacman.castShadow = true;
         scene.add(pacman);
         pacmanRef.current = pacman;
 
         // Boca do Pac-Man (um cone para simular a abertura)
-        const mouthGeometry = new THREE.ConeGeometry(WALL_SIZE * 0.4, WALL_SIZE * 0.4, 32);
-        const mouthMaterial = new THREE.MeshPhongMaterial({ color: 0x1a1a2e }); // Cor do fundo para "cortar"
+        const mouthGeometry = new THREE.ConeGeometry(WALL_SIZE * 0.4, WALL_SIZE * 0.4, 16);
+        const mouthMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Preto para "cortar"
         const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
         mouth.position.set(WALL_SIZE * 0.2, 0, 0); // Posição relativa ao Pac-Man
         mouth.rotation.y = -Math.PI / 2; // Aponta para fora
         pacman.add(mouth); // Adiciona a boca como filho do Pac-Man
 
         // === Fantasmas ===
-        const ghostColors = [0xff0000, 0x00ffff, 0xffb8de, 0xffb847]; // Vermelho, Ciano, Rosa, Laranja
-        const ghostMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+        const ghostColors = [0x00ff41, 0x00ff8f, 0xffb000, 0xffffff]; // Matrix green, cyan-green, amber, white
+        const ghostMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff41, wireframe: true });
         const ghostGeometry = new THREE.Group(); // Grupo para o corpo e olhos
         
-        // Corpo do fantasma (cápsula invertida)
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 32), ghostMaterial);
-        body.position.y = 0.4; // Altura do corpo
+        // Corpo do fantasma (cápsula)
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 16), ghostMaterial);
+        body.position.y = 0.4;
         ghostGeometry.add(body);
         
-        const bottom = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32, 0, Math.PI * 2, Math.PI / 2, Math.PI), ghostMaterial);
-        bottom.position.y = 0; // Parte de baixo arredondada
+        const bottom = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI), ghostMaterial);
+        bottom.position.y = 0;
         ghostGeometry.add(bottom);
 
-        // Olhos (esferas brancas e pupilas azuis)
-        const eyeGeometry = new THREE.SphereGeometry(0.15, 16, 16);
-        const pupilGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        // Olhos
+        const eyeGeometry = new THREE.SphereGeometry(0.12, 8, 8);
+        const pupilGeometry = new THREE.SphereGeometry(0.06, 8, 8);
 
-        const eyeMaterialWhite = new THREE.MeshPhongMaterial({ color: 0xffffff });
-        const eyeMaterialBlue = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+        const eyeMaterialWhite = new THREE.MeshBasicMaterial({ color: 0x00ff41 });
+        const eyeMaterialBlue = new THREE.MeshBasicMaterial({ color: 0x000000 });
 
         const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterialWhite);
         leftEye.position.set(-0.2, 0.7, 0.3);
@@ -175,12 +173,10 @@ const Pacman3D = () => {
             const ghostGroup = ghostGeometry.clone(); // Clona o grupo de geometria
             ghostGroup.traverse((child) => {
                 if (child.isMesh && child.material === ghostMaterial) {
-                    child.material = new THREE.MeshPhongMaterial({ color: color }); // Aplica a cor individual
+                    child.material = new THREE.MeshBasicMaterial({ color: color, wireframe: true }); // Aplica a cor individual
                 }
             });
             ghostGroup.position.copy(initialGhostPositions[index]);
-            ghostGroup.castShadow = true;
-            ghostGroup.receiveShadow = true;
             scene.add(ghostGroup);
             ghosts.push({
                 mesh: ghostGroup,
@@ -196,7 +192,6 @@ const Pacman3D = () => {
         const currentPath = [];
         const visited = new Set();
         const PACMAN_SPEED = 0.08;
-        let pacmanDirection = new THREE.Vector3(1, 0, 0); // Começa indo para a direita
         let mouthOpen = true;
         let mouthAngle = 0;
         const MOUTH_SPEED = 0.1; // Velocidade da boca
@@ -395,11 +390,13 @@ const Pacman3D = () => {
         };
         window.addEventListener('resize', onWindowResize);
 
+        const currentMount = mountRef.current;
+
         // === Cleanup ===
         return () => {
             window.removeEventListener('resize', onWindowResize);
-            if (mountRef.current && renderer.domElement) {
-                mountRef.current.removeChild(renderer.domElement);
+            if (currentMount && renderer.domElement) {
+                currentMount.removeChild(renderer.domElement);
             }
             scene.traverse(obj => {
                 if (obj.isMesh) {

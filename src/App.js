@@ -1,285 +1,531 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react';
 import Pacman3D from './components/Pacman3D';
+import MatrixRain3D from './components/MatrixRain3D';
+import { AsciiArt } from './components/ui/ascii-art';
 
 import {
-	FaGithub,
-	FaInstagram,
-	FaLinkedin,
-	FaTooth,
-	FaHtml5,
-	FaCss3,
-	FaReact,
-	FaNodeJs,
-	FaDocker,
-	FaJsSquare,
-	FaGit,
-	FaEye,
-	FaHandPointUp,
-} from 'react-icons/fa'
+  FaGithub,
+  FaInstagram,
+  FaLinkedin,
+  FaTooth,
+  FaHtml5,
+  FaCss3,
+  FaReact,
+  FaNodeJs,
+  FaDocker,
+  FaJsSquare,
+  FaGit,
+  FaTerminal,
+  FaGlobe,
+} from 'react-icons/fa';
 
-import { SiTypescript, SiTrailforks } from 'react-icons/si'
+import { SiTypescript } from 'react-icons/si';
 
 import {
-	Container,
-	Header,
-	Avatar,
-	Username,
-	Main,
-	Contact,
-	Footer,
-	PageHolder,
-	Gitinfo,
-	Info,
-	Repo,
-	Count,
-	Repos,
-} from './style/global.style'
+  Container,
+  Header,
+  Avatar,
+  Username,
+  Main,
+  Contact,
+  Footer,
+  PageHolder,
+  Gitinfo,
+  Scanlines,
+  SidePanel,
+  TerminalWrapper,
+  CommandHistory,
+  CommandRow,
+  PromptLabel,
+  TerminalInputLine,
+  CustomInput,
+  ControlPanel,
+  CyberButton,
+  ModeSelector,
+} from './style/global.style';
 
-import API from './services/api'
-
+import API from './services/api';
 
 function App() {
-	const [avatarimg, setAvatarimg] = useState('')
-	const [username, setUsername] = useState('')
-	const [repos, setRepos] = useState([])
-	const [language, setLanguage] = useState('en')
+  const [avatarimg, setAvatarimg] = useState('');
+  const [username, setUsername] = useState('lucascardev');
+  const [repos, setRepos] = useState([]);
+  const [language, setLanguage] = useState('en');
+  const [terminalInput, setTerminalInput] = useState('');
+  const [history, setHistory] = useState([]);
+  const [showPacman, setShowPacman] = useState(false);
+  const [activeTab, setActiveTab] = useState('ascii'); // ascii | photo
+  
+  // ASCII configurations
+  const [asciiRes, setAsciiRes] = useState(70);
+  const [asciiColor, setAsciiColor] = useState('#00ff41');
+  const [asciiInverted, setAsciiInverted] = useState(false);
 
-	useEffect(() => {
-		async function getmyprofile() {
-			const response = await API.get('users/lucascardev')
-			const repos_response = await API.get('users/lucascardev/repos')
-			setRepos(repos_response.data)
-			setAvatarimg(response.data.avatar_url)
-			setUsername(response.data.login)
-		}
-		getmyprofile()
-	}, [])
+  const historyEndRef = useRef(null);
 
-	useEffect(() => {
-		const detectLanguage = () => {
-			const userLanguage = navigator.language || navigator.userLanguage
-			if (userLanguage.startsWith('pt')) {
-				setLanguage('pt')
-			} else {
-				setLanguage('en')
-			}
-		}
+  useEffect(() => {
+    async function getmyprofile() {
+      try {
+        const response = await API.get('users/lucascardev');
+        const repos_response = await API.get('users/lucascardev/repos');
+        setRepos(repos_response.data);
+        if (response.data.avatar_url) {
+          setAvatarimg(response.data.avatar_url);
+        } else {
+          setAvatarimg('https://avatars.githubusercontent.com/u/35515714?v=4');
+        }
+        setUsername(response.data.login || 'lucascardev');
+      } catch (e) {
+        console.error('Error fetching data from github API', e);
+        // Fallbacks
+        setAvatarimg('https://avatars.githubusercontent.com/u/35515714?v=4');
+      }
+    }
+    getmyprofile();
+  }, []);
 
-		detectLanguage()
+  // Detect and set browser language
+  useEffect(() => {
+    const detectLanguage = () => {
+      const userLanguage = navigator.language || navigator.userLanguage;
+      const lang = userLanguage.startsWith('pt') ? 'pt' : 'en';
+      setLanguage(lang);
+      
+      // Initialize history with correct language
+      setHistory(getInitialHistory(lang));
+    };
 
-		window.addEventListener('languagechange', detectLanguage)
+    detectLanguage();
+    window.addEventListener('languagechange', detectLanguage);
+    return () => {
+      window.removeEventListener('languagechange', detectLanguage);
+    };
+  }, []);
 
-		return () => {
-			window.removeEventListener('languagechange', detectLanguage)
-		}
-	}, [])
+  // Scroll to bottom of terminal
+  useEffect(() => {
+    if (historyEndRef.current) {
+      historyEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [history, showPacman]);
 
-	return (
-		<Container>
-			<Header>
-				<Gitinfo>
-					<Avatar src={avatarimg} />
-					<div
-						style={{
-							color: 'whitesmoke',
-							display: 'flex',
-							justifyItems: 'center',
-							flexDirection: 'column',
-							alignItems: 'center',
-						}}
-					>
-						<Username>
-							<a
-								href='https://github.com/lucascardev'
-								alt='Github profile'
-								target='_blank'
-								rel='noreferrer'
-							>
-								@{username}
-							</a>
-						</Username>
-						<p className='github-hint'>
-							<FaHandPointUp /> Veja meu github acima{' '}
-							<FaHandPointUp />
-						</p>
-					</div>
-				</Gitinfo>
-				<Contact>
-					<p>
-						<b>Phonenumber:</b> &nbsp;{' '}
-						<a href='tel:+5571992931330'>+55(71)99293-1330</a>
-					</p>
-					<p>
-						<b>Email: </b> &nbsp;{' '}
-						<a href='mailto:lucasmatheussc97@gmail.com'>
-							lucasmatheussc97@gmail.com
-						</a>
-					</p>
-				</Contact>
+  const getInitialHistory = (lang) => {
+    return lang === 'pt'
+      ? [
+          { type: 'info', text: 'INICIANDO PROTOCOLO DE CONEXÃO SYSTEM@LUCASCARDEV...' },
+          { type: 'info', text: 'ESTADO: SEGURO // PORTA: 443 // IP: 127.0.0.1' },
+          { type: 'info', text: 'Digite "ajuda" para listar os comandos disponíveis.' },
+          { type: 'output', text: '------------------------------------------------------------' },
+          { type: 'output', text: 'LUCAS MATHEUS // CIRURGIÃO-DENTISTA & DESENVOLVEDOR FULLSTACK' },
+          { type: 'output', text: 'Mais de 6 anos de experiência codificando soluções inovadoras.' },
+          { type: 'output', text: '------------------------------------------------------------' },
+        ]
+      : [
+          { type: 'info', text: 'INITIALIZING SYSTEM@LUCASCARDEV CONNECTION PROTOCOL...' },
+          { type: 'info', text: 'STATUS: SECURE // PORT: 443 // IP: 127.0.0.1' },
+          { type: 'info', text: 'Type "help" to list all available commands.' },
+          { type: 'output', text: '------------------------------------------------------------' },
+          { type: 'output', text: 'LUCAS MATHEUS // DENTIST & FULLSTACK SOFTWARE DEVELOPER' },
+          { type: 'output', text: 'Over 6 years of experience coding innovative digital systems.' },
+          { type: 'output', text: '------------------------------------------------------------' },
+        ];
+  };
 
-				<div className='techs'>
-					<SiTypescript />
-					<FaCss3 />
-					<FaDocker />
-					<FaHtml5 />
-					<FaReact />
-					<FaNodeJs />
-					<FaJsSquare />
-					<FaGit />
-				</div>
-			</Header>
-			<PageHolder>
-				{language === 'en' && (
-					<Main>
-						<h1>Hello there. I'm lucascardev.</h1>
-						<p>
-							I'm a programming enthusiast dedicated to following best practices for web
-							development. With a passion for creating innovative solutions, I maintain
-							several projects on my GitHub. I have **over 6 years of programming experience**
-							and hold a degree from **Estácio University**. One of my standout projects
-							is a dental appointment scheduling application. I’m constantly seeking
-							improvement, committed to continuous learning, and actively look for opportunities
-							to broaden my horizons and deepen my understanding of programming complexities.
-							With an unwavering commitment to personal and professional growth, I’m determined
-							to reach new levels of excellence.
-						</p>
-						<hr />
-						<p className='social-media-text'> Keep contact with me on my social media. </p>
-						<div className='linkholder'>
-							<a href='https://www.instagram.com/lucas_mtheus/'>
-								<FaInstagram />
-							</a>
-							<a href='https://github.com/lucascardev'>
-								<FaGithub />
-							</a>
+  const handleCommandSubmit = (e) => {
+    e.preventDefault();
+    const command = terminalInput.trim();
+    if (!command) return;
 
-							<a href='https://www.linkedin.com/in/lucascardev'>
-								<FaLinkedin />
-							</a>
-						</div>
+    const cleaned = command.toLowerCase();
+    const newHistory = [...history, { type: 'input', text: command }];
+    let outputLines = [];
+    let isError = false;
 
-						<p className='dentistry-text'> Im also a dentistry</p>
-						<div
-							className='linkholder'
-							style={{ marginBottom: 30 }}
-						>
-							<a href='https://www.instagram.com/dr.lucasmscardoso/'>
-								<FaTooth />
-							</a>
-						</div>
-						<Repos>
-							{repos.map((repo) => (
-								<Repo key={repo.id}> {/* Adicionado key aqui */}
-									<h3>Repo - {repo.description || repo.name}</h3> {/* Adicionado fallback para description */}
-									<p>
-										<a href={repo.html_url} target='_blank' rel='noreferrer'>
-											{repo.full_name}
-										</a>
-									</p>
-									<p>{repo.language}</p>
-									<Info>
-										<Count>
-											<SiTrailforks />
-											{repo.forks_count} {/* Usar forks_count */}
-										</Count>{' '}
-										<Count>
-											<FaEye />
-											{repo.watchers_count} {/* Usar watchers_count */}
-										</Count>
-									</Info>
-								</Repo>
-							))}
-						</Repos>
-						  {/* AQUI VOCÊ ADICIONA O COMPONENTE 3D */}
-                        <h2>3D Pac-Man Demo</h2>
-                        <p>A small demonstration using Three.js:</p>
-                        <Pacman3D /> {/* O componente 3D */}
-                        <hr />
-                        {/* ... Restante do conteúdo em inglês ... */}
-					</Main>
-				)}
-				{language === 'pt' && (
-					<Main>
-						<h1>Olá! Eu sou o lucascardev.</h1>
-						<p>
-							Sou um entusiasta da programação que adora seguir as melhores práticas para o
-							desenvolvimento web. Tenho uma paixão por criar soluções inovadoras e mantenho
-							vários projetos no meu GitHub. Possuo **mais de 6 anos de experiência em programação**
-							e sou formado pela **Faculdade Estácio**. Um dos meus projetos de destaque
-							é um aplicativo de agendamento odontológico. Estou sempre em busca de aprimoramento
-							e continuo minha jornada de aprendizado. Busco constantemente oportunidades
-							para expandir meus horizontes e aprofundar minha compreensão das complexidades
-							da programação. Com um compromisso inabalável com o crescimento pessoal e
-							profissional, estou determinado a alcançar novos patamares de excelência.
-						</p>
-						<hr />
-						<p className='social-media-text'> Me siga nas redes sociais </p>
-						<div className='linkholder'>
-							<a href='https://www.instagram.com/lightup.marketingdigital/'>
-								<FaInstagram />
-							</a>
-							<a href='https://github.com/lucascardev'>
-								<FaGithub />
-							</a>
+    // Toggle Portuguese/English commands support
+    if (cleaned === 'help' || cleaned === 'ajuda') {
+      outputLines = language === 'pt' ? [
+        'Comandos Disponíveis:',
+        '  ajuda | help       - Exibe este menu de ajuda.',
+        '  sobre | bio        - Imprime minha biografia e trajetória.',
+        '  projetos | ls      - Lista os projetos e repositórios do GitHub.',
+        '  contato | contact  - Mostra meus canais de contato e e-mail.',
+        '  odonto | teeth     - Exibe detalhes sobre minha atuação como dentista.',
+        '  jogar | pacman     - Inicia a simulação 3D Pacman.',
+        '  sistema | specs    - Exibe informações técnicas da aplicação.',
+        '  limpar | clear     - Limpa o console de comando.'
+      ] : [
+        'Available Commands:',
+        '  help | ajuda       - Display this help menu.',
+        '  bio | sobre        - Show my professional biography.',
+        '  projects | ls      - List GitHub repositories & stars.',
+        '  contact | contato  - Display contact channels and email.',
+        '  teeth | odonto     - Database records of my dentistry practice.',
+        '  pacman | play      - Boot up the interactive 3D Pacman game.',
+        '  specs | sistema    - Display application technical specs.',
+        '  clear | limpar     - Clear the terminal console.'
+      ];
+    } else if (cleaned === 'bio' || cleaned === 'sobre') {
+      outputLines = language === 'pt' ? [
+        'Nome: Lucas Matheus Cardoso',
+        'Grau: Bacharel em Sistemas de Informação - Estácio de Sá',
+        'Experiência: +6 anos de desenvolvimento web',
+        'Biografia:',
+        '  Sou um programador apaixonado por resolver desafios complexos e projetar',
+        '  arquiteturas robustas. Crio soluções completas do front ao back-end,',
+        '  seguindo sempre as melhores práticas de Clean Code, Git Flow e DevOps.',
+        '  Com olhar crítico para design, também opero na odontologia, unindo a',
+        '  precisão de consultório clínico com a exatidão digital.'
+      ] : [
+        'Name: Lucas Matheus Cardoso',
+        'Degree: Bachelor of Information Systems - Estácio University',
+        'Experience: +6 years of professional web development',
+        'Biography:',
+        '  I am a software engineering enthusiast dedicated to solving complex problems',
+        '  and structuring robust software architectures. I design modern applications',
+        '  from UI components to backend services, matching clean code principles.',
+        '  Holding a parallel path in dentistry, I combine clinical medical precision',
+        '  with software engineering accuracy.'
+      ];
+    } else if (cleaned === 'projects' || cleaned === 'ls' || cleaned === 'projetos') {
+      if (repos.length === 0) {
+        outputLines = ['[!] Connecting to GitHub servers...', 'No repositories found.'];
+      } else {
+        outputLines = [
+          `FOUND ${repos.length} REPOSITORIES AT GITHUB://LUCASCARDEV:`,
+          '------------------------------------------------------------',
+          ...repos.slice(0, 8).map(
+            (r) => `* [${r.language || 'HTML/JS'}] ${r.name} - ⭐ ${r.stargazers_count} | Forks: ${r.forks_count}`
+          ),
+          repos.length > 8 ? `... and ${repos.length - 8} more. Type 'projects -a' to see all on GitHub.` : ''
+        ].filter(Boolean);
+      }
+    } else if (cleaned === 'contact' || cleaned === 'contato') {
+      outputLines = [
+        'CONTACT_NODES // OPEN CHANNELS:',
+        '---------------------------------------',
+        '  Email:       lucasmatheussc97@gmail.com',
+        '  Phone/Wpp:   +55 (71) 99293-1330',
+        '  LinkedIn:    https://www.linkedin.com/in/lucascardev',
+        '  Instagram:   @lucas_mtheus',
+        '               @lightup.marketingdigital'
+      ];
+    } else if (cleaned === 'teeth' || cleaned === 'odonto' || cleaned === 'dentistry') {
+      outputLines = language === 'pt' ? [
+        'CADASTRO CLÍNICO // DR. LUCAS MATHEUS CARDOSO',
+        '---------------------------------------',
+        '  Área: Cirurgião-dentista',
+        '  Registro: CRO ativo',
+        '  Foco: Reabilitação oral, estética e precisão diagnóstica.',
+        '  Instagram Odonto: @dr.lucasmscardoso',
+        '  Nota de Desenvolvimento:',
+        '    Desenvolvi sistemas de agendamento clínico integrados para otimizar',
+        '    o atendimento odontológico e prontuário digital.'
+      ] : [
+        'CLINICAL REGISTRY // DR. LUCAS MATHEUS CARDOSO',
+        '---------------------------------------',
+        '  Practice: Dentistry & Oral Health',
+        '  Instagram Profile: @dr.lucasmscardoso',
+        '  Focus: Oral surgery, dental aesthetics, clinical diagnostics.',
+        '  Engineering Node:',
+        '    Created tailored dental appointment engines and digital clinical',
+        '    chart database schemes to optimize patient flow.'
+      ];
+    } else if (cleaned === 'pacman' || cleaned === 'play' || cleaned === 'jogar') {
+      setShowPacman(true);
+      outputLines = language === 'pt' 
+        ? ['[SUCCESS] Iniciando Pacman 3D no console...', 'Pressione "pacman -stop" para fechar o simulador.']
+        : ['[SUCCESS] Booting 3D Pacman Simulation inside console...', 'Type "pacman -stop" to shut down simulation.'];
+    } else if (cleaned === 'pacman -stop') {
+      setShowPacman(false);
+      outputLines = ['[SUCCESS] Shutting down simulation container.'];
+    } else if (cleaned === 'clear' || cleaned === 'limpar') {
+      setHistory([]);
+      setTerminalInput('');
+      return;
+    } else if (cleaned === 'neofetch' || cleaned === 'specs' || cleaned === 'sistema') {
+      outputLines = [
+        '               ,        LUCASCARDEV@PORTFOLIO',
+        '              / \\       ---------------------',
+        '             /   \\      OS: Linux (Workspace Env)',
+        '            /     \\     Host: React SPA Terminal Node',
+        '           /       \\    Kernel: React 17.0.2',
+        '          /________/\\   Uptime: Active Session',
+        '          \\        \\/   Shell: Bash Emulator v1.2',
+        '           \\   ()   \\   Resolution: WebGL Responsive',
+        '            \\        \\  ThreeJS: v0.139.2',
+        '             \\      /   Styled-Components: v5.3.11',
+        '              \\    /    Language Node: ' + language.toUpperCase(),
+        '               \\  /     ASCII decoder: ACTIVE',
+        '                \\/      ',
+      ];
+    } else {
+      isError = true;
+      outputLines = language === 'pt'
+        ? [`Comando não reconhecido: "${command}". Digite "ajuda" para ajuda.` ]
+        : [`Command not recognized: "${command}". Type "help" for a list of commands.`];
+    }
 
-							<a href='https://www.linkedin.com/in/lucascardev'>
-								<FaLinkedin />
-							</a>
-						</div>
-						<hr />
-						{/* <p className='dentistry-text'> Também sou dentista</p>
-						<div
-							className='linkholder'
-							style={{ marginBottom: 30 }}
-						>
-							<a href='https://www.instagram.com/dr.lucasmscardoso/'>
-								<FaTooth />
-							</a>
-						</div> */}
-						<Repos>
-							{repos.map((repo) => (
-								<Repo key={repo.id}> {/* Adicionado key aqui */}
-									<h3>Repo - {repo.description || repo.name}</h3> {/* Adicionado fallback para description */}
-									<p>
-										<a href={repo.html_url} target='_blank' rel='noreferrer'>
-											{repo.full_name}
-										</a>
-									</p>
-									<p>{repo.language}</p>
-									<Info>
-										<Count>
-											<SiTrailforks />
-											{repo.forks_count} {/* Usar forks_count */}
-										</Count>{' '}
-										<Count>
-											<FaEye />
-											{repo.watchers_count} {/* Usar watchers_count */}
-										</Count>
-									</Info>
-								</Repo>
-							))}
-						</Repos>
-						 {/* AQUI VOCÊ ADICIONA O COMPONENTE 3D */}
-                        <h2>Demonstração 3D Pac-Man</h2>
-                        <p>Uma pequena demonstração utilizando Three.js:</p>
-                        <Pacman3D /> {/* O componente 3D */}
-                        <hr />
-                        {/* ... Restante do conteúdo em português ... */}
-					</Main>
-				)}
-			</PageHolder>
+    setHistory([
+      ...newHistory,
+      ...outputLines.map((line) => ({
+        type: isError ? 'error' : 'output',
+        text: line,
+      })),
+    ]);
+    setTerminalInput('');
+  };
 
-			<Footer>
-				<p>
-					This page was build using the{' '}
-					<a href='https://pages.github.com/'>
-						<b>GitHub Pages</b>
-					</a>{' '}
-					an excelent frontend server.
-				</p>
-			</Footer>
-		</Container>
-	)
+  const toggleLanguage = () => {
+    const nextLang = language === 'en' ? 'pt' : 'en';
+    setLanguage(nextLang);
+    setHistory([
+      ...history,
+      { type: 'info', text: nextLang === 'pt' ? 'ALTERANDO IDIOMA PARA PORTUGUÊS...' : 'SWITCHING LANGUAGE TO ENGLISH...' },
+      ...getInitialHistory(nextLang)
+    ]);
+  };
+
+  return (
+    <Container>
+      <Scanlines />
+      {/* 3D background digital rain */}
+      <MatrixRain3D />
+
+      <Header>
+        <Gitinfo>
+          <Avatar src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'} alt="Lucas Cardoso" />
+          <div>
+            <Username>
+              <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer">
+                @{username}
+              </a>
+            </Username>
+            <div className="github-hint">
+              <FaTerminal /> SECURE PORTFOLIO GATEWAY <FaTerminal />
+            </div>
+          </div>
+        </Gitinfo>
+
+        <Contact>
+          <p>
+            <b>TEL:</b> <a href="tel:+5571992931330">+55(71)99293-1330</a>
+          </p>
+          <p>
+            <b>EMAIL:</b> <a href="mailto:lucasmatheussc97@gmail.com">lucasmatheussc97@gmail.com</a>
+          </p>
+        </Contact>
+
+        <div className="techs">
+          <SiTypescript title="TypeScript" />
+          <FaCss3 title="CSS3" />
+          <FaDocker title="Docker" />
+          <FaHtml5 title="HTML5" />
+          <FaReact title="React" />
+          <FaNodeJs title="NodeJS" />
+          <FaJsSquare title="JavaScript" />
+          <FaGit title="Git" />
+          <FaGlobe 
+            title={language === 'en' ? 'Switch to Portuguese' : 'Mudar para Inglês'} 
+            onClick={toggleLanguage} 
+            style={{ marginLeft: '12px', color: '#ffb000' }}
+          />
+        </div>
+      </Header>
+
+      <PageHolder>
+        {/* Left Side: Hacker Terminal Console */}
+        <Main>
+          <h1>
+            <FaTerminal style={{ marginRight: '10px' }} />
+            SYSTEM_SHELL_EMULATOR.sh
+          </h1>
+          
+          <CommandHistory>
+            {history.map((h, i) => (
+              <CommandRow key={i} className={h.type}>
+                {h.type === 'input' && <PromptLabel>lucascardev@system:~$</PromptLabel>}
+                {h.text}
+              </CommandRow>
+            ))}
+            
+            {showPacman && (
+              <div style={{ marginTop: '15px', border: '1px solid #00ff41', padding: '10px', borderRadius: '4px', background: '#000' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8em', color: '#00ff41' }}>
+                  <span>SIMULADOR_3D_PACMAN.EXE (MATRIX WIREFRAME EDITION)</span>
+                  <CyberButton onClick={() => setShowPacman(false)}>STOP</CyberButton>
+                </div>
+                <Pacman3D />
+              </div>
+            )}
+            
+            <div ref={historyEndRef} />
+          </CommandHistory>
+
+          <TerminalInputLine onSubmit={handleCommandSubmit}>
+            <PromptLabel>lucascardev@system:~$</PromptLabel>
+            <CustomInput
+              type="text"
+              value={terminalInput}
+              onChange={(e) => setTerminalInput(e.target.value)}
+              placeholder={language === 'pt' ? 'Digite um comando... (ex: "ajuda")' : 'Type a command... (ex: "help")'}
+              autoFocus
+            />
+          </TerminalInputLine>
+        </Main>
+
+        {/* Right Side: ASCII Photo and Decryption Controls */}
+        <SidePanel>
+          <TerminalWrapper title="AVATAR_IMAGE_DECODER">
+            <ModeSelector>
+              <CyberButton 
+                className={activeTab === 'ascii' ? 'active' : ''} 
+                onClick={() => setActiveTab('ascii')}
+              >
+                ASCII Art
+              </CyberButton>
+              <CyberButton 
+                className={activeTab === 'photo' ? 'active' : ''} 
+                onClick={() => setActiveTab('photo')}
+              >
+                Original Photo
+              </CyberButton>
+            </ModeSelector>
+
+            {activeTab === 'ascii' ? (
+              <AsciiArt
+                src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'}
+                resolution={asciiRes}
+                color={asciiColor}
+                animationStyle="matrix"
+                inverted={asciiInverted}
+                animateOnView={false}
+                className="aspect-square w-full max-w-md mx-auto rounded border border-green-950"
+              />
+            ) : (
+              <div className="relative aspect-square w-full max-w-md mx-auto bg-black flex items-center justify-center border border-green-950 rounded overflow-hidden">
+                <img 
+                  src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'} 
+                  alt="Original Avatar" 
+                  className="w-full h-full object-cover grayscale"
+                  style={{ filter: 'contrast(1.2) brightness(0.9) sepia(1) hue-rotate(85deg)' }} // Matrix color tint
+                />
+                {/* scanning green line overlay */}
+                <div 
+                  className="absolute left-0 w-full bg-green-500 opacity-20 pointer-events-none"
+                  style={{
+                    height: '2px',
+                    top: '0',
+                    boxShadow: '0 0 10px #00ff41',
+                    animation: 'scanline 4s linear infinite',
+                  }}
+                />
+              </div>
+            )}
+
+            <ControlPanel>
+              <h4>DECODER STREAMS</h4>
+              
+              <div className="control-row">
+                <span>Resolution / Resolução: {asciiRes}</span>
+                <input
+                  type="range"
+                  min="40"
+                  max="110"
+                  step="5"
+                  value={asciiRes}
+                  onChange={(e) => setAsciiRes(parseInt(e.target.value))}
+                />
+              </div>
+
+              <div className="control-row">
+                <span>Color / Cor:</span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <span 
+                    onClick={() => setAsciiColor('#00ff41')}
+                    style={{ 
+                      width: '18px', 
+                      height: '18px', 
+                      background: '#00ff41', 
+                      borderRadius: '50%', 
+                      cursor: 'pointer',
+                      border: asciiColor === '#00ff41' ? '2px solid white' : '1px solid #333'
+                    }}
+                  />
+                  <span 
+                    onClick={() => setAsciiColor('#ffb000')}
+                    style={{ 
+                      width: '18px', 
+                      height: '18px', 
+                      background: '#ffb000', 
+                      borderRadius: '50%', 
+                      cursor: 'pointer',
+                      border: asciiColor === '#ffb000' ? '2px solid white' : '1px solid #333'
+                    }}
+                  />
+                  <span 
+                    onClick={() => setAsciiColor('#ffffff')}
+                    style={{ 
+                      width: '18px', 
+                      height: '18px', 
+                      background: '#ffffff', 
+                      borderRadius: '50%', 
+                      cursor: 'pointer',
+                      border: asciiColor === '#ffffff' ? '2px solid white' : '1px solid #333'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="control-row">
+                <span>Invert Character Map:</span>
+                <CyberButton 
+                  className={asciiInverted ? 'active' : ''}
+                  onClick={() => setAsciiInverted(!asciiInverted)}
+                  style={{ fontSize: '0.8em', padding: '3px 8px' }}
+                >
+                  {asciiInverted ? 'ON' : 'OFF'}
+                </CyberButton>
+              </div>
+            </ControlPanel>
+          </TerminalWrapper>
+
+          <TerminalWrapper title="SOCIAL_LINKS">
+            <div className="linkholder" style={{ margin: 0 }}>
+              <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer" title="GitHub">
+                <FaGithub />
+              </a>
+              <a href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer" title="LinkedIn">
+                <FaLinkedin />
+              </a>
+              <a href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer" title="Instagram Developer">
+                <FaInstagram />
+              </a>
+              <a href="https://www.instagram.com/dr.lucasmscardoso/" target="_blank" rel="noreferrer" title="Instagram Dentistry" style={{ color: '#ffb000' }}>
+                <FaTooth />
+              </a>
+            </div>
+          </TerminalWrapper>
+        </SidePanel>
+      </PageHolder>
+
+      <Footer>
+        <p>
+          SYSTEM CONSOLE {'//'} COMPILED VIA{' '}
+          <a href="https://pages.github.com/" target="_blank" rel="noreferrer">
+            GITHUB PAGES SERVER
+          </a>{' '}
+          {'//'} ALL RIGHTS RESERVED
+        </p>
+      </Footer>
+      
+      <style>{`
+        @keyframes scanline {
+          0% { top: 0%; }
+          100% { top: 100%; }
+        }
+      `}</style>
+    </Container>
+  );
 }
 
-export default App
+export default App;
