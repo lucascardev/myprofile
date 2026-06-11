@@ -203,6 +203,7 @@ function ClaraChatSimulator({ language }) {
 
 function App() {
   const [avatarimg] = useState('https://i.ibb.co/XkvSFmbh/E2-B95-B01-6545-426-C-9850-B00-D20-F701-E3.jpg');
+  const [githubAvatar, setGithubAvatar] = useState('https://avatars.githubusercontent.com/u/35515714?v=4');
   const [username, setUsername] = useState('lucascardev');
   const [repos, setRepos] = useState([]);
   const [language, setLanguage] = useState('en');
@@ -323,6 +324,9 @@ function App() {
         const repos_response = await API.get('users/lucascardev/repos');
         setRepos(repos_response.data);
         setUsername(response.data.login || 'lucascardev');
+        if (response.data.avatar_url) {
+          setGithubAvatar(response.data.avatar_url);
+        }
       } catch (e) {
         console.error('Error fetching data from github API', e);
       }
@@ -685,7 +689,7 @@ function App() {
 
       <Header>
         <Gitinfo>
-          <Avatar src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'} alt="Lucas Cardoso" />
+          <Avatar src={githubAvatar} alt="Lucas Cardoso" />
           <div>
             <Username>
               <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer">
