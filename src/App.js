@@ -65,6 +65,14 @@ import {
   ClaraFeatureList,
   ClaraButtonList,
   ClaraButton,
+  ProjectShowcase,
+  ProjectTitle,
+  ProjectTag,
+  ProjectBadgeList,
+  ProjectBadge,
+  ProjectFeatureList,
+  ProjectButtonList,
+  ProjectButton,
   HeaderTechs,
   ClaraChatWindow,
   ClaraChatHeader,
@@ -848,6 +856,61 @@ function App() {
               
               <ClaraChatSimulator language={language} />
             </ClaraShowcase>
+          </TerminalWrapper>
+
+          <TerminalWrapper title="FEATURED_PROJECT: PSY_REPORT">
+            <ProjectShowcase>
+              <ProjectTitle>
+                PSYREPORT AUTO
+                <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
+              </ProjectTitle>
+              <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
+                {language === 'pt' 
+                  ? 'Sistema completo e ágil para psicólogos gerenciarem relatórios de sessões e emitirem recibos profissionais com assinatura digital, sincronizado com o Google Sheets.' 
+                  : 'Complete system for psychologists to manage session reports and professional receipts with digital signatures, synced with Google Sheets.'}
+              </p>
+              <ProjectBadgeList>
+                <ProjectBadge>React (Vite)</ProjectBadge>
+                <ProjectBadge>Firebase Auth</ProjectBadge>
+                <ProjectBadge>Google Sheets API</ProjectBadge>
+                <ProjectBadge>Tailwind CSS</ProjectBadge>
+                <ProjectBadge>jsPDF</ProjectBadge>
+                <ProjectBadge>driver.js</ProjectBadge>
+              </ProjectBadgeList>
+              <ProjectFeatureList>
+                <li>
+                  {language === 'pt' 
+                    ? 'Autenticação Google Workspace via Firebase' 
+                    : 'Google Workspace Login via Firebase'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Sincronização bidirecional com Google Sheets' 
+                    : 'Two-way sync with Google Sheets'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Assinatura digital integrada e geração de PDFs' 
+                    : 'Integrated digital signatures and PDF export'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Histórico completo com controle de vouchers/créditos' 
+                    : 'Full session history with vouchers/credits system'}
+                </li>
+              </ProjectFeatureList>
+              <ProjectButtonList>
+                <ProjectButton 
+                  href="https://psy-report.vercel.app/" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="primary"
+                  style={{ gridColumn: 'span 2' }}
+                >
+                  {language === 'pt' ? 'Acessar Plataforma' : 'Access Platform'}
+                </ProjectButton>
+              </ProjectButtonList>
+            </ProjectShowcase>
           </TerminalWrapper>
 
           <TerminalWrapper title="LINKS_&_DOWNLOADS">

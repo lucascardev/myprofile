@@ -946,6 +946,131 @@ export const ClaraButton = styled.a`
   }
 `;
 
+// Generic Project Showcase styled-components
+export const ProjectShowcase = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: 'Share Tech Mono', monospace;
+`;
+
+export const ProjectTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25em;
+  color: ${colors.primary};
+  text-shadow: 0 0 8px ${colors.glow};
+  font-weight: bold;
+  letter-spacing: 1px;
+`;
+
+export const ProjectTag = styled.span`
+  background: rgba(0, 255, 65, 0.12);
+  border: 1px solid ${colors.primary};
+  color: ${colors.primary};
+  font-size: 0.6em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-shadow: none;
+  letter-spacing: 1px;
+  animation: ${textGlow} 2s infinite ease-in-out;
+`;
+
+export const ProjectBadgeList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0;
+`;
+
+export const ProjectBadge = styled.span`
+  font-size: 0.65em;
+  padding: 2px 6px;
+  background: rgba(255, 176, 0, 0.08);
+  border: 1px solid rgba(255, 176, 0, 0.25);
+  color: ${colors.amber};
+  border-radius: 2px;
+`;
+
+export const ProjectFeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85em;
+  color: ${colors.text};
+  
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.35;
+    
+    &::before {
+      content: "*";
+      color: ${colors.primary};
+      font-weight: bold;
+    }
+  }
+`;
+
+export const ProjectButtonList = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ProjectButton = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 3px;
+  transition: all 0.25s ease;
+  letter-spacing: 1px;
+  text-align: center;
+  box-sizing: border-box;
+  
+  &.primary {
+    background: ${colors.primary};
+    color: ${colors.background};
+    border: 1px solid ${colors.primary};
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.25);
+    
+    &:hover {
+      background: #fff;
+      border-color: #fff;
+      color: ${colors.background};
+      box-shadow: 0 0 20px ${colors.primary};
+    }
+  }
+  
+  &.secondary {
+    background: transparent;
+    color: ${colors.amber};
+    border: 1px solid ${colors.amber};
+    box-shadow: 0 0 5px rgba(255, 176, 0, 0.12);
+    
+    &:hover {
+      background: ${colors.amber};
+      color: ${colors.background};
+      box-shadow: 0 0 15px ${colors.amber};
+    }
+  }
+`;
+
 // Responsive Header techs container (replacing inline styles)
 export const HeaderTechs = styled.div`
   display: flex;
