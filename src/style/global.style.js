@@ -216,8 +216,8 @@ export const Contact = styled.div`
 `;
 
 export const PageHolder = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
+  display: flex;
+  flex-direction: row;
   gap: 24px;
   padding: 24px;
   flex: 1;
@@ -226,16 +226,23 @@ export const PageHolder = styled.div`
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 
   @media (max-width: 992px) {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     padding: 16px;
+    width: 100%;
+    max-width: 100%;
   }
 `;
 
 export const Main = styled.main`
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  width: 100%;
   background: ${colors.terminalBg};
   border: 1px solid ${colors.glassBorder};
   border-radius: 4px;
@@ -247,6 +254,7 @@ export const Main = styled.main`
   @media (max-width: 768px) {
     padding: 16px;
     min-height: 420px;
+    width: 100%;
   }
 
   &::before {
@@ -444,9 +452,14 @@ export const SidePanel = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  flex: 1.1;
+  min-width: 0;
+  box-sizing: border-box;
+  width: 100%;
 
   @media (max-width: 992px) {
     order: -1;
+    width: 100%;
   }
 `;
 
@@ -1112,6 +1125,9 @@ export const CalendarContainer = styled.div`
   flex-direction: column;
   overflow-x: auto;
   padding-bottom: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {

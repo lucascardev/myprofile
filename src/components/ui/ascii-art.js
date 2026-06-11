@@ -276,21 +276,57 @@ export function AsciiArt({
   return (
     <div 
       ref={containerRef} 
-      className={`relative w-full overflow-hidden flex items-center justify-center bg-black ${className}`}
-      style={{ minHeight: '200px' }}
+      className={`w-full mx-auto rounded border border-green-950 ${className}`}
+      style={{ 
+        position: 'relative',
+        width: '100%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#000000',
+        minHeight: '200px'
+      }}
     >
       {loading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-green-500 font-mono text-sm bg-black z-10">
-          <div className="animate-pulse mb-2">ACCESSING STREAM DATA...</div>
-          <div className="w-32 bg-green-950 h-1 rounded overflow-hidden">
-            <div className="bg-green-500 h-full animate-[loading_1.5s_infinite_ease-in-out]" style={{ width: '40%' }}></div>
+        <div style={{
+          position: 'absolute',
+          top: 0, right: 0, bottom: 0, left: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#00ff41',
+          fontFamily: 'monospace',
+          fontSize: '14px',
+          backgroundColor: '#000000',
+          zIndex: 10
+        }}>
+          <div style={{ marginBottom: '8px', animation: 'scanline-pulse 1.5s infinite ease-in-out' }}>ACCESSING STREAM DATA...</div>
+          <div style={{ width: '128px', backgroundColor: '#003b00', height: '4px', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#00ff41', height: '100%', width: '40%', borderRadius: '4px', animation: 'scanline-loading 1.5s infinite ease-in-out' }}></div>
           </div>
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-red-500 font-mono text-sm bg-black z-10 p-4 text-center border border-red-500">
+        <div style={{
+          position: 'absolute',
+          top: 0, right: 0, bottom: 0, left: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#ff5555',
+          fontFamily: 'monospace',
+          fontSize: '14px',
+          backgroundColor: '#000000',
+          zIndex: 10,
+          padding: '16px',
+          textAlign: 'center',
+          border: '1px solid #ff5555'
+        }}>
           <div>[ERROR: DECRYPTION_FAILED]</div>
-          <div className="text-xs mt-2 text-red-700">COULD NOT LOAD IMAGE BINARY FROM SOURCE</div>
+          <div style={{ fontSize: '12px', marginTop: '8px', color: '#aa0000' }}>COULD NOT LOAD IMAGE BINARY FROM SOURCE</div>
         </div>
       )}
       <canvas 
