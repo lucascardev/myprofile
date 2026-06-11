@@ -42,17 +42,17 @@
   {
     "id": "kubernetes",
     "name": "Kubernetes",
-    "experience": "3 years"
+    "experience": "2 years"
   },
   {
     "id": "oraclecloud",
     "name": "Oracle Cloud",
-    "experience": "3 years"
+    "experience": "1 years"
   },
   {
     "id": "gcp",
     "name": "Google Cloud",
-    "experience": "4 years"
+    "experience": "2 years"
   },
   {
     "id": "digitalocean",
@@ -62,16 +62,16 @@
   {
     "id": "antigravity",
     "name": "Antigravity Kit",
-    "experience": "1 year"
+    "experience": "0.5 year"
   },
   {
     "id": "iadeveloper",
     "name": "AI Developer",
-    "experience": "3 years"
+    "experience": "1 years"
   },
   {
     "id": "automation",
     "name": "Automation Tasks",
-    "experience": "5 years"
+    "experience": "3 years"
   }
 ]
