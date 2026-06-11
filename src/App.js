@@ -913,6 +913,61 @@ function App() {
             </ProjectShowcase>
           </TerminalWrapper>
 
+          <TerminalWrapper title="FEATURED_PROJECT: CAPINHAS_BRAZIL">
+            <ProjectShowcase>
+              <ProjectTitle>
+                CONECTALINK
+                <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
+              </ProjectTitle>
+              <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
+                {language === 'pt' 
+                  ? 'Catálogo comparador de preços de capinhas de celular para marketing de afiliados. Monitora automaticamente preços no Mercado Livre, Shopee e AliExpress.' 
+                  : 'Affiliate marketing price comparison catalog for phone cases. Automatically crawls and monitors prices on Mercado Livre, Shopee, and AliExpress.'}
+              </p>
+              <ProjectBadgeList>
+                <ProjectBadge>Next.js</ProjectBadge>
+                <ProjectBadge>Supabase (Postgres)</ProjectBadge>
+                <ProjectBadge>Clerk Auth</ProjectBadge>
+                <ProjectBadge>Playwright</ProjectBadge>
+                <ProjectBadge>Browserless.io</ProjectBadge>
+                <ProjectBadge>Tailwind CSS</ProjectBadge>
+              </ProjectBadgeList>
+              <ProjectFeatureList>
+                <li>
+                  {language === 'pt' 
+                    ? 'Agrupamento automático de ofertas idênticas' 
+                    : 'Automatic grouping of identical offers'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Scraper automatizado via Playwright & Browserless.io' 
+                    : 'Automated crawler using Playwright & Browserless.io'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'Bypass de anti-bot do Mercado Livre e Shopee' 
+                    : 'Mercado Livre & Shopee anti-bot stealth bypass'}
+                </li>
+                <li>
+                  {language === 'pt' 
+                    ? 'API Cron no Vercel para atualização em lote' 
+                    : 'Vercel Cron API for batch price updates'}
+                </li>
+              </ProjectFeatureList>
+              <ProjectButtonList>
+                <ProjectButton 
+                  href="https://capinhasbrazil.vercel.app/" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="primary"
+                  style={{ gridColumn: 'span 2' }}
+                >
+                  {language === 'pt' ? 'Acessar Comparador' : 'Access Catalog'}
+                </ProjectButton>
+              </ProjectButtonList>
+            </ProjectShowcase>
+          </TerminalWrapper>
+
           <TerminalWrapper title="LINKS_&_DOWNLOADS">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <LinkHolder style={{ margin: 0 }}>
