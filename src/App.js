@@ -44,6 +44,8 @@ import {
   SidePanel,
   TerminalWrapper,
   CommandHistory,
+  LinkHolder,
+  CyberButton,
   CommandRow,
   PromptLabel,
   TerminalInputLine,
@@ -848,17 +850,39 @@ function App() {
             </ClaraShowcase>
           </TerminalWrapper>
 
-          <TerminalWrapper title="SOCIAL_LINKS">
-            <div className="linkholder" style={{ margin: 0 }}>
-              <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer" title="GitHub">
-                <FaGithub />
-              </a>
-              <a href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer" title="LinkedIn">
-                <FaLinkedin />
-              </a>
-              <a href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer" title="Instagram Developer">
-                <FaInstagram />
-              </a>
+          <TerminalWrapper title="LINKS_&_DOWNLOADS">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <LinkHolder style={{ margin: 0 }}>
+                <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer" title="GitHub">
+                  <FaGithub />
+                </a>
+                <a href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer" title="LinkedIn">
+                  <FaLinkedin />
+                </a>
+                <a href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer" title="Instagram Developer">
+                  <FaInstagram />
+                </a>
+              </LinkHolder>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <a 
+                  href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-en.pdf`} 
+                  download 
+                  style={{ textDecoration: 'none' }}
+                >
+                  <CyberButton as="span" style={{ display: 'inline-block', fontSize: '0.8em', padding: '8px 12px' }}>
+                    {language === 'pt' ? 'Download CV (EN)' : 'Download CV (EN)'}
+                  </CyberButton>
+                </a>
+                <a 
+                  href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-pt.pdf`} 
+                  download 
+                  style={{ textDecoration: 'none' }}
+                >
+                  <CyberButton as="span" style={{ display: 'inline-block', fontSize: '0.8em', padding: '8px 12px' }}>
+                    {language === 'pt' ? 'Download CV (PT)' : 'Download CV (PT)'}
+                  </CyberButton>
+                </a>
+              </div>
             </div>
           </TerminalWrapper>
         </SidePanel>

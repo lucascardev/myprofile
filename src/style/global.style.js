@@ -281,6 +281,11 @@ export const Main = styled.main`
     padding-bottom: 10px;
     letter-spacing: 1px;
     text-shadow: 0 0 8px ${colors.glow};
+    word-break: break-all;
+
+    @media (max-width: 768px) {
+      font-size: 1.35em;
+    }
   }
 
   h2 {
@@ -290,6 +295,10 @@ export const Main = styled.main`
     margin-bottom: 12px;
     border-bottom: 1px solid rgba(255, 176, 0, 0.2);
     padding-bottom: 4px;
+
+    @media (max-width: 768px) {
+      font-size: 1.25em;
+    }
   }
 
   h3 {
@@ -325,31 +334,33 @@ export const Main = styled.main`
     margin: 20px 0;
   }
 
-  .linkholder {
+  /* .linkholder styling moved to standalone LinkHolder export */
+`;
+
+export const LinkHolder = styled.div`
+  display: flex;
+  gap: 16px;
+  margin: 12px 0 24px 0;
+  justify-content: flex-start;
+
+  a {
     display: flex;
-    gap: 16px;
-    margin: 12px 0 24px 0;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border: 1px solid ${colors.glassBorder};
+    background: rgba(0, 0, 0, 0.4);
+    color: ${colors.primary};
+    font-size: 1.5em;
+    border-radius: 4px;
+    transition: all 0.25s ease;
 
-    a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 45px;
-      height: 45px;
-      border: 1px solid ${colors.glassBorder};
-      background: rgba(0, 0, 0, 0.4);
-      color: ${colors.primary};
-      font-size: 1.5em;
-      border-radius: 4px;
-      transition: all 0.25s ease;
-
-      &:hover {
-        background: ${colors.primary};
-        color: ${colors.background};
-        box-shadow: 0 0 15px ${colors.primary};
-        transform: translateY(-3px);
-      }
+    &:hover {
+      background: ${colors.primary};
+      color: ${colors.background};
+      box-shadow: 0 0 15px ${colors.primary};
+      transform: translateY(-3px);
     }
   }
 `;
@@ -660,14 +671,12 @@ export const TechsMarqueeContainer = styled.div`
   display: flex;
   align-items: center;
   position: relative;
+  box-sizing: border-box;
   
-  @media (max-width: 992px) {
-    width: 240px;
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 320px;
     margin: 10px 0;
-  }
-
-  @media (max-width: 480px) {
-    width: 180px;
   }
 `;
 
@@ -798,13 +807,10 @@ export const TechExperienceDisplay = styled.div`
   white-space: nowrap;
   box-sizing: border-box;
   
-  @media (max-width: 992px) {
-    width: 240px;
-  }
-
-  @media (max-width: 480px) {
-    width: 180px;
-    font-size: 0.65em;
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 320px;
+    font-size: 0.7em;
   }
   
   &::before {
