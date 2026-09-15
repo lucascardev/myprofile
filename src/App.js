@@ -57,14 +57,6 @@ import {
   FloatingWhatsApp,
   TechExperienceDisplay,
   BlinkingCursor,
-  ClaraShowcase,
-  ClaraTitle,
-  ClaraTag,
-  ClaraBadgeList,
-  ClaraBadge,
-  ClaraFeatureList,
-  ClaraButtonList,
-  ClaraButton,
   ProjectShowcase,
   ProjectTitle,
   ProjectTag,
@@ -74,10 +66,15 @@ import {
   ProjectButtonList,
   ProjectButton,
   HeaderTechs,
-  ClaraChatWindow,
-  ClaraChatHeader,
-  ClaraChatBody,
-  ClaraChatMessage,
+  PosterSimulatorWindow,
+  PosterSimulatorHeader,
+  PosterSimulatorBody,
+  PosterControls,
+  PosterGridBtnGroup,
+  PosterGridBtn,
+  PosterGridArea,
+  PosterTile,
+  PosterStatusBar,
   ContributionsWrapper,
   ContributionsTitle,
   CalendarContainer,
@@ -134,70 +131,104 @@ function TypingText({ text, speed = 25 }) {
   return <span>{displayedText}</span>;
 }
 
-function ClaraChatSimulator({ language }) {
-  const [messages, setMessages] = useState([]);
-  
-  const scriptPT = [
-    { sender: 'patient', text: 'Olá! Gostaria de agendar uma consulta com o Dr. Lucas.' },
-    { sender: 'clara', text: 'Olá! Claro, posso te ajudar. Temos horários livres nesta quinta às 14h ou sexta às 10h. Qual prefere?' },
-    { sender: 'patient', text: 'Quero na sexta às 10h, por favor!' },
-    { sender: 'clara', text: 'Perfeito! Agendamento confirmado para sexta às 10:00. Já sincronizei com Clinicorp e enviei seu lembrete. Até logo! 📅' }
-  ];
+function PosterGridSimulator({ language }) {
+  const [gridSize, setGridSize] = useState({ rows: 2, cols: 2 });
+  const [activeTile, setActiveTile] = useState(null);
 
-  const scriptEN = [
-    { sender: 'patient', text: 'Hello! I would like to book an appointment with Dr. Lucas.' },
-    { sender: 'clara', text: 'Hi! Sure, I can help you. We have openings this Thursday at 2 PM or Friday at 10 AM. Which one do you prefer?' },
-    { sender: 'patient', text: 'Friday at 10 AM, please!' },
-    { sender: 'clara', text: 'Excellent! Appointment confirmed for Friday at 10:00 AM. Synced with Clinicorp and calendar invitation sent. See you soon! 📅' }
-  ];
+  const totalPages = gridSize.rows * gridSize.cols;
+  const rowLabels = ['A', 'B', 'C'];
+  const tiles = [];
 
-  const script = language === 'pt' ? scriptPT : scriptEN;
-
-  useEffect(() => {
-    setMessages([]);
-    let currentMsgIndex = 0;
-    
-    const timer1 = setTimeout(() => {
-      setMessages([script[0]]);
-      currentMsgIndex = 1;
-      
-      const interval = setInterval(() => {
-        if (currentMsgIndex < script.length) {
-          setMessages(prev => [...prev, script[currentMsgIndex]]);
-          currentMsgIndex++;
-        } else {
-          clearInterval(interval);
-          setTimeout(() => {
-            setMessages([]);
-          }, 3000);
-        }
-      }, 3000);
-      
-      return () => clearInterval(interval);
-    }, 1000);
-
-    return () => clearTimeout(timer1);
-  }, [language, script]);
+  let pageIndex = 1;
+  for (let r = 0; r < gridSize.rows; r++) {
+    for (let c = 0; c < gridSize.cols; c++) {
+      tiles.push({
+        id: `${rowLabels[r]}${c + 1}`,
+        page: pageIndex,
+        row: r,
+        col: c
+      });
+      pageIndex++;
+    }
+  }
 
   return (
-    <ClaraChatWindow>
-      <ClaraChatHeader>
-        CLARA_IA_ROUTING_NODE
-      </ClaraChatHeader>
-      <ClaraChatBody>
-        {messages.length === 0 && (
-          <div style={{ color: '#005e0d', fontStyle: 'italic', fontSize: '0.85em', textAlign: 'center', margin: 'auto' }}>
-            {language === 'pt' ? 'ESTABELECENDO CANAL SEGURO...' : 'ESTABLISHING SECURE CHANNEL...'}
+    <PosterSimulatorWindow>
+      <PosterSimulatorHeader>
+        <div className="title-group">
+          <span>PRINT_MY_POSTER_SLICER_NODE</span>
+        </div>
+        <span style={{ fontSize: '0.75em', color: '#ffb000' }}>
+          {language === 'pt' ? 'GRADE CLIENT-SIDE' : 'CLIENT-SIDE GRID'}
+        </span>
+      </PosterSimulatorHeader>
+      <PosterSimulatorBody>
+        <PosterControls>
+          <div style={{ fontSize: '0.75em', color: '#d2f8d2' }}>
+            {language === 'pt' ? 'Formato: ' : 'Format: '}
+            <strong style={{ color: '#00ff41' }}>{totalPages}x A4 ({gridSize.cols}x{gridSize.rows})</strong>
           </div>
-        )}
-        {messages.map((msg, index) => (
-          <ClaraChatMessage key={index} className={msg.sender}>
-            <strong>{msg.sender === 'patient' ? (language === 'pt' ? 'Paciente: ' : 'Patient: ') : 'Clara AI: '}</strong>
-            {msg.text}
-          </ClaraChatMessage>
-        ))}
-      </ClaraChatBody>
-    </ClaraChatWindow>
+          <PosterGridBtnGroup>
+            <PosterGridBtn
+              type="button"
+              $active={gridSize.rows === 2 && gridSize.cols === 2}
+              onClick={() => setGridSize({ rows: 2, cols: 2 })}
+            >
+              2x2 (4 A4)
+            </PosterGridBtn>
+            <PosterGridBtn
+              type="button"
+              $active={gridSize.rows === 2 && gridSize.cols === 3}
+              onClick={() => setGridSize({ rows: 2, cols: 3 })}
+            >
+              3x2 (6 A4)
+            </PosterGridBtn>
+            <PosterGridBtn
+              type="button"
+              $active={gridSize.rows === 3 && gridSize.cols === 3}
+              onClick={() => setGridSize({ rows: 3, cols: 3 })}
+            >
+              3x3 (9 A4)
+            </PosterGridBtn>
+          </PosterGridBtnGroup>
+        </PosterControls>
+
+        <PosterGridArea $cols={gridSize.cols} $rows={gridSize.rows}>
+          {tiles.map((tile) => (
+            <PosterTile
+              key={tile.id}
+              onMouseEnter={() => setActiveTile(tile.id)}
+              onMouseLeave={() => setActiveTile(null)}
+              style={{
+                borderColor: activeTile === tile.id ? '#00ff41' : undefined,
+                boxShadow: activeTile === tile.id ? 'inset 0 0 10px rgba(0, 255, 65, 0.4)' : undefined,
+              }}
+            >
+              <span className="crop-tl">┌</span>
+              <span className="crop-br">┘</span>
+              <div className="tile-content">
+                {tile.id}
+              </div>
+              <div className="tile-sub">
+                {tile.page}/{totalPages}
+              </div>
+            </PosterTile>
+          ))}
+        </PosterGridArea>
+
+        <PosterStatusBar>
+          <div>
+            <span className="status-highlight">ENGINE:</span> CANVAS 100% LOCAL
+          </div>
+          <div>
+            <span className="status-highlight">PDF:</span> 300 DPI READY
+          </div>
+          <div>
+            <span className="status-highlight">CROP:</span> {language === 'pt' ? 'GUIAS ATIVAS' : 'GUIDES ON'}
+          </div>
+        </PosterStatusBar>
+      </PosterSimulatorBody>
+    </PosterSimulatorWindow>
   );
 }
 
@@ -276,7 +307,7 @@ function App() {
         '  web escaláveis e de alta performance. Especialista no ecossistema JavaScript/TypeScript,',
         '  com foco em arquiteturas robustas em React/Next.js no frontend e Node.js no backend.',
         '  Proficiente em modelagem de APIs multi-tenant, integração de microsserviços e',
-        '  sistemas inteligentes como a assistente Clara IA (clara-ia.online). Praticante de',
+        '  aplicações modernas de alta performance como o PrintMyPoster (printmyposter.art). Praticante de',
         '  Clean Code, DevOps (Kubernetes/Cloud) e metodologias ágeis.'
       ];
     }
@@ -290,7 +321,7 @@ function App() {
       '  scalable, high-performance web applications. Specialized in the JavaScript/TypeScript',
       '  ecosystem, designing robust architectures with React/Next.js on the frontend',
       '  and Node.js on the backend. Experienced in multi-tenant system design, microservices',
-      '  integration, and intelligent automation systems like Clara IA (clara-ia.online).',
+      '  integration, and modern applications like PrintMyPoster (printmyposter.art).',
       '  Dedicated to Clean Code principles, DevOps, and agile practices.'
     ];
   };
@@ -489,7 +520,7 @@ function App() {
         'Comandos Disponíveis:',
         '  ajuda | help       - Exibe este menu de ajuda.',
         '  sobre | bio        - Imprime minha biografia e trajetória.',
-        '  clara | clara-ia   - Detalhes do meu projeto principal, Clara IA.',
+        '  poster | printmyposter - Detalhes do PrintMyPoster (printmyposter.art).',
         '  projetos | ls      - Lista os projetos e repositórios do GitHub.',
         '  projetos -a        - Lista todos os projetos disponíveis.',
         '  contato | contact  - Mostra meus canais de contato e e-mail.',
@@ -500,7 +531,7 @@ function App() {
         'Available Commands:',
         '  help | ajuda       - Display this help menu.',
         '  bio | sobre        - Show my professional biography.',
-        '  clara | clara-ia   - Show specs of my featured project, Clara IA.',
+        '  poster | printmyposter - Show specs of PrintMyPoster (printmyposter.art).',
         '  projects | ls      - List GitHub repositories & stars.',
         '  projects -a        - List all available repositories.',
         '  contact | contato  - Display contact channels and email.',
@@ -510,43 +541,45 @@ function App() {
       ];
     } else if (cleaned === 'bio' || cleaned === 'sobre') {
       outputLines = getDynamicBio(language);
-    } else if (cleaned === 'clara' || cleaned === 'clara-ia') {
+    } else if (cleaned === 'poster' || cleaned === 'printmyposter' || cleaned === 'print-my-poster' || cleaned === 'clara' || cleaned === 'clara-ia') {
       outputLines = language === 'pt' ? [
-        'PROJETO DESTACADO: CLARA IA (clara-ia.online)',
+        'PROJETO DESTACADO: PRINT MY POSTER (printmyposter.art)',
         '------------------------------------------------------------',
-        'Descrição: Recepcionista e Assistente Virtual inteligente com IA para WhatsApp.',
+        'Descrição: Transforme qualquer imagem em um pôster gigante impresso em casa.',
         'Funcionalidades Principais:',
-        '  * Atendimento inteligente e agendamentos automáticos 24 horas por dia.',
-        '  * Lembretes ativos de presença que reduzem o no-show de pacientes.',
-        '  * Sincronização em tempo real com Clinicorp e Google Calendar.',
+        '  * Processamento 100% client-side: fotos fatiadas localmente sem envio para servidores.',
+        '  * Grade personalizável em folhas A4 com ajuste fino de margens da impressora.',
+        '  * Marcas de corte (crop marks) e guias com abas de sobreposição para colagem perfeita.',
+        '  * Geração instantânea de PDF de alta fidelidade (300 DPI) para impressão caseira.',
         'Ações Disponíveis:',
         { type: 'output', text: (
           <span>
-            * Abrir Website Oficial: <a href="https://clara-ia.online" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>https://clara-ia.online</a>
+            * Abrir Aplicação Web: <a href="https://www.printmyposter.art/" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>https://www.printmyposter.art/</a>
           </span>
         )},
         { type: 'output', text: (
           <span>
-            * Testar Clara no WhatsApp: <a href="https://wa.me/5571987632774?text=Olá!%20Gostaria%20de%20testar%20a%20Clara!" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>wa.me/5571987632774</a>
+            * Repositório no GitHub: <a href="https://github.com/lucascardev/Image-to-Poster" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>github.com/lucascardev/Image-to-Poster</a>
           </span>
         )}
       ] : [
-        'FEATURED PROJECT: CLARA IA (clara-ia.online)',
+        'FEATURED PROJECT: PRINT MY POSTER (printmyposter.art)',
         '------------------------------------------------------------',
-        'Description: Intelligent virtual receptionist and AI scheduling assistant for WhatsApp.',
+        'Description: Turn any image into a giant wall poster ready for home printing.',
         'Core Features:',
-        '  * Real-time automated scheduling and natural chats 24/7.',
-        '  * Active reminders sent on WhatsApp reducing patient no-shows.',
-        '  * Secure, real-time sync with Clinicorp and Google Calendar.',
+        '  * 100% Client-Side Processing: all image slicing done in-browser for complete privacy.',
+        '  * Customizable A4 grid layout and precise printer margin controls.',
+        '  * Dashed crop marks and overlap alignment tabs for seamless assembly.',
+        '  * Instant high-resolution print-ready PDF export (300 DPI).',
         'Available Actions:',
         { type: 'output', text: (
           <span>
-            * Open Official Website: <a href="https://clara-ia.online" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>https://clara-ia.online</a>
+            * Open Web App: <a href="https://www.printmyposter.art/" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>https://www.printmyposter.art/</a>
           </span>
         )},
         { type: 'output', text: (
           <span>
-            * Demo Clara on WhatsApp: <a href="https://wa.me/5571987632774?text=Hello!%20I%20would%20like%20to%20test%20Clara." target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>wa.me/5571987632774</a>
+            * GitHub Repository: <a href="https://github.com/lucascardev/Image-to-Poster" target="_blank" rel="noreferrer" style={{ color: '#ffb000', textDecoration: 'underline' }}>github.com/lucascardev/Image-to-Poster</a>
           </span>
         )}
       ];
@@ -805,61 +838,68 @@ function App() {
             />
           </TerminalWrapper>
 
-          <TerminalWrapper title="FEATURED_PROJECT: CLARA_IA">
-            <ClaraShowcase>
-              <ClaraTitle>
-                CLARA IA
-                <ClaraTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ClaraTag>
-              </ClaraTitle>
+          <TerminalWrapper title="FEATURED_PROJECT: PRINT_MY_POSTER">
+            <ProjectShowcase>
+              <ProjectTitle>
+                PRINT MY POSTER
+                <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
+              </ProjectTitle>
               <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
                 {language === 'pt' 
-                  ? 'Recepcionista e Assistente Virtual inteligente integrada ao WhatsApp para Clínicas e Consultórios.' 
-                  : 'Intelligent AI-powered virtual receptionist and scheduling assistant integrated with WhatsApp for health clinics.'}
+                  ? 'Aplicação web moderna para transformar qualquer imagem em um pôster gigante impresso em casa. Divide fotos em grade A4 personalizada com marcas de corte e guias de sobreposição, com processamento 100% no navegador.' 
+                  : 'Modern web application to turn any image into a giant wall poster ready for home printing. Splits photos into custom A4 grids with crop marks and overlap guides, processed 100% client-side.'}
               </p>
-              <ClaraBadgeList>
-                <ClaraBadge>WhatsApp API</ClaraBadge>
-                <ClaraBadge>Clinicorp Sync</ClaraBadge>
-                <ClaraBadge>Google Calendar</ClaraBadge>
-                <ClaraBadge>AI Scheduling</ClaraBadge>
-              </ClaraBadgeList>
-              <ClaraFeatureList>
+              <ProjectBadgeList>
+                <ProjectBadge>React 19</ProjectBadge>
+                <ProjectBadge>TypeScript</ProjectBadge>
+                <ProjectBadge>Three.js</ProjectBadge>
+                <ProjectBadge>jsPDF</ProjectBadge>
+                <ProjectBadge>Tailwind CSS</ProjectBadge>
+                <ProjectBadge>Canvas API</ProjectBadge>
+              </ProjectBadgeList>
+              <ProjectFeatureList>
                 <li>
                   {language === 'pt' 
-                    ? 'Agendamentos inteligentes via WhatsApp 24h' 
-                    : 'Smart 24/7 client booking on WhatsApp'}
+                    ? 'Processamento 100% client-side (máxima privacidade sem envio de arquivos)' 
+                    : '100% client-side processing (complete privacy, zero server uploads)'}
                 </li>
                 <li>
                   {language === 'pt' 
-                    ? 'Confirmação ativa de presença reduz faltas' 
-                    : 'Active attendance confirmations reduces no-shows'}
+                    ? 'Grade e margens de impressão customizáveis (linhas x colunas A4)' 
+                    : 'Customizable grid size and margins (rows x columns in A4)'}
                 </li>
                 <li>
                   {language === 'pt' 
-                    ? 'Sincronização Clinicorp e Google Agenda' 
-                    : 'Clinicorp and Google Calendar sync'}
+                    ? 'Marcas de corte pontilhadas e abas de sobreposição para alinhamento' 
+                    : 'Dashed crop lines and overlap alignment tabs for easy assembly'}
                 </li>
-              </ClaraFeatureList>
-              <ClaraButtonList>
-                <ClaraButton 
-                  href="https://clara-ia.online" 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="secondary"
-                >
-                  {language === 'pt' ? 'Ver Site' : 'View Site'}
-                </ClaraButton>
-                <ClaraButton 
-                  href="https://wa.me/5571987632774?text=Olá!%20Gostaria%20de%20testar%20a%20Clara!" 
+                <li>
+                  {language === 'pt' 
+                    ? 'Exportação instantânea em PDF de alta qualidade para impressão caseira' 
+                    : 'High-resolution PDF generation ready for direct home printing'}
+                </li>
+              </ProjectFeatureList>
+              <ProjectButtonList>
+                <ProjectButton 
+                  href="https://www.printmyposter.art/" 
                   target="_blank" 
                   rel="noreferrer" 
                   className="primary"
                 >
-                  {language === 'pt' ? 'Testar IA' : 'Test AI'}
-                </ClaraButton>
-              </ClaraButtonList>
+                  {language === 'pt' ? 'Acessar Site' : 'Open App'}
+                </ProjectButton>
+                <ProjectButton 
+                  href="https://github.com/lucascardev/Image-to-Poster" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="secondary"
+                >
+                  GitHub
+                </ProjectButton>
+              </ProjectButtonList>
               
-              <ClaraChatSimulator language={language} />
-            </ClaraShowcase>
+              <PosterGridSimulator language={language} />
+            </ProjectShowcase>
           </TerminalWrapper>
 
           <TerminalWrapper title="FEATURED_PROJECT: PSY_REPORT">

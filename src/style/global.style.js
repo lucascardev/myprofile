@@ -821,130 +821,6 @@ export const TechExperienceDisplay = styled.div`
   }
 `;
 
-// ClaraIA Showcase Addon styled-components
-export const ClaraShowcase = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-family: 'Share Tech Mono', monospace;
-`;
-
-export const ClaraTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.25em;
-  color: ${colors.primary};
-  text-shadow: 0 0 8px ${colors.glow};
-  font-weight: bold;
-  letter-spacing: 1px;
-`;
-
-export const ClaraTag = styled.span`
-  background: rgba(0, 255, 65, 0.12);
-  border: 1px solid ${colors.primary};
-  color: ${colors.primary};
-  font-size: 0.6em;
-  padding: 2px 6px;
-  border-radius: 2px;
-  text-shadow: none;
-  letter-spacing: 1px;
-  animation: ${textGlow} 2s infinite ease-in-out;
-`;
-
-export const ClaraBadgeList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 4px 0;
-`;
-
-export const ClaraBadge = styled.span`
-  font-size: 0.65em;
-  padding: 2px 6px;
-  background: rgba(255, 176, 0, 0.08);
-  border: 1px solid rgba(255, 176, 0, 0.25);
-  color: ${colors.amber};
-  border-radius: 2px;
-`;
-
-export const ClaraFeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 4px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.85em;
-  color: ${colors.text};
-  
-  li {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    line-height: 1.35;
-    
-    &::before {
-      content: "*";
-      color: ${colors.primary};
-      font-weight: bold;
-    }
-  }
-`;
-
-export const ClaraButtonList = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 8px;
-  
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-export const ClaraButton = styled.a`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  font-size: 0.8em;
-  text-transform: uppercase;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 3px;
-  transition: all 0.25s ease;
-  letter-spacing: 1px;
-  text-align: center;
-  box-sizing: border-box;
-  
-  &.primary {
-    background: ${colors.primary};
-    color: ${colors.background};
-    border: 1px solid ${colors.primary};
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.25);
-    
-    &:hover {
-      background: #fff;
-      border-color: #fff;
-      color: ${colors.background};
-      box-shadow: 0 0 20px ${colors.primary};
-    }
-  }
-  
-  &.secondary {
-    background: transparent;
-    color: ${colors.amber};
-    border: 1px solid ${colors.amber};
-    box-shadow: 0 0 5px rgba(255, 176, 0, 0.12);
-    
-    &:hover {
-      background: ${colors.amber};
-      color: ${colors.background};
-      box-shadow: 0 0 15px ${colors.amber};
-    }
-  }
-`;
 
 // Generic Project Showcase styled-components
 export const ProjectShowcase = styled.div`
@@ -1129,8 +1005,8 @@ export const DpadButton = styled.button`
   }
 `;
 
-// ClaraIA Interactive Chat Simulator styled-components
-export const ClaraChatWindow = styled.div`
+// PrintMyPoster Interactive Grid Simulator styled-components
+export const PosterSimulatorWindow = styled.div`
   border: 1px solid ${colors.glassBorder};
   background: rgba(1, 10, 3, 0.9);
   border-radius: 6px;
@@ -1140,67 +1016,156 @@ export const ClaraChatWindow = styled.div`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 `;
 
-export const ClaraChatHeader = styled.div`
+export const PosterSimulatorHeader = styled.div`
   background: rgba(0, 255, 65, 0.08);
   border-bottom: 1px solid ${colors.glassBorder};
   padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   font-size: 0.8em;
   color: ${colors.primary};
   font-weight: bold;
-  
-  &::before {
-    content: "";
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: ${colors.primary};
-    box-shadow: 0 0 6px ${colors.primary};
-    animation: ${blink} 1.5s step-end infinite;
+  letter-spacing: 0.5px;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: ${colors.primary};
+      box-shadow: 0 0 6px ${colors.primary};
+      animation: ${blink} 1.5s step-end infinite;
+    }
   }
 `;
 
-export const ClaraChatBody = styled.div`
+export const PosterSimulatorBody = styled.div`
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 160px;
-  font-size: 0.8em;
+  gap: 12px;
   box-sizing: border-box;
 `;
 
-export const ClaraChatMessage = styled.div`
-  max-width: 85%;
-  padding: 8px 10px;
-  border-radius: 4px;
-  line-height: 1.4;
-  word-break: break-word;
-  box-sizing: border-box;
-  animation: fadeIn 0.3s ease-out forwards;
-  
-  &.patient {
-    align-self: flex-end;
-    background: rgba(255, 176, 0, 0.12);
-    border: 1px solid rgba(255, 176, 0, 0.3);
-    color: ${colors.amber};
-    border-bottom-right-radius: 0;
+export const PosterControls = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+`;
+
+export const PosterGridBtnGroup = styled.div`
+  display: flex;
+  gap: 6px;
+`;
+
+export const PosterGridBtn = styled.button`
+  background: ${props => props.$active ? 'rgba(0, 255, 65, 0.2)' : 'rgba(0, 0, 0, 0.4)'};
+  border: 1px solid ${props => props.$active ? colors.primary : 'rgba(0, 255, 65, 0.25)'};
+  color: ${props => props.$active ? '#fff' : colors.primary};
+  padding: 4px 8px;
+  font-size: 0.75em;
+  font-family: 'Share Tech Mono', monospace;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: ${props => props.$active ? '0 0 8px rgba(0, 255, 65, 0.3)' : 'none'};
+
+  &:hover {
+    background: rgba(0, 255, 65, 0.25);
+    border-color: ${colors.primary};
+    color: #fff;
   }
-  
-  &.clara {
-    align-self: flex-start;
-    background: rgba(0, 255, 65, 0.08);
-    border: 1px solid rgba(0, 255, 65, 0.3);
-    color: ${colors.text};
-    border-bottom-left-radius: 0;
+`;
+
+export const PosterGridArea = styled.div`
+  display: grid;
+  grid-template-columns: repeat(${props => props.$cols || 2}, 1fr);
+  grid-template-rows: repeat(${props => props.$rows || 2}, 1fr);
+  gap: 4px;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 6px;
+  background: radial-gradient(circle at center, rgba(0, 40, 10, 0.7) 0%, rgba(0, 15, 5, 0.95) 100%);
+  border: 1px dashed rgba(0, 255, 65, 0.3);
+  border-radius: 4px;
+  position: relative;
+  box-sizing: border-box;
+`;
+
+export const PosterTile = styled.div`
+  border: 1px dashed ${colors.amber};
+  background: rgba(0, 255, 65, 0.04);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 255, 65, 0.12);
+    border-color: ${colors.primary};
+    box-shadow: inset 0 0 8px rgba(0, 255, 65, 0.2);
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+  .crop-tl {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    color: #ff5555;
+    font-size: 8px;
+    line-height: 1;
+  }
+  .crop-br {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    color: #ff5555;
+    font-size: 8px;
+    line-height: 1;
+  }
+  .tile-content {
+    margin: auto;
+    font-size: 0.7em;
+    font-weight: bold;
+    color: ${colors.primary};
+    text-shadow: 0 0 4px ${colors.primary};
+    letter-spacing: 0.5px;
+  }
+  .tile-sub {
+    font-size: 0.55em;
+    color: ${colors.amber};
+    text-align: right;
+  }
+`;
+
+export const PosterStatusBar = styled.div`
+  font-size: 0.75em;
+  color: ${colors.textDim};
+  border-top: 1px solid rgba(0, 255, 65, 0.15);
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  span.status-highlight {
+    color: ${colors.primary};
+    font-weight: bold;
   }
 `;
 
