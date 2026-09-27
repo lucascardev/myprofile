@@ -6,12 +6,17 @@ const STANDARD_CHARS = '@%#*+=-:. ';
 
 export function AsciiArt({
   src,
+  fallbackSrc,
   resolution = 80,
   color = '#00ff00',
   animationStyle = 'matrix',
   inverted = false,
+  transparent = false,
+  scale = 1.0,
+  faceCenter = { x: 0.46, y: 0.48 },
   animateOnView = false,
   className = '',
+  style = {},
 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -25,15 +30,22 @@ export function AsciiArt({
     animationFrameId: null,
     imageLoaded: false,
     imageData: null,
+    imgAspect: 1,
+    scale,
     color,
     animationStyle,
     inverted,
+    transparent,
+    faceCenter,
   });
 
   // Keep ref up to date with latest props
   stateRef.current.color = color;
   stateRef.current.animationStyle = animationStyle;
   stateRef.current.inverted = inverted;
+  stateRef.current.transparent = transparent;
+  stateRef.current.faceCenter = faceCenter;
+  stateRef.current.scale = scale;
 
   const hexToRGBA = (hex, alpha) => {
     let r = 0, g = 255, b = 0;
@@ -64,26 +76,70 @@ export function AsciiArt({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const { originalGrid, cols, rows, color: renderColor, animationStyle: renderStyle } = stateRef.current;
+      const { 
+        originalGrid, 
+        cols, 
+        rows, 
+        color: renderColor, 
+        animationStyle: renderStyle, 
+        transparent: isTransparent, 
+        faceCenter: currentFaceCenter,
+        imgAspect,
+        scale: currentScale 
+      } = stateRef.current;
       if (!originalGrid || originalGrid.length === 0) return;
 
       // Make canvas display-density aware (HDPI)
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
+      const container = containerRef.current;
+      const containerRect = container ? container.getBoundingClientRect() : rect;
       
-      // Set actual render size based on container client size
-      const targetWidth = rect.width || 400;
-      const targetHeight = rect.width * (rows / cols) || 400;
+      const containerWidth = containerRect.width || rect.width || 400;
+      const containerHeight = containerRect.height || rect.height || 400;
       
-      if (canvas.width !== targetWidth * dpr || canvas.height !== targetHeight * dpr) {
-        canvas.width = targetWidth * dpr;
-        canvas.height = targetHeight * dpr;
+      // True visual aspect ratio of the rendered image:
+      // Monospace characters have an aspect ratio of ~0.55 (width / height).
+      // rows was calculated as cols * (img.height / img.width) * 0.55.
+      // So on screen, visualAspect = (cols / rows) * 0.55 = img.width / img.height.
+      const visualAspect = imgAspect || ((cols / rows) * 0.55);
+
+      let targetWidth = containerWidth;
+      let targetHeight = targetWidth / visualAspect;
+
+      // In transparent background mode, behave like object-fit: cover with zoom scaling
+      if (isTransparent) {
+        if (targetHeight < containerHeight) {
+          targetHeight = containerHeight;
+          targetWidth = targetHeight * visualAspect;
+        }
+        const effectiveScale = (currentScale && currentScale > 0) ? currentScale : 1.35;
+        targetWidth = Math.round(targetWidth * effectiveScale);
+        targetHeight = Math.round(targetHeight * effectiveScale);
+      } else {
+        const effectiveScale = currentScale || 1.0;
+        targetWidth = Math.round(targetWidth * effectiveScale);
+        targetHeight = Math.round(targetHeight * effectiveScale);
+      }
+      
+      const pixelWidth = Math.round(targetWidth * dpr);
+      const pixelHeight = Math.round(targetHeight * dpr);
+
+      if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+        canvas.style.width = `${Math.round(targetWidth)}px`;
+        canvas.style.height = `${Math.round(targetHeight)}px`;
         ctx.scale(dpr, dpr);
       }
 
       // Render background
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, targetWidth, targetHeight);
+      if (isTransparent) {
+        ctx.clearRect(0, 0, targetWidth, targetHeight);
+      } else {
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, targetWidth, targetHeight);
+      }
 
       // Character cell dimensions
       const cellWidth = targetWidth / cols;
@@ -93,9 +149,9 @@ export function AsciiArt({
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
-      // Neon glow setup (subtle for performance)
+      // Neon glow setup
       ctx.shadowColor = renderColor;
-      ctx.shadowBlur = 4;
+      ctx.shadowBlur = isTransparent ? 6 : 4;
 
       // Animation parameters
       const time = performance.now() * 0.002; // Slower speed for natural organic animation
@@ -104,6 +160,9 @@ export function AsciiArt({
       const swayX = Math.sin(time * 0.4) * 0.015; // Slow horizontal head bobbing/sway
       const swayY = Math.cos(time * 0.3) * 0.010; // Slow vertical head bobbing/sway
 
+      const mx = currentFaceCenter?.x ?? 0.46;
+      const my = currentFaceCenter?.y ?? 0.48;
+
       // Draw grid
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -111,9 +170,6 @@ export function AsciiArt({
           const u = c / cols;
           const v = r / rows;
 
-          // Mouth coordinates in user's profile photo (analyzed at mx=0.58, my=0.46)
-          const mx = 0.58;
-          const my = 0.46;
           const rx = u - mx;
           const ry = v - my;
           const dist = Math.sqrt(rx * rx + ry * ry);
@@ -166,11 +222,13 @@ export function AsciiArt({
         }
       }
 
-      // Add a scanline effect
-      ctx.shadowBlur = 0; // disable shadow for overlay
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-      for (let y = 0; y < targetHeight; y += 4) {
-        ctx.fillRect(0, y, targetWidth, 1);
+      // Add a scanline effect for non-transparent mode
+      if (!isTransparent) {
+        ctx.shadowBlur = 0; // disable shadow for overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        for (let y = 0; y < targetHeight; y += 4) {
+          ctx.fillRect(0, y, targetWidth, 1);
+        }
       }
 
       stateRef.current.animationFrameId = requestAnimationFrame(render);
@@ -197,9 +255,14 @@ export function AsciiArt({
       cancelAnimationFrame(stateRef.current.animationFrameId);
     }
 
+    const isExternal = (url) => typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'));
+
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = src;
+    if (isExternal(src)) {
+      img.crossOrigin = 'anonymous';
+    }
+
+    let triedFallback = false;
 
     img.onload = () => {
       if (!active) return;
@@ -219,9 +282,27 @@ export function AsciiArt({
       }
 
       ctx.drawImage(img, 0, 0, cols, rows);
-      const imgData = ctx.getImageData(0, 0, cols, rows);
-      const data = imgData.data;
+      let imgData;
+      try {
+        imgData = ctx.getImageData(0, 0, cols, rows);
+      } catch (err) {
+        console.error('Failed to get image data (CORS):', err);
+        if (!triedFallback && fallbackSrc && img.src !== fallbackSrc) {
+          triedFallback = true;
+          if (isExternal(fallbackSrc)) {
+            img.crossOrigin = 'anonymous';
+          } else {
+            img.removeAttribute('crossorigin');
+          }
+          img.src = fallbackSrc;
+          return;
+        }
+        setError(true);
+        setLoading(false);
+        return;
+      }
 
+      const data = imgData.data;
       const grid = [];
       for (let r = 0; r < rows; r++) {
         const row = [];
@@ -245,6 +326,7 @@ export function AsciiArt({
       stateRef.current.originalGrid = grid;
       stateRef.current.cols = cols;
       stateRef.current.rows = rows;
+      stateRef.current.imgAspect = img.width / img.height;
       stateRef.current.imageLoaded = true;
 
       setLoading(false);
@@ -253,9 +335,22 @@ export function AsciiArt({
 
     img.onerror = () => {
       if (!active) return;
+      if (!triedFallback && fallbackSrc && img.src !== fallbackSrc) {
+        console.warn(`[AsciiArt] Failed to load "${img.src}", trying fallback "${fallbackSrc}"`);
+        triedFallback = true;
+        if (isExternal(fallbackSrc)) {
+          img.crossOrigin = 'anonymous';
+        } else {
+          img.removeAttribute('crossorigin');
+        }
+        img.src = fallbackSrc;
+        return;
+      }
       setError(true);
       setLoading(false);
     };
+
+    img.src = src;
 
     const currentRef = stateRef.current;
     return () => {
@@ -264,28 +359,31 @@ export function AsciiArt({
         cancelAnimationFrame(currentRef.animationFrameId);
       }
     };
-  }, [src, resolution, inverted, startRenderLoop]);
+  }, [src, fallbackSrc, resolution, inverted, startRenderLoop]);
 
   // Handle color or animationStyle change without reloading image
   useEffect(() => {
     if (stateRef.current.imageLoaded) {
       startRenderLoop();
     }
-  }, [color, animationStyle, startRenderLoop]);
+  }, [color, animationStyle, transparent, startRenderLoop]);
 
   return (
     <div 
       ref={containerRef} 
-      className={`w-full mx-auto rounded border border-green-950 ${className}`}
+      className={transparent ? className : `w-full mx-auto rounded border border-green-950 ${className}`}
       style={{ 
         position: 'relative',
         width: '100%',
+        height: transparent ? '100%' : 'auto',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#000000',
-        minHeight: '200px'
+        backgroundColor: transparent ? 'transparent' : '#000000',
+        minHeight: transparent ? '0px' : '200px',
+        border: transparent ? 'none' : undefined,
+        ...style
       }}
     >
       {loading && (
@@ -298,17 +396,21 @@ export function AsciiArt({
           justifyContent: 'center',
           color: '#00ff41',
           fontFamily: 'monospace',
-          fontSize: '14px',
-          backgroundColor: '#000000',
+          fontSize: '12px',
+          backgroundColor: transparent ? 'transparent' : '#000000',
           zIndex: 10
         }}>
-          <div style={{ marginBottom: '8px', animation: 'scanline-pulse 1.5s infinite ease-in-out' }}>ACCESSING STREAM DATA...</div>
-          <div style={{ width: '128px', backgroundColor: '#003b00', height: '4px', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ backgroundColor: '#00ff41', height: '100%', width: '40%', borderRadius: '4px', animation: 'scanline-loading 1.5s infinite ease-in-out' }}></div>
+          <div style={{ marginBottom: '8px', opacity: 0.75, animation: 'scanline-pulse 1.5s infinite ease-in-out' }}>
+            {transparent ? 'DECODING_MATRIX_BACKGROUND...' : 'ACCESSING STREAM DATA...'}
           </div>
+          {!transparent && (
+            <div style={{ width: '128px', backgroundColor: '#003b00', height: '4px', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ backgroundColor: '#00ff41', height: '100%', width: '40%', borderRadius: '4px', animation: 'scanline-loading 1.5s infinite ease-in-out' }}></div>
+            </div>
+          )}
         </div>
       )}
-      {error && (
+      {error && !transparent && (
         <div style={{
           position: 'absolute',
           top: 0, right: 0, bottom: 0, left: 0,
@@ -331,8 +433,11 @@ export function AsciiArt({
       )}
       <canvas 
         ref={canvasRef} 
-        className="w-full h-auto block max-w-full"
-        style={{ display: loading || error ? 'none' : 'block' }}
+        className="block"
+        style={{ 
+          display: loading || error ? 'none' : 'block',
+          ...(transparent ? {} : { maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' })
+        }}
       />
     </div>
   );

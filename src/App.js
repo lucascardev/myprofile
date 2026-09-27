@@ -43,6 +43,7 @@ import {
   Scanlines,
   SidePanel,
   TerminalWrapper,
+  TerminalAsciiBackground,
   CommandHistory,
   LinkHolder,
   CyberButton,
@@ -233,7 +234,8 @@ function PosterGridSimulator({ language }) {
 }
 
 function App() {
-  const [avatarimg] = useState('https://i.ibb.co/XkvSFmbh/E2-B95-B01-6545-426-C-9850-B00-D20-F701-E3.jpg');
+  const localAvatar = `${process.env.PUBLIC_URL}/assets/lucasphoto.jpeg`;
+  const [avatarimg] = useState(localAvatar);
   const [githubAvatar, setGithubAvatar] = useState('https://avatars.githubusercontent.com/u/35515714?v=4');
   const [username, setUsername] = useState('lucascardev');
   const [repos, setRepos] = useState([]);
@@ -780,8 +782,23 @@ function App() {
       </Header>
 
       <PageHolder>
-        {/* Left Side: Hacker Terminal Console */}
+        {/* Left Side: Hacker Terminal Console with Holographic Living ASCII Background */}
         <Main>
+          <TerminalAsciiBackground>
+            <AsciiArt
+              src={avatarimg}
+              fallbackSrc="https://avatars.githubusercontent.com/u/35515714?v=4"
+              resolution={75}
+              color="#00ff41"
+              animationStyle="matrix"
+              inverted={false}
+              transparent={true}
+              scale={1.35}
+              faceCenter={{ x: 0.46, y: 0.42 }}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </TerminalAsciiBackground>
+
           <h1>
             <FaTerminal style={{ marginRight: '10px' }} />
             SYSTEM_SHELL_EMULATOR.sh
@@ -824,20 +841,8 @@ function App() {
           </TerminalInputLine>
         </Main>
 
-        {/* Right Side: ASCII Photo only (toggles and controls removed, photo max-width increased) */}
+        {/* Right Side: Projects and Links */}
         <SidePanel>
-          <TerminalWrapper title="AVATAR_IMAGE_DECODER">
-            <AsciiArt
-              src={avatarimg || 'https://avatars.githubusercontent.com/u/35515714?v=4'}
-              resolution={50}
-              color="#00ff41"
-              animationStyle="matrix"
-              inverted={false}
-              animateOnView={false}
-              className="aspect-square w-full mx-auto rounded border border-green-950"
-            />
-          </TerminalWrapper>
-
           <TerminalWrapper title="FEATURED_PROJECT: PRINT_MY_POSTER">
             <ProjectShowcase>
               <ProjectTitle>

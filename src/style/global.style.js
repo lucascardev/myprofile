@@ -236,6 +236,28 @@ export const PageHolder = styled.div`
   }
 `;
 
+export const TerminalAsciiBackground = styled.div`
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1 !important;
+  opacity: 0.5;
+  overflow: hidden;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, rgba(0, 0, 0, 0.95) 45%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, rgba(0, 0, 0, 0.95) 45%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
+  filter: contrast(125%) brightness(110%);
+  transition: opacity 0.5s ease;
+`;
+
 export const Main = styled.main`
   display: flex;
   flex-direction: column;
@@ -250,6 +272,11 @@ export const Main = styled.main`
   box-shadow: 0 0 30px rgba(0, 255, 65, 0.15), inset 0 0 20px rgba(0, 255, 65, 0.05);
   position: relative;
   min-height: 550px;
+
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
 
   @media (max-width: 768px) {
     padding: 16px;
