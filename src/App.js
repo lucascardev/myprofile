@@ -788,13 +788,13 @@ function App() {
             <AsciiArt
               src={avatarimg}
               fallbackSrc="https://avatars.githubusercontent.com/u/35515714?v=4"
-              resolution={75}
+              resolution={130}
               color="#00ff41"
               animationStyle="matrix"
               inverted={false}
               transparent={true}
-              scale={1.35}
-              faceCenter={{ x: 0.46, y: 0.42 }}
+              scale={0.96}
+              faceCenter={{ x: 0.48, y: 0.36 }}
               style={{ width: '100%', height: '100%' }}
             />
           </TerminalAsciiBackground>

@@ -246,14 +246,14 @@ export const TerminalAsciiBackground = styled.div`
   height: 100%;
   pointer-events: none;
   z-index: 1 !important;
-  opacity: 0.5;
+  opacity: 0.55;
   overflow: hidden;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, rgba(0, 0, 0, 0.95) 45%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, rgba(0, 0, 0, 0.95) 45%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
+  mask-image: radial-gradient(ellipse 98% 98% at 50% 50%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.5) 90%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 98% 98% at 50% 50%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.5) 90%, transparent 100%);
   filter: contrast(125%) brightness(110%);
   transition: opacity 0.5s ease;
 `;
