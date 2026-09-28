@@ -790,6 +790,7 @@ function App() {
               src={avatarimg}
               fallbackSrc="https://avatars.githubusercontent.com/u/35515714?v=4"
               resolution={150}
+              mobileResolution={80}
               color="#00ff41"
               animationStyle="matrix"
               inverted={false}

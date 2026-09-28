@@ -249,6 +249,10 @@ export const TerminalAsciiBackground = styled.div`
   -webkit-mask-image: radial-gradient(ellipse 98% 98% at 50% 50%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.5) 90%, transparent 100%);
   will-change: opacity;
   transition: opacity 0.5s ease;
+
+  @media (max-width: 768px) {
+    opacity: 0.40;
+  }
 `;
 
 export const Main = styled.main`

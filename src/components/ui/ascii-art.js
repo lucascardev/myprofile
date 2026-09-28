@@ -11,6 +11,7 @@ export function AsciiArt({
   src,
   fallbackSrc,
   resolution = 80,
+  mobileResolution = 80,
   color = '#00ff00',
   animationStyle = 'matrix',
   inverted = false,
@@ -287,14 +288,19 @@ export function AsciiArt({
     img.onload = () => {
       if (!active) return;
 
-      const cols = resolution;
+      const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 768;
+      const cols = isMobileView ? (mobileResolution || 80) : resolution;
       const isBg = transparent;
-      const cropX = isBg ? Math.round(img.width * 0.05) : 0;
+
+      // On mobile view, crop tighter around the portrait to fit vertical terminal console
+      const cropX = isBg ? (isMobileView ? Math.round(img.width * 0.10) : Math.round(img.width * 0.05)) : 0;
       const cropY = 0;
-      const cropW = isBg ? Math.round(img.width * 0.90) : img.width;
-      const cropH = isBg ? Math.round(img.height * 0.75) : img.height;
+      const cropW = isBg ? (isMobileView ? Math.round(img.width * 0.80) : Math.round(img.width * 0.90)) : img.width;
+      const cropH = isBg ? (isMobileView ? Math.round(img.height * 0.85) : Math.round(img.height * 0.75)) : img.height;
 
       const rows = Math.round(cols * (cropH / cropW) * 0.55);
+
+      const effectiveFaceCenter = isMobileView ? { x: 0.50, y: 0.38 } : faceCenter;
 
       const hiddenCanvas = document.createElement('canvas');
       hiddenCanvas.width = cols;
@@ -396,7 +402,7 @@ export function AsciiArt({
                 animationStyle,
                 transparent,
                 scale,
-                faceCenter,
+                faceCenter: effectiveFaceCenter,
                 containerWidth,
                 containerHeight,
                 dpr,
@@ -410,14 +416,18 @@ export function AsciiArt({
           stateRef.current.useWorker = false;
         }
       } else if (stateRef.current.useWorker && workerRef.current) {
-        // Worker already initialized, send updated grid
+        // Worker already initialized, send updated grid and dimensions
         workerRef.current.postMessage({
           type: 'UPDATE_CONFIG',
           payload: {
+            grid,
+            cols,
+            rows,
+            imgAspect: cropW / cropH,
             color,
             animationStyle,
             scale,
-            faceCenter,
+            faceCenter: effectiveFaceCenter,
             transparent,
           },
         });
@@ -455,7 +465,7 @@ export function AsciiArt({
         currentRef.animationFrameId = null;
       }
     };
-  }, [src, fallbackSrc, resolution, inverted, transparent, color, animationStyle, scale, faceCenter, updateColorLookup, startFallbackRenderLoop]);
+  }, [src, fallbackSrc, resolution, mobileResolution, inverted, transparent, color, animationStyle, scale, faceCenter, updateColorLookup, startFallbackRenderLoop]);
 
   // Handle color or animationStyle prop updates
   useEffect(() => {
@@ -628,7 +638,12 @@ export function AsciiArt({
           display: loading || error ? 'none' : 'block',
           filter: 'drop-shadow(0 0 2px rgba(0, 255, 65, 0.45))',
           willChange: 'transform',
-          ...(transparent ? {} : { maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }),
+          maxWidth: '100%',
+          maxHeight: '100%',
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          pointerEvents: 'none',
         }}
       />
     </div>

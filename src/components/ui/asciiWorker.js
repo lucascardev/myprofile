@@ -221,6 +221,10 @@ export function createAsciiWorker() {
         }
 
         case 'UPDATE_CONFIG': {
+          if (payload.grid) originalGrid = payload.grid;
+          if (payload.cols) cols = payload.cols;
+          if (payload.rows) rows = payload.rows;
+          if (payload.imgAspect) imgAspect = payload.imgAspect;
           if (payload.color && payload.color !== color) {
             color = payload.color;
             updateColorLookup(color);
