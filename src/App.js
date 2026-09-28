@@ -89,6 +89,7 @@ import {
 import API from './services/api';
 import techsData from './services/techs.json';
 import contributionsData from './services/contributions.json';
+import { version } from '../package.json';
 
 const ICON_MAP = {
   typescript: SiTypescript,
@@ -1088,6 +1089,10 @@ function App() {
             GITHUB PAGES SERVER
           </a>{' '}
           {'//'} ALL RIGHTS RESERVED
+        </p>
+        <p style={{ marginTop: '8px', fontSize: '0.85em', color: '#008f11' }}>
+          SYSTEM_RELEASE: <span style={{ color: '#00ff41', fontWeight: 'bold' }}>v{version}</span> {'//'}{' '}
+          <span style={{ color: '#ffb000' }}>BUILD_CHANNEL: STABLE</span>
         </p>
       </Footer>
       
