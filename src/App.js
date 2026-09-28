@@ -788,7 +788,7 @@ function App() {
             <AsciiArt
               src={avatarimg}
               fallbackSrc="https://avatars.githubusercontent.com/u/35515714?v=4"
-              resolution={130}
+              resolution={150}
               color="#00ff41"
               animationStyle="matrix"
               inverted={false}

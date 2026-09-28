@@ -24,12 +24,6 @@ const fontSizes = {
 
 // Keyframes for cyber effects
 
-const crtFlicker = keyframes`
-  0% { opacity: 0.985; }
-  50% { opacity: 0.995; }
-  100% { opacity: 0.985; }
-`;
-
 const textGlow = keyframes`
   0% { text-shadow: 0 0 4px rgba(0, 255, 65, 0.3); }
   50% { text-shadow: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.2); }
@@ -66,7 +60,6 @@ export const Container = styled.div`
   font-family: 'Share Tech Mono', 'Fira Code', monospace;
   position: relative;
   overflow-x: hidden;
-  animation: ${crtFlicker} 0.15s infinite;
 
   &::before {
     content: " ";
@@ -254,7 +247,7 @@ export const TerminalAsciiBackground = styled.div`
   justify-content: center;
   mask-image: radial-gradient(ellipse 98% 98% at 50% 50%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.5) 90%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 98% 98% at 50% 50%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.5) 90%, transparent 100%);
-  filter: contrast(125%) brightness(110%);
+  will-change: opacity;
   transition: opacity 0.5s ease;
 `;
 

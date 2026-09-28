@@ -9,7 +9,7 @@ export default function MatrixRain3D() {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
-    
+
     // === Scene ===
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000000, 0.015);
@@ -24,13 +24,12 @@ export default function MatrixRain3D() {
     camera.position.set(0, 0, 50);
 
     // === Renderer ===
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     container.appendChild(renderer.domElement);
 
     // === Create Matrix Textures (Glyph Maps) ===
-    // Canvas for '1'
     const glyphCanvas1 = document.createElement('canvas');
     glyphCanvas1.width = 128;
     glyphCanvas1.height = 128;
@@ -44,7 +43,6 @@ export default function MatrixRain3D() {
     gCtx1.fillText('1', 64, 64);
     const glyphTexture1 = new THREE.CanvasTexture(glyphCanvas1);
 
-    // Canvas for '0'
     const glyphCanvas0 = document.createElement('canvas');
     glyphCanvas0.width = 128;
     glyphCanvas0.height = 128;
@@ -59,25 +57,22 @@ export default function MatrixRain3D() {
     const glyphTexture0 = new THREE.CanvasTexture(glyphCanvas0);
 
     // === Particle Setup (Digital Rain Streams) ===
-    const streamCount = 120;
-    const particlesPerStream = 20;
+    const streamCount = 100;
+    const particlesPerStream = 18;
     const halfStreamCount = streamCount / 2;
     const particleCountHalf = halfStreamCount * particlesPerStream;
-    
-    // Arrays for '1'
+
     const positions1 = new Float32Array(particleCountHalf * 3);
     const colors1 = new Float32Array(particleCountHalf * 3);
-    
-    // Arrays for '0'
+
     const positions0 = new Float32Array(particleCountHalf * 3);
     const colors0 = new Float32Array(particleCountHalf * 3);
 
     const streams = [];
 
     for (let i = 0; i < streamCount; i++) {
-      // Scatter stream column positions in X and Z
       const x = (Math.random() - 0.5) * 120;
-      const z = (Math.random() - 0.5) * 80 - 10; // depth range
+      const z = (Math.random() - 0.5) * 80 - 10;
       const speed = Math.random() * 0.4 + 0.1;
       const length = particlesPerStream;
       const spacing = Math.random() * 1.5 + 0.8;
@@ -90,12 +85,19 @@ export default function MatrixRain3D() {
         speed,
         length,
         spacing,
-        charType: i % 2 // Alternating streams render '0' or '1'
+        charType: i % 2,
       });
     }
 
-    // Geometries & Materials
+    // Geometries & Materials (Allocated ONCE)
     const geometry1 = new THREE.BufferGeometry();
+    const posAttr1 = new THREE.BufferAttribute(positions1, 3);
+    const colAttr1 = new THREE.BufferAttribute(colors1, 3);
+    posAttr1.setUsage(THREE.DynamicDrawUsage);
+    colAttr1.setUsage(THREE.DynamicDrawUsage);
+    geometry1.setAttribute('position', posAttr1);
+    geometry1.setAttribute('color', colAttr1);
+
     const material1 = new THREE.PointsMaterial({
       size: 1.8,
       map: glyphTexture1,
@@ -108,6 +110,13 @@ export default function MatrixRain3D() {
     scene.add(points1);
 
     const geometry0 = new THREE.BufferGeometry();
+    const posAttr0 = new THREE.BufferAttribute(positions0, 3);
+    const colAttr0 = new THREE.BufferAttribute(colors0, 3);
+    posAttr0.setUsage(THREE.DynamicDrawUsage);
+    colAttr0.setUsage(THREE.DynamicDrawUsage);
+    geometry0.setAttribute('position', posAttr0);
+    geometry0.setAttribute('color', colAttr0);
+
     const material0 = new THREE.PointsMaterial({
       size: 1.8,
       map: glyphTexture0,
@@ -122,27 +131,33 @@ export default function MatrixRain3D() {
     // Camera target for mouse movement
     let targetX = 0;
     let targetY = 0;
+    let mouseTicking = false;
 
     const handleMouseMove = (e) => {
-      const rect = container.getBoundingClientRect();
-      const mouseX = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
-      const mouseY = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
-      
-      targetX = mouseX * 25;
-      targetY = mouseY * 15;
+      if (mouseTicking) return;
+      mouseTicking = true;
+      requestAnimationFrame(() => {
+        if (!containerRef.current) return;
+        const rect = container.getBoundingClientRect();
+        const mouseX = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
+        const mouseY = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+        targetX = mouseX * 25;
+        targetY = mouseY * 15;
+        mouseTicking = false;
+      });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    // Update positions & colors in buffer
+    // In-place buffer updates without garbage-collection overhead
     const updateParticles = () => {
       let idx0 = 0;
       let idx1 = 0;
-      
+
       streams.forEach((stream) => {
         stream.headY -= stream.speed;
-        
-        if (stream.headY - (stream.length * stream.spacing) < -50) {
+
+        if (stream.headY - stream.length * stream.spacing < -50) {
           stream.headY = 50 + Math.random() * 20;
           stream.x = (Math.random() - 0.5) * 120;
           stream.z = (Math.random() - 0.5) * 80 - 10;
@@ -154,17 +169,17 @@ export default function MatrixRain3D() {
         const currentIdx = isOne ? idx1 : idx0;
 
         for (let j = 0; j < stream.length; j++) {
-          const y = stream.headY - (j * stream.spacing);
+          const y = stream.headY - j * stream.spacing;
           const pIdx = currentIdx + j * 3;
-          
+
           positions[pIdx] = stream.x;
           positions[pIdx + 1] = y;
           positions[pIdx + 2] = stream.z;
 
-          const tailFade = 1.0 - (j / stream.length);
+          const tailFade = 1.0 - j / stream.length;
           const glitched = Math.random() < 0.05;
           const greenIntensity = glitched ? 1.0 : tailFade;
-          const redBlueIntensity = j === 0 ? 0.8 : (glitched ? 0.4 : 0.0);
+          const redBlueIntensity = j === 0 ? 0.8 : glitched ? 0.4 : 0.0;
 
           colors[pIdx] = redBlueIntensity;
           colors[pIdx + 1] = greenIntensity;
@@ -178,21 +193,28 @@ export default function MatrixRain3D() {
         }
       });
 
-      geometry1.setAttribute('position', new THREE.BufferAttribute(positions1, 3));
-      geometry1.setAttribute('color', new THREE.BufferAttribute(colors1, 3));
-      geometry1.attributes.position.needsUpdate = true;
-      geometry1.attributes.color.needsUpdate = true;
-
-      geometry0.setAttribute('position', new THREE.BufferAttribute(positions0, 3));
-      geometry0.setAttribute('color', new THREE.BufferAttribute(colors0, 3));
-      geometry0.attributes.position.needsUpdate = true;
-      geometry0.attributes.color.needsUpdate = true;
+      // Update existing buffer attributes in place
+      posAttr1.needsUpdate = true;
+      colAttr1.needsUpdate = true;
+      posAttr0.needsUpdate = true;
+      colAttr0.needsUpdate = true;
     };
 
-    // Animation Loop
+    // Animation Loop with 30 FPS cap and Visibility Pausing
     let animationId;
-    const animate = () => {
+    let isVisible = true;
+    const TARGET_FPS = 30;
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
+    let lastFrameTime = performance.now();
+
+    const animate = (now) => {
       animationId = requestAnimationFrame(animate);
+
+      if (!isVisible || document.hidden) return;
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed < FRAME_INTERVAL) return;
+      lastFrameTime = now - (elapsed % FRAME_INTERVAL);
 
       camera.position.x += (targetX - camera.position.x) * 0.05;
       camera.position.y += (targetY - camera.position.y) * 0.05;
@@ -203,14 +225,42 @@ export default function MatrixRain3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    animate(performance.now());
 
-    // Resize Handler
+    // Page Visibility and IntersectionObserver Pausing
+    const handleVisibility = () => {
+      if (!document.hidden && isVisible) {
+        lastFrameTime = performance.now();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    let observer = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+              lastFrameTime = performance.now();
+            }
+          });
+        },
+        { threshold: 0.01 }
+      );
+      observer.observe(container);
+    }
+
+    // Debounced Resize Handler
+    let resizeTimer = null;
     const handleResize = () => {
-      if (!containerRef.current) return;
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!containerRef.current) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }, 100);
     };
     window.addEventListener('resize', handleResize);
 
@@ -218,12 +268,15 @@ export default function MatrixRain3D() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (observer) observer.disconnect();
+      if (resizeTimer) clearTimeout(resizeTimer);
       cancelAnimationFrame(animationId);
-      
-      if (container && renderer.domElement) {
+
+      if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
-      
+
       geometry1.dispose();
       material1.dispose();
       glyphTexture1.dispose();
@@ -246,8 +299,9 @@ export default function MatrixRain3D() {
         width: '100%',
         height: '100%',
         zIndex: 0,
-        pointerEvents: 'none', // Allow mouse to click elements underneath
+        pointerEvents: 'none',
         overflow: 'hidden',
+        willChange: 'transform',
       }}
     />
   );
