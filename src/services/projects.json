@@ -1,0 +1,150 @@
+[
+  {
+    "id": "printmyposter",
+    "title": "Print My Poster",
+    "url": "https://www.printmyposter.art/",
+    "github": "https://github.com/lucascardev/Image-to-Poster",
+    "status": {
+      "pt": "Em Produção",
+      "en": "Production"
+    },
+    "tagline": {
+      "pt": "Fatiamento vetorial de imagens para pôsteres murais em grade A4 com processamento 100% client-side.",
+      "en": "Vector image slicing into custom A4 wall posters with 100% client-side in-browser processing."
+    },
+    "problem": {
+      "pt": "Impressão caseira de grandes pôsteres geralmente exige plotters caras ou o envio de fotos pessoais para servidores de terceiros, gerando riscos de privacidade e custos elevados.",
+      "en": "Home printing of large posters typically requires expensive plotters or uploading personal photos to third-party servers, posing privacy concerns and unnecessary costs."
+    },
+    "solution": {
+      "pt": "Aplicação web que divide qualquer imagem em uma grade personalizável de folhas A4 com guias de sangria e corte, gerando PDFs de 300 DPI prontos para montagem direta pelo usuário.",
+      "en": "High-performance web app that slices any image into a customizable A4 grid with precise bleed and cut guides, generating 300 DPI print-ready PDFs directly in-browser."
+    },
+    "engineeringHighlights": {
+      "pt": [
+        "Processamento 100% no navegador (Canvas API & Three.js), garantindo zero upload de arquivos e privacidade absoluta do usuário.",
+        "Algoritmo matemático de cálculo de margens de impressora com compensação milimétrica de sobreposição de bordas.",
+        "Geração de arquivos PDF vetoriais em alta fidelidade (300 DPI) usando jsPDF sem sobrecarga de memória no cliente.",
+        "Interface responsiva e intuitiva construída com React 19, TypeScript e Tailwind CSS."
+      ],
+      "en": [
+        "100% client-side execution (Canvas API & Three.js), guaranteeing zero server uploads and complete privacy.",
+        "Mathematical grid slicing algorithm compensating for physical printer margin bleed and overlap tabs.",
+        "High-fidelity 300 DPI vector PDF export using jsPDF with optimized in-browser memory management.",
+        "Responsive, modern UI engineered with React 19, TypeScript, and Tailwind CSS."
+      ]
+    },
+    "technologies": ["React 19", "TypeScript", "Three.js", "Canvas API", "jsPDF", "Tailwind CSS"]
+  },
+  {
+    "id": "psyreport",
+    "title": "PsyReport Auto",
+    "url": "https://psy-report.vercel.app/",
+    "github": null,
+    "status": {
+      "pt": "Em Produção",
+      "en": "Production"
+    },
+    "tagline": {
+      "pt": "Gestão clínica e prontuários para psicólogos com emissão de recibos e assinatura digital.",
+      "en": "Clinical session management and receipt automation for psychologists with digital signatures."
+    },
+    "problem": {
+      "pt": "Profissionais de saúde mental perdem horas semanais na burocracia de emissão manual de recibos fiscais e anotações clínicas dispersas em planilhas desorganizadas.",
+      "en": "Mental health professionals waste hours each week on manual receipt generation and unstructured session records scattered across spreadsheets."
+    },
+    "solution": {
+      "pt": "SaaS clínico focado em agilidade que unifica o histórico de sessões do paciente, gera relatórios padronizados e assina digitalmente recibos com validade profissional.",
+      "en": "Agile clinical SaaS that centralizes patient session records, generates standardized reports, and issues digitally signed PDF receipts."
+    },
+    "engineeringHighlights": {
+      "pt": [
+        "Sincronização bidirecional em tempo real com Google Sheets API, servindo como banco de dados serverless sem custos adicionais de infraestrutura.",
+        "Módulo de assinatura digital integrado com renderização criptográfica em documentos PDF via jsPDF.",
+        "Autenticação corporativa com Firebase Auth (Google Workspace) e controle de permissões por sessão.",
+        "Fluxo de onboarding guiado interativo utilizando driver.js para redução de taxa de abandono."
+      ],
+      "en": [
+        "Bi-directional real-time synchronization with Google Sheets API acting as a serverless low-cost data layer.",
+        "Integrated digital signature module with cryptographic visual stamping in PDF exports via jsPDF.",
+        "Corporate Google Workspace authentication via Firebase Auth and session-level permission control.",
+        "Interactive guided onboarding tours with driver.js to minimize user drop-off."
+      ]
+    },
+    "technologies": ["React (Vite)", "Firebase Auth", "Google Sheets API", "jsPDF", "Tailwind CSS", "driver.js"]
+  },
+  {
+    "id": "conectalink",
+    "title": "ConectaLink / Capinhas Brazil",
+    "url": "https://capinhasbrazil.vercel.app/",
+    "github": null,
+    "status": {
+      "pt": "Em Produção",
+      "en": "Production"
+    },
+    "tagline": {
+      "pt": "Plataforma agregadora e comparador automatizado de preços para marketing de afiliados.",
+      "en": "Automated price comparison and crawler platform for affiliate marketing."
+    },
+    "problem": {
+      "pt": "Dificuldade de rastrear oscilações diárias de preços entre Mercado Livre, Shopee e AliExpress, resultando em perda de comissões e ofertas desatualizadas.",
+      "en": "Tracking rapid price swings across competing marketplaces (Mercado Livre, Shopee, AliExpress) manually leads to expired deals and lost affiliate commissions."
+    },
+    "solution": {
+      "pt": "Motor de crawling automatizado que extrai, deduplica e compara ofertas idênticas em múltiplos marketplaces, atualizando o catálogo com links afiliados dinâmicos.",
+      "en": "Automated crawling engine that parses, deduplicates, and tracks identical product offers across marketplaces, updating catalog prices with monetized links."
+    },
+    "engineeringHighlights": {
+      "pt": [
+        "Scraper headless resiliente em Playwright & Browserless.io com técnicas avançadas de bypass de proteções anti-bot (Cloudflare, Akamai).",
+        "Modelagem relacional de dados em PostgreSQL gerenciado pelo Supabase com indexação para buscas rápidas de produtos.",
+        "Rotinas de atualização programadas via Vercel Cron Jobs para atualização contínua em lotes.",
+        "Controle de acesso e painel administrativo protegido com Clerk Authentication."
+      ],
+      "en": [
+        "Resilient headless scrapers built with Playwright & Browserless.io featuring stealth anti-bot protection bypass.",
+        "Relational data modeling on Supabase PostgreSQL optimized for high-volume product lookups.",
+        "Scheduled batch synchronization pipelines orchestrated through Vercel Cron API.",
+        "Administrative dashboard and user authentication secured via Clerk Auth."
+      ]
+    },
+    "technologies": ["Next.js", "Supabase (PostgreSQL)", "Clerk Auth", "Playwright", "Browserless.io", "Tailwind CSS"]
+  },
+  {
+    "id": "dental-ai-secretary",
+    "title": "Secretária Virtual Odontológica com IA",
+    "url": null,
+    "github": "https://github.com/lucascardev",
+    "status": {
+      "pt": "Arquitetura / Protótipo",
+      "en": "Prototype / Architecture"
+    },
+    "tagline": {
+      "pt": "Agente conversacional inteligente via WhatsApp para triagem e agendamento de consultas 24/7.",
+      "en": "Intelligent WhatsApp conversational AI agent for 24/7 dental clinic triage and appointment scheduling."
+    },
+    "problem": {
+      "pt": "Consultórios odontológicos perdem novos pacientes fora do horário comercial pela demora no primeiro contato e sobrecarga da equipe da recepção.",
+      "en": "Dental practices lose prospective patients during off-hours due to delayed first contact and overwhelmed front-desk staff."
+    },
+    "solution": {
+      "pt": "Chatbot com inteligência artificial integrado ao WhatsApp capaz de compreender linguagem natural, tirar dúvidas sobre tratamentos e agendar consultas diretamente na agenda.",
+      "en": "WhatsApp conversational bot powered by LLMs to parse natural language inquiries, provide treatment guidelines, and book appointments directly."
+    },
+    "engineeringHighlights": {
+      "pt": [
+        "Integração com LLMs (Gemini / OpenAI) com prompts de sistema estruturados para atendimento humanizado e seguro em saúde.",
+        "Conexão estável com webhooks do WhatsApp (Baileys / Meta Cloud API) com máquina de estados para recuperação de contexto de conversa.",
+        "Modelagem de dados com Prisma ORM e PostgreSQL para gestão de slots de horários de dentistas.",
+        "Notificações automáticas de confirmação e lembretes para redução de faltas (no-show)."
+      ],
+      "en": [
+        "LLM integration (Gemini / OpenAI) with system prompt constraints designed for safe clinical patient intake.",
+        "Robust WhatsApp webhook connection with finite state machine for conversational context preservation.",
+        "Data schema engineered with Prisma ORM and PostgreSQL for managing doctor agenda availability.",
+        "Automated confirmation workflows to minimize patient no-show rates."
+      ]
+    },
+    "technologies": ["Node.js", "TypeScript", "LLMs / Gemini", "Prisma ORM", "PostgreSQL", "WhatsApp API", "Docker"]
+  }
+]

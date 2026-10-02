@@ -20,6 +20,7 @@ import {
   FaBrain,
   FaRobot,
   FaRocket,
+  FaUserTie,
 } from 'react-icons/fa';
 
 import { 
@@ -84,8 +85,12 @@ import {
   MonthLabelsContainer,
   CalendarCell,
   CalendarLegend,
+  ModeSwitchContainer,
+  ModeSwitchButton,
+  LanguagePill,
 } from './style/global.style';
 
+import NormalResume from './components/NormalResume';
 import API from './services/api';
 import techsData from './services/techs.json';
 import contributionsData from './services/contributions.json';
@@ -235,6 +240,31 @@ function PosterGridSimulator({ language }) {
 }
 
 function App() {
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem('lucascardev_view_mode') || 'normal';
+  });
+
+  const handleModeChange = (mode) => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('lucascardev_view_mode', mode);
+    } catch (e) {
+      console.warn('Failed to save view mode in localStorage', e);
+    }
+  };
+
+  const linkedinHeaderPhoto = `${process.env.PUBLIC_URL}/assets/linkedin-profile.jpg`;
+  const githubLocalPhoto = `${process.env.PUBLIC_URL}/assets/github_avatar.jpg`;
+  const [headerAvatar, setHeaderAvatar] = useState(linkedinHeaderPhoto);
+
+  const handleHeaderAvatarError = () => {
+    if (headerAvatar === linkedinHeaderPhoto) {
+      setHeaderAvatar(githubLocalPhoto);
+    } else if (headerAvatar === githubLocalPhoto) {
+      setHeaderAvatar(githubAvatar);
+    }
+  };
+
   const localAvatar = `${process.env.PUBLIC_URL}/assets/lucasphoto.jpeg`;
   const [avatarimg] = useState(localAvatar);
   const [githubAvatar, setGithubAvatar] = useState('https://avatars.githubusercontent.com/u/35515714?v=4');
@@ -302,7 +332,7 @@ function App() {
     if (lang === 'pt') {
       return [
         'Nome: Lucas Matheus Cardoso',
-        'Grau: Bacharel em Sistemas de Informação - Estácio de Sá',
+        'Formação: Pós-Graduação em Desenvolvimento Full Stack (Descomplica) | ADS (Estácio)',
         `Projetos Públicos no GitHub: ${totalRepos} repositórios`,
         `Foco Tecnológico: TypeScript (${tsRepos} projetos) & JavaScript (${jsRepos} projetos)`,
         'Biografia:',
@@ -311,12 +341,14 @@ function App() {
         '  com foco em arquiteturas robustas em React/Next.js no frontend e Node.js no backend.',
         '  Proficiente em modelagem de APIs multi-tenant, integração de microsserviços e',
         '  aplicações modernas de alta performance como o PrintMyPoster (printmyposter.art). Praticante de',
-        '  Clean Code, DevOps (Kubernetes/Cloud) e metodologias ágeis.'
+        '  Clean Code, DevOps (Kubernetes/Cloud) e metodologias ágeis.',
+        '  Atualmente direciona estudos avançados em arquitetura e engenharia de software,',
+        '  reconhecendo o papel fundamental de bases estruturais sólidas na era do desenvolvimento impulsionado por IA.'
       ];
     }
     return [
       'Name: Lucas Matheus Cardoso',
-      'Degree: Bachelor of Information Systems - Estácio University',
+      'Education: Postgraduate in Full Stack Development (Descomplica) | Systems Analysis (Estácio)',
       `Public GitHub Projects: ${totalRepos} repositories`,
       `Core Tech Stack: TypeScript (${tsRepos} projects) & JavaScript (${jsRepos} projects)`,
       'Biography:',
@@ -325,7 +357,9 @@ function App() {
       '  ecosystem, designing robust architectures with React/Next.js on the frontend',
       '  and Node.js on the backend. Experienced in multi-tenant system design, microservices',
       '  integration, and modern applications like PrintMyPoster (printmyposter.art).',
-      '  Dedicated to Clean Code principles, DevOps, and agile practices.'
+      '  Dedicated to Clean Code principles, DevOps, and agile practices.',
+      '  Currently advancing studies in software architecture and systems engineering,',
+      '  emphasizing robust structural design in an AI-assisted development era.'
     ];
   };
 
@@ -719,383 +753,482 @@ function App() {
   };
 
   return (
-    <Container>
-      <Scanlines />
-      <MatrixRain3D />
+    <Container $viewMode={viewMode}>
+      {viewMode === 'dev' && <Scanlines />}
+      {viewMode === 'dev' && <MatrixRain3D />}
 
-      <Header>
-        <Gitinfo>
-          <Avatar src={githubAvatar} alt="Lucas Cardoso" />
-          <div>
-            <Username>
-              <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer">
-                @{username}
-              </a>
-            </Username>
-            <div className="github-hint">
-              <FaTerminal /> SECURE PORTFOLIO GATEWAY <FaTerminal />
-            </div>
-          </div>
-        </Gitinfo>
-
-        <Contact>
-          <p>
-            <b>WPP:</b> <a href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." target="_blank" rel="noreferrer">+55(71)99293-1330</a>
-          </p>
-          <p>
-            <b>EMAIL:</b> <a href="mailto:lucasmatheussc97@gmail.com">lucasmatheussc97@gmail.com</a>
-          </p>
-        </Contact>
-
-        <HeaderTechs>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <TechsMarqueeContainer>
-              <TechsTrack>
-                {[...techsData, ...techsData].map((tech, index) => {
-                  const IconComponent = ICON_MAP[tech.id];
-                  if (!IconComponent) return null;
-                  return (
-                    <TechItem 
-                      key={`${tech.id}-${index}`}
-                      onMouseEnter={() => setHoveredTech(tech)}
-                      onMouseLeave={() => setHoveredTech(null)}
-                    >
-                      <IconComponent />
-                      <TechTooltip className="tech-tooltip">
-                        {tech.name}: {tech.experience} ({techProjectCounts[tech.id] || 0} {language === 'pt' ? 'repos' : 'repos'})
-                      </TechTooltip>
-                    </TechItem>
-                  );
-                })}
-              </TechsTrack>
-            </TechsMarqueeContainer>
-            <FaGlobe 
-              title={language === 'en' ? 'Switch to Portuguese' : 'Mudar para Inglês'} 
-              onClick={toggleLanguage} 
-              style={{ marginLeft: '16px', color: '#ffb000', cursor: 'pointer', fontSize: '1.3em' }}
+      <Header $viewMode={viewMode}>
+        {viewMode === 'normal' ? (
+          <Gitinfo>
+            <Avatar
+              $viewMode="normal"
+              src={headerAvatar}
+              alt="Lucas Matheus Cardoso"
+              onError={handleHeaderAvatarError}
             />
+            <div>
+              <Username $viewMode="normal">
+                <a href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer">
+                  Lucas Matheus Cardoso
+                </a>
+              </Username>
+              <div style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 500, marginTop: '2px' }}>
+                {language === 'pt' ? 'Engenheiro de Software Fullstack' : 'Fullstack Software Engineer'}
+              </div>
+            </div>
+          </Gitinfo>
+        ) : (
+          <Gitinfo>
+            <Avatar src={githubAvatar} alt="Lucas Cardoso" />
+            <div>
+              <Username>
+                <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer">
+                  @{username}
+                </a>
+              </Username>
+              <div className="github-hint">
+                <FaTerminal /> SECURE PORTFOLIO GATEWAY <FaTerminal />
+              </div>
+            </div>
+          </Gitinfo>
+        )}
+
+        {/* Segmented Mode Switch in Header */}
+        <ModeSwitchContainer $viewMode={viewMode}>
+          <ModeSwitchButton
+            type="button"
+            $viewMode={viewMode}
+            $active={viewMode === 'normal'}
+            onClick={() => handleModeChange('normal')}
+            title={language === 'pt' ? 'Mudar para o Perfil Profissional Executivo' : 'Switch to Professional Resume'}
+          >
+            <FaUserTie />
+            <span>{language === 'pt' ? 'Perfil Profissional' : 'Executive Resume'}</span>
+          </ModeSwitchButton>
+          <ModeSwitchButton
+            type="button"
+            $viewMode={viewMode}
+            $active={viewMode === 'dev'}
+            onClick={() => handleModeChange('dev')}
+            title={language === 'pt' ? 'Mudar para o Modo Dev Matrix' : 'Switch to Dev Mode'}
+          >
+            <FaTerminal />
+            <span>{language === 'pt' ? 'Modo Dev' : 'Dev Mode'}</span>
+          </ModeSwitchButton>
+        </ModeSwitchContainer>
+
+        {viewMode === 'normal' ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <a
+              href="https://wa.me/5571992931330?text=Ol%C3%A1%20Lucas!%20Encontrei%20seu%20perfil%20profissional%20e%20gostaria%20de%20conversar."
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#059669',
+                backgroundColor: '#ecfdf5',
+                border: '1px solid #a7f3d0',
+                padding: '6px 14px',
+                borderRadius: '6px',
+                fontSize: '0.84rem',
+                fontWeight: '600',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <FaWhatsapp style={{ fontSize: '1rem' }} />
+              <span>WhatsApp</span>
+            </a>
+
+            <LanguagePill
+              type="button"
+              $viewMode="normal"
+              onClick={toggleLanguage}
+              title={language === 'pt' ? 'Switch to English' : 'Mudar para Português'}
+            >
+              <FaGlobe />
+              <span>{language === 'pt' ? 'EN' : 'PT'}</span>
+            </LanguagePill>
           </div>
-          <TechExperienceDisplay>
-            <TypingText text={getStatusText()} />
-            <BlinkingCursor />
-          </TechExperienceDisplay>
-        </HeaderTechs>
+        ) : (
+          <>
+            <Contact>
+              <p>
+                <b>WPP:</b> <a href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." target="_blank" rel="noreferrer">+55 (71) 99293-1330</a>
+              </p>
+              <p>
+                <b>EMAIL:</b> <a href="mailto:lucasmatheussc97@gmail.com">lucasmatheussc97@gmail.com</a>
+              </p>
+            </Contact>
+
+            <HeaderTechs>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <TechsMarqueeContainer>
+                  <TechsTrack>
+                    {[...techsData, ...techsData].map((tech, index) => {
+                      const IconComponent = ICON_MAP[tech.id];
+                      if (!IconComponent) return null;
+                      return (
+                        <TechItem 
+                          key={`${tech.id}-${index}`}
+                          onMouseEnter={() => setHoveredTech(tech)}
+                          onMouseLeave={() => setHoveredTech(null)}
+                        >
+                          <IconComponent />
+                          <TechTooltip className="tech-tooltip">
+                            {tech.name}: {tech.experience} ({techProjectCounts[tech.id] || 0} {language === 'pt' ? 'repos' : 'repos'})
+                          </TechTooltip>
+                        </TechItem>
+                      );
+                    })}
+                  </TechsTrack>
+                </TechsMarqueeContainer>
+                <FaGlobe 
+                  title={language === 'en' ? 'Switch to Portuguese' : 'Mudar para Inglês'} 
+                  onClick={toggleLanguage} 
+                  style={{ marginLeft: '16px', color: '#ffb000', cursor: 'pointer', fontSize: '1.3em' }}
+                />
+              </div>
+              <TechExperienceDisplay>
+                <TypingText text={getStatusText()} />
+                <BlinkingCursor />
+              </TechExperienceDisplay>
+            </HeaderTechs>
+          </>
+        )}
       </Header>
 
-      <PageHolder>
-        {/* Left Side: Hacker Terminal Console with Holographic Living ASCII Background */}
-        <Main>
-          <TerminalAsciiBackground>
-            <AsciiArt
-              src={avatarimg}
-              fallbackSrc="https://avatars.githubusercontent.com/u/35515714?v=4"
-              resolution={150}
-              mobileResolution={80}
-              color="#00ff41"
-              animationStyle="matrix"
-              inverted={false}
-              transparent={true}
-              scale={0.96}
-              faceCenter={{ x: 0.48, y: 0.36 }}
-              style={{ width: '100%', height: '100%' }}
-            />
-          </TerminalAsciiBackground>
+      {/* BODY CONTENT: NORMAL RESUME OR DEV TERMINAL */}
+      {viewMode === 'normal' ? (
+        <NormalResume
+          language={language}
+          repos={repos}
+          contributions={contributions}
+          totalContributions={totalContributions}
+          githubAvatar={githubAvatar}
+          username={username}
+          onSwitchToDev={() => handleModeChange('dev')}
+        />
+      ) : (
+        <>
+          <PageHolder>
+            {/* Left Side: Hacker Terminal Console with Holographic Living ASCII Background */}
+            <Main>
+              <TerminalAsciiBackground>
+                <AsciiArt
+                  src={avatarimg}
+                  fallbackSrc="https://avatars.githubusercontent.com/u/35515714?v=4"
+                  resolution={150}
+                  mobileResolution={80}
+                  color="#00ff41"
+                  animationStyle="matrix"
+                  inverted={false}
+                  transparent={true}
+                  scale={0.96}
+                  faceCenter={{ x: 0.48, y: 0.36 }}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </TerminalAsciiBackground>
 
-          <h1>
-            <FaTerminal style={{ marginRight: '10px' }} />
-            SYSTEM_SHELL_EMULATOR.sh
-          </h1>
-          
-          <CommandHistory>
-            {history.map((h, i) => (
-              <CommandRow key={i} className={h.type}>
-                {h.type === 'input' && <PromptLabel>lucascardev@system:~$</PromptLabel>}
-                {h.text}
-              </CommandRow>
-            ))}
-            <div ref={historyEndRef} />
-          </CommandHistory>
-
-          {showPacman && (
-            <div style={{ marginTop: '15px', border: '1px solid #00ff41', padding: '10px', borderRadius: '4px', background: '#000', position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8em', color: '#00ff41', padding: '0 4px' }}>
-                <span>SIMULADOR_3D_PACMAN.EXE (MATRIX WIREFRAME EDITION)</span>
-                <button 
-                  onClick={() => setShowPacman(false)}
-                  style={{ background: 'transparent', border: '1px solid #00ff41', color: '#00ff41', fontSize: '0.8em', cursor: 'pointer', padding: '2px 6px' }}
-                >
-                  STOP
-                </button>
-              </div>
-              <Pacman3D />
-            </div>
-          )}
-
-          <TerminalInputLine onSubmit={handleCommandSubmit}>
-            <PromptLabel>lucascardev@system:~$</PromptLabel>
-            <CustomInput
-              type="text"
-              value={terminalInput}
-              onChange={(e) => setTerminalInput(e.target.value)}
-              placeholder={language === 'pt' ? 'Digite um comando... (ex: "ajuda")' : 'Type a command... (ex: "help")'}
-              autoFocus
-            />
-          </TerminalInputLine>
-        </Main>
-
-        {/* Right Side: Projects and Links */}
-        <SidePanel>
-          <TerminalWrapper title="FEATURED_PROJECT: PRINT_MY_POSTER">
-            <ProjectShowcase>
-              <ProjectTitle>
-                PRINT MY POSTER
-                <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
-              </ProjectTitle>
-              <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
-                {language === 'pt' 
-                  ? 'Aplicação web moderna para transformar qualquer imagem em um pôster gigante impresso em casa. Divide fotos em grade A4 personalizada com marcas de corte e guias de sobreposição, com processamento 100% no navegador.' 
-                  : 'Modern web application to turn any image into a giant wall poster ready for home printing. Splits photos into custom A4 grids with crop marks and overlap guides, processed 100% client-side.'}
-              </p>
-              <ProjectBadgeList>
-                <ProjectBadge>React 19</ProjectBadge>
-                <ProjectBadge>TypeScript</ProjectBadge>
-                <ProjectBadge>Three.js</ProjectBadge>
-                <ProjectBadge>jsPDF</ProjectBadge>
-                <ProjectBadge>Tailwind CSS</ProjectBadge>
-                <ProjectBadge>Canvas API</ProjectBadge>
-              </ProjectBadgeList>
-              <ProjectFeatureList>
-                <li>
-                  {language === 'pt' 
-                    ? 'Processamento 100% client-side (máxima privacidade sem envio de arquivos)' 
-                    : '100% client-side processing (complete privacy, zero server uploads)'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Grade e margens de impressão customizáveis (linhas x colunas A4)' 
-                    : 'Customizable grid size and margins (rows x columns in A4)'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Marcas de corte pontilhadas e abas de sobreposição para alinhamento' 
-                    : 'Dashed crop lines and overlap alignment tabs for easy assembly'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Exportação instantânea em PDF de alta qualidade para impressão caseira' 
-                    : 'High-resolution PDF generation ready for direct home printing'}
-                </li>
-              </ProjectFeatureList>
-              <ProjectButtonList>
-                <ProjectButton 
-                  href="https://www.printmyposter.art/" 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="primary"
-                >
-                  {language === 'pt' ? 'Acessar Site' : 'Open App'}
-                </ProjectButton>
-                <ProjectButton 
-                  href="https://github.com/lucascardev/Image-to-Poster" 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="secondary"
-                >
-                  GitHub
-                </ProjectButton>
-              </ProjectButtonList>
+              <h1>
+                <FaTerminal style={{ marginRight: '10px' }} />
+                SYSTEM_SHELL_EMULATOR.sh
+              </h1>
               
-              <PosterGridSimulator language={language} />
-            </ProjectShowcase>
-          </TerminalWrapper>
+              <CommandHistory>
+                {history.map((h, i) => (
+                  <CommandRow key={i} className={h.type}>
+                    {h.type === 'input' && <PromptLabel>lucascardev@system:~$</PromptLabel>}
+                    {h.text}
+                  </CommandRow>
+                ))}
+                <div ref={historyEndRef} />
+              </CommandHistory>
 
-          <TerminalWrapper title="FEATURED_PROJECT: PSY_REPORT">
-            <ProjectShowcase>
-              <ProjectTitle>
-                PSYREPORT AUTO
-                <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
-              </ProjectTitle>
-              <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
-                {language === 'pt' 
-                  ? 'Sistema completo e ágil para psicólogos gerenciarem relatórios de sessões e emitirem recibos profissionais com assinatura digital, sincronizado com o Google Sheets.' 
-                  : 'Complete system for psychologists to manage session reports and professional receipts with digital signatures, synced with Google Sheets.'}
-              </p>
-              <ProjectBadgeList>
-                <ProjectBadge>React (Vite)</ProjectBadge>
-                <ProjectBadge>Firebase Auth</ProjectBadge>
-                <ProjectBadge>Google Sheets API</ProjectBadge>
-                <ProjectBadge>Tailwind CSS</ProjectBadge>
-                <ProjectBadge>jsPDF</ProjectBadge>
-                <ProjectBadge>driver.js</ProjectBadge>
-              </ProjectBadgeList>
-              <ProjectFeatureList>
-                <li>
-                  {language === 'pt' 
-                    ? 'Autenticação Google Workspace via Firebase' 
-                    : 'Google Workspace Login via Firebase'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Sincronização bidirecional com Google Sheets' 
-                    : 'Two-way sync with Google Sheets'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Assinatura digital integrada e geração de PDFs' 
-                    : 'Integrated digital signatures and PDF export'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Histórico completo com controle de vouchers/créditos' 
-                    : 'Full session history with vouchers/credits system'}
-                </li>
-              </ProjectFeatureList>
-              <ProjectButtonList>
-                <ProjectButton 
-                  href="https://psy-report.vercel.app/" 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="primary"
-                  style={{ gridColumn: 'span 2' }}
-                >
-                  {language === 'pt' ? 'Acessar Plataforma' : 'Access Platform'}
-                </ProjectButton>
-              </ProjectButtonList>
-            </ProjectShowcase>
-          </TerminalWrapper>
+              {showPacman && (
+                <div style={{ marginTop: '15px', border: '1px solid #00ff41', padding: '10px', borderRadius: '4px', background: '#000', position: 'relative' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8em', color: '#00ff41', padding: '0 4px' }}>
+                    <span>SIMULADOR_3D_PACMAN.EXE (MATRIX WIREFRAME EDITION)</span>
+                    <button 
+                      onClick={() => setShowPacman(false)}
+                      style={{ background: 'transparent', border: '1px solid #00ff41', color: '#00ff41', fontSize: '0.8em', cursor: 'pointer', padding: '2px 6px' }}
+                    >
+                      STOP
+                    </button>
+                  </div>
+                  <Pacman3D />
+                </div>
+              )}
 
-          <TerminalWrapper title="FEATURED_PROJECT: CAPINHAS_BRAZIL">
-            <ProjectShowcase>
-              <ProjectTitle>
-                CONECTALINK
-                <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
-              </ProjectTitle>
-              <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
-                {language === 'pt' 
-                  ? 'Catálogo comparador de preços de capinhas de celular para marketing de afiliados. Monitora automaticamente preços no Mercado Livre, Shopee e AliExpress.' 
-                  : 'Affiliate marketing price comparison catalog for phone cases. Automatically crawls and monitors prices on Mercado Livre, Shopee, and AliExpress.'}
-              </p>
-              <ProjectBadgeList>
-                <ProjectBadge>Next.js</ProjectBadge>
-                <ProjectBadge>Supabase (Postgres)</ProjectBadge>
-                <ProjectBadge>Clerk Auth</ProjectBadge>
-                <ProjectBadge>Playwright</ProjectBadge>
-                <ProjectBadge>Browserless.io</ProjectBadge>
-                <ProjectBadge>Tailwind CSS</ProjectBadge>
-              </ProjectBadgeList>
-              <ProjectFeatureList>
-                <li>
-                  {language === 'pt' 
-                    ? 'Agrupamento automático de ofertas idênticas' 
-                    : 'Automatic grouping of identical offers'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Scraper automatizado via Playwright & Browserless.io' 
-                    : 'Automated crawler using Playwright & Browserless.io'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'Bypass de anti-bot do Mercado Livre e Shopee' 
-                    : 'Mercado Livre & Shopee anti-bot stealth bypass'}
-                </li>
-                <li>
-                  {language === 'pt' 
-                    ? 'API Cron no Vercel para atualização em lote' 
-                    : 'Vercel Cron API for batch price updates'}
-                </li>
-              </ProjectFeatureList>
-              <ProjectButtonList>
-                <ProjectButton 
-                  href="https://capinhasbrazil.vercel.app/" 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="primary"
-                  style={{ gridColumn: 'span 2' }}
-                >
-                  {language === 'pt' ? 'Acessar Comparador' : 'Access Catalog'}
-                </ProjectButton>
-              </ProjectButtonList>
-            </ProjectShowcase>
-          </TerminalWrapper>
+              <TerminalInputLine onSubmit={handleCommandSubmit}>
+                <PromptLabel>lucascardev@system:~$</PromptLabel>
+                <CustomInput
+                  type="text"
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  placeholder={language === 'pt' ? 'Digite um comando... (ex: "ajuda")' : 'Type a command... (ex: "help")'}
+                  autoFocus
+                />
+              </TerminalInputLine>
+            </Main>
 
-          <TerminalWrapper title="LINKS_&_DOWNLOADS">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <LinkHolder style={{ margin: 0 }}>
-                <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer" title="GitHub">
-                  <FaGithub />
-                </a>
-                <a href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer" title="LinkedIn">
-                  <FaLinkedin />
-                </a>
-                <a href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer" title="Instagram Developer">
-                  <FaInstagram />
-                </a>
-              </LinkHolder>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                <a 
-                  href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-en.pdf`} 
-                  download 
-                  style={{ textDecoration: 'none' }}
-                >
-                  <CyberButton as="span" style={{ display: 'inline-block', fontSize: '0.8em', padding: '8px 12px' }}>
-                    {language === 'pt' ? 'Download CV (EN)' : 'Download CV (EN)'}
-                  </CyberButton>
-                </a>
-                <a 
-                  href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-pt.pdf`} 
-                  download 
-                  style={{ textDecoration: 'none' }}
-                >
-                  <CyberButton as="span" style={{ display: 'inline-block', fontSize: '0.8em', padding: '8px 12px' }}>
-                    {language === 'pt' ? 'Download CV (PT)' : 'Download CV (PT)'}
-                  </CyberButton>
-                </a>
-              </div>
+            {/* Right Side: Projects and Links */}
+            <SidePanel>
+              <TerminalWrapper title="FEATURED_PROJECT: PRINT_MY_POSTER">
+                <ProjectShowcase>
+                  <ProjectTitle>
+                    PRINT MY POSTER
+                    <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
+                  </ProjectTitle>
+                  <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
+                    {language === 'pt' 
+                      ? 'Aplicação web moderna para transformar qualquer imagem em um pôster gigante impresso em casa. Divide fotos em grade A4 personalizada com marcas de corte e guias de sobreposição, com processamento 100% no navegador.' 
+                      : 'Modern web application to turn any image into a giant wall poster ready for home printing. Splits photos into custom A4 grids with crop marks and overlap guides, processed 100% client-side.'}
+                  </p>
+                  <ProjectBadgeList>
+                    <ProjectBadge>React 19</ProjectBadge>
+                    <ProjectBadge>TypeScript</ProjectBadge>
+                    <ProjectBadge>Three.js</ProjectBadge>
+                    <ProjectBadge>jsPDF</ProjectBadge>
+                    <ProjectBadge>Tailwind CSS</ProjectBadge>
+                    <ProjectBadge>Canvas API</ProjectBadge>
+                  </ProjectBadgeList>
+                  <ProjectFeatureList>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Processamento 100% client-side (máxima privacidade sem envio de arquivos)' 
+                        : '100% client-side processing (complete privacy, zero server uploads)'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Grade e margens de impressão customizáveis (linhas x colunas A4)' 
+                        : 'Customizable grid size and margins (rows x columns in A4)'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Marcas de corte pontilhadas e abas de sobreposição para alinhamento' 
+                        : 'Dashed crop lines and overlap alignment tabs for easy assembly'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Exportação instantânea em PDF de alta qualidade para impressão caseira' 
+                        : 'High-resolution PDF generation ready for direct home printing'}
+                    </li>
+                  </ProjectFeatureList>
+                  <ProjectButtonList>
+                    <ProjectButton 
+                      href="https://www.printmyposter.art/" 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="primary"
+                    >
+                      {language === 'pt' ? 'Acessar Site' : 'Open App'}
+                    </ProjectButton>
+                    <ProjectButton 
+                      href="https://github.com/lucascardev/Image-to-Poster" 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="secondary"
+                    >
+                      GitHub
+                    </ProjectButton>
+                  </ProjectButtonList>
+                  
+                  <PosterGridSimulator language={language} />
+                </ProjectShowcase>
+              </TerminalWrapper>
+
+              <TerminalWrapper title="FEATURED_PROJECT: PSY_REPORT">
+                <ProjectShowcase>
+                  <ProjectTitle>
+                    PSYREPORT AUTO
+                    <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
+                  </ProjectTitle>
+                  <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
+                    {language === 'pt' 
+                      ? 'Sistema completo e ágil para psicólogos gerenciarem relatórios de sessões e emitirem recibos profissionais com assinatura digital, sincronizado com o Google Sheets.' 
+                      : 'Complete system for psychologists to manage session reports and professional receipts with digital signatures, synced with Google Sheets.'}
+                  </p>
+                  <ProjectBadgeList>
+                    <ProjectBadge>React (Vite)</ProjectBadge>
+                    <ProjectBadge>Firebase Auth</ProjectBadge>
+                    <ProjectBadge>Google Sheets API</ProjectBadge>
+                    <ProjectBadge>Tailwind CSS</ProjectBadge>
+                    <ProjectBadge>jsPDF</ProjectBadge>
+                    <ProjectBadge>driver.js</ProjectBadge>
+                  </ProjectBadgeList>
+                  <ProjectFeatureList>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Autenticação Google Workspace via Firebase' 
+                        : 'Google Workspace Login via Firebase'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Sincronização bidirecional com Google Sheets' 
+                        : 'Two-way sync with Google Sheets'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Assinatura digital integrada e geração de PDFs' 
+                        : 'Integrated digital signatures and PDF export'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Histórico completo com controle de vouchers/créditos' 
+                        : 'Full session history with vouchers/credits system'}
+                    </li>
+                  </ProjectFeatureList>
+                  <ProjectButtonList>
+                    <ProjectButton 
+                      href="https://psy-report.vercel.app/" 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="primary"
+                      style={{ gridColumn: 'span 2' }}
+                    >
+                      {language === 'pt' ? 'Acessar Plataforma' : 'Access Platform'}
+                    </ProjectButton>
+                  </ProjectButtonList>
+                </ProjectShowcase>
+              </TerminalWrapper>
+
+              <TerminalWrapper title="FEATURED_PROJECT: CAPINHAS_BRAZIL">
+                <ProjectShowcase>
+                  <ProjectTitle>
+                    CONECTALINK
+                    <ProjectTag>{language === 'pt' ? 'ATIVO' : 'ONLINE'}</ProjectTag>
+                  </ProjectTitle>
+                  <p style={{ margin: '4px 0 8px 0', fontSize: '0.85em', color: '#d2f8d2', lineHeight: '1.4' }}>
+                    {language === 'pt' 
+                      ? 'Catálogo comparador de preços de capinhas de celular para marketing de afiliados. Monitora automaticamente preços no Mercado Livre, Shopee e AliExpress.' 
+                      : 'Affiliate marketing price comparison catalog for phone cases. Automatically crawls and monitors prices on Mercado Livre, Shopee, and AliExpress.'}
+                  </p>
+                  <ProjectBadgeList>
+                    <ProjectBadge>Next.js</ProjectBadge>
+                    <ProjectBadge>Supabase (Postgres)</ProjectBadge>
+                    <ProjectBadge>Clerk Auth</ProjectBadge>
+                    <ProjectBadge>Playwright</ProjectBadge>
+                    <ProjectBadge>Browserless.io</ProjectBadge>
+                    <ProjectBadge>Tailwind CSS</ProjectBadge>
+                  </ProjectBadgeList>
+                  <ProjectFeatureList>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Agrupamento automático de ofertas idênticas' 
+                        : 'Automatic grouping of identical offers'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Scraper automatizado via Playwright & Browserless.io' 
+                        : 'Automated crawler using Playwright & Browserless.io'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'Bypass de anti-bot do Mercado Livre e Shopee' 
+                        : 'Mercado Livre & Shopee anti-bot stealth bypass'}
+                    </li>
+                    <li>
+                      {language === 'pt' 
+                        ? 'API Cron no Vercel para atualização em lote' 
+                        : 'Vercel Cron API for batch price updates'}
+                    </li>
+                  </ProjectFeatureList>
+                  <ProjectButtonList>
+                    <ProjectButton 
+                      href="https://capinhasbrazil.vercel.app/" 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="primary"
+                      style={{ gridColumn: 'span 2' }}
+                    >
+                      {language === 'pt' ? 'Acessar Comparador' : 'Access Catalog'}
+                    </ProjectButton>
+                  </ProjectButtonList>
+                </ProjectShowcase>
+              </TerminalWrapper>
+
+              <TerminalWrapper title="LINKS_&_DOWNLOADS">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <LinkHolder style={{ margin: 0 }}>
+                    <a href="https://github.com/lucascardev" target="_blank" rel="noreferrer" title="GitHub">
+                      <FaGithub />
+                    </a>
+                    <a href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer" title="LinkedIn">
+                      <FaLinkedin />
+                    </a>
+                    <a href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer" title="Instagram Developer">
+                      <FaInstagram />
+                    </a>
+                  </LinkHolder>
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <a 
+                      href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-en.pdf`} 
+                      download 
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <CyberButton as="span" style={{ display: 'inline-block', fontSize: '0.8em', padding: '8px 12px' }}>
+                        {language === 'pt' ? 'Download CV (EN)' : 'Download CV (EN)'}
+                      </CyberButton>
+                    </a>
+                    <a 
+                      href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-pt.pdf`} 
+                      download 
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <CyberButton as="span" style={{ display: 'inline-block', fontSize: '0.8em', padding: '8px 12px' }}>
+                        {language === 'pt' ? 'Download CV (PT)' : 'Download CV (PT)'}
+                      </CyberButton>
+                    </a>
+                  </div>
+                </div>
+              </TerminalWrapper>
+            </SidePanel>
+          </PageHolder>
+
+          <ContributionsWrapper title="GITHUB_CONTRIBUTIONS_STREAM">
+            <ContributionsTitle>
+              <span>{totalContributions}</span> {language === 'pt' ? 'contribuições no último ano' : 'contributions in the last year'}
+            </ContributionsTitle>
+            {renderContributionsGrid()}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', flexWrap: 'wrap', gap: '8px' }}>
+              <a 
+                href="https://github.com/lucascardev" 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ fontSize: '9px', color: '#008f11', textDecoration: 'underline', fontFamily: "'Share Tech Mono', monospace" }}
+              >
+                {language === 'pt' ? 'Saiba como as contribuições são contadas' : 'Learn how we count contributions'}
+              </a>
+              <CalendarLegend style={{ margin: 0, padding: 0 }}>
+                <span>{language === 'pt' ? 'Menos' : 'Less'}</span>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'rgba(0, 255, 65, 0.04)', border: '1px solid rgba(0, 255, 65, 0.03)' }}></div>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#003b00' }}></div>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#005e0d' }}></div>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#008f11' }}></div>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#00ff41' }}></div>
+                <span>{language === 'pt' ? 'Mais' : 'More'}</span>
+              </CalendarLegend>
             </div>
-          </TerminalWrapper>
-        </SidePanel>
-      </PageHolder>
+          </ContributionsWrapper>
 
-      <ContributionsWrapper title="GITHUB_CONTRIBUTIONS_STREAM">
-        <ContributionsTitle>
-          <span>{totalContributions}</span> {language === 'pt' ? 'contribuições no último ano' : 'contributions in the last year'}
-        </ContributionsTitle>
-        {renderContributionsGrid()}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', flexWrap: 'wrap', gap: '8px' }}>
-          <a 
-            href="https://github.com/lucascardev" 
-            target="_blank" 
-            rel="noreferrer" 
-            style={{ fontSize: '9px', color: '#008f11', textDecoration: 'underline', fontFamily: "'Share Tech Mono', monospace" }}
-          >
-            {language === 'pt' ? 'Saiba como as contribuições são contadas' : 'Learn how we count contributions'}
-          </a>
-          <CalendarLegend style={{ margin: 0, padding: 0 }}>
-            <span>{language === 'pt' ? 'Menos' : 'Less'}</span>
-            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'rgba(0, 255, 65, 0.04)', border: '1px solid rgba(0, 255, 65, 0.03)' }}></div>
-            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#003b00' }}></div>
-            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#005e0d' }}></div>
-            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#008f11' }}></div>
-            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#00ff41' }}></div>
-            <span>{language === 'pt' ? 'Mais' : 'More'}</span>
-          </CalendarLegend>
-        </div>
-      </ContributionsWrapper>
-
-      <Footer>
-        <p>
-          SYSTEM CONSOLE {'//'} COMPILED VIA{' '}
-          <a href="https://pages.github.com/" target="_blank" rel="noreferrer">
-            GITHUB PAGES SERVER
-          </a>{' '}
-          {'//'} ALL RIGHTS RESERVED
-        </p>
-        <p style={{ marginTop: '8px', fontSize: '0.85em', color: '#008f11' }}>
-          SYSTEM_RELEASE: <span style={{ color: '#00ff41', fontWeight: 'bold' }}>v{version}</span> {'//'}{' '}
-          <span style={{ color: '#ffb000' }}>BUILD_CHANNEL: STABLE</span>
-        </p>
-      </Footer>
+          <Footer>
+            <p>
+              SYSTEM CONSOLE {'//'} COMPILED VIA{' '}
+              <a href="https://pages.github.com/" target="_blank" rel="noreferrer">
+                GITHUB PAGES SERVER
+              </a>{' '}
+              {'//'} ALL RIGHTS RESERVED
+            </p>
+            <p style={{ marginTop: '8px', fontSize: '0.85em', color: '#008f11' }}>
+              SYSTEM_RELEASE: <span style={{ color: '#00ff41', fontWeight: 'bold' }}>v{version}</span> {'//'}{' '}
+              <span style={{ color: '#ffb000' }}>BUILD_CHANNEL: STABLE</span>
+            </p>
+          </Footer>
+        </>
+      )}
       
       {!showPacman && (
         <FloatingWhatsApp 
@@ -1108,12 +1241,14 @@ function App() {
         </FloatingWhatsApp>
       )}
 
-      <style>{`
-        @keyframes scanline {
-          0% { top: 0%; }
-          100% { top: 100%; }
-        }
-      `}</style>
+      {viewMode === 'dev' && (
+        <style>{`
+          @keyframes scanline {
+            0% { top: 0%; }
+            100% { top: 100%; }
+          }
+        `}</style>
+      )}
     </Container>
   );
 }

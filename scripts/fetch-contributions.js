@@ -79,6 +79,11 @@ async function main() {
     fs.writeFileSync(path.join(targetDir, 'contributions.json'), JSON.stringify(result, null, 2));
     console.log('Successfully wrote contributions.json!');
   } catch (error) {
+    const existingPath = path.join(__dirname, '..', 'src', 'services', 'contributions.json');
+    if (fs.existsSync(existingPath)) {
+      console.warn('Warning: Could not fetch latest contributions from GitHub (offline or sandboxed). Keeping existing cached contributions.json.');
+      process.exit(0);
+    }
     console.error('Error in fetch-contributions:', error);
     process.exit(1);
   }

@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 // Matrix Theme Tokens
 const colors = {
@@ -55,15 +55,15 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: ${colors.background};
-  color: ${colors.text};
-  font-family: 'Share Tech Mono', 'Fira Code', monospace;
+  background-color: ${props => props.$viewMode === 'normal' ? '#f8fafc' : colors.background};
+  color: ${props => props.$viewMode === 'normal' ? '#0f172a' : colors.text};
+  font-family: ${props => props.$viewMode === 'normal' ? "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" : "'Share Tech Mono', 'Fira Code', monospace"};
   position: relative;
   overflow-x: hidden;
 
   &::before {
     content: " ";
-    display: block;
+    display: ${props => props.$viewMode === 'normal' ? 'none' : 'block'};
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
     background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
@@ -77,17 +77,18 @@ export const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  background-color: rgba(2, 8, 3, 0.95);
-  border-bottom: 1px solid ${colors.glassBorder};
-  box-shadow: 0 4px 20px rgba(0, 255, 65, 0.1);
-  z-index: 10;
+  padding: ${props => props.$viewMode === 'normal' ? '12px 28px' : '12px 24px'};
+  background-color: ${props => props.$viewMode === 'normal' ? '#ffffff' : 'rgba(2, 8, 3, 0.95)'};
+  border-bottom: 1px solid ${props => props.$viewMode === 'normal' ? '#e2e8f0' : colors.glassBorder};
+  box-shadow: ${props => props.$viewMode === 'normal' ? '0 1px 4px rgba(15, 23, 42, 0.06)' : '0 4px 20px rgba(0, 255, 65, 0.1)'};
+  z-index: 100;
   position: relative;
+  transition: all 0.3s ease;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
+    gap: 14px;
+    padding: 14px 16px;
   }
 
   .techs {
@@ -128,6 +129,85 @@ export const Header = styled.header`
   }
 `;
 
+export const ModeSwitchContainer = styled.div`
+  display: inline-flex;
+  align-items: center;
+  background-color: ${props => props.$viewMode === 'normal' ? '#f1f5f9' : 'rgba(0, 20, 5, 0.85)'};
+  border: 1px solid ${props => props.$viewMode === 'normal' ? '#cbd5e1' : 'rgba(0, 255, 65, 0.3)'};
+  border-radius: 9999px;
+  padding: 4px;
+  box-shadow: ${props => props.$viewMode === 'normal' ? 'inset 0 1px 2px rgba(0, 0, 0, 0.05)' : '0 0 10px rgba(0, 255, 65, 0.15)'};
+  transition: all 0.25s ease;
+`;
+
+export const ModeSwitchButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background-color: ${props => {
+    if (!props.$active) return 'transparent';
+    return props.$viewMode === 'normal' ? '#ffffff' : 'rgba(0, 255, 65, 0.2)';
+  }};
+  color: ${props => {
+    if (props.$active) {
+      return props.$viewMode === 'normal' ? '#0f172a' : '#00ff41';
+    }
+    return props.$viewMode === 'normal' ? '#64748b' : '#008f11';
+  }};
+  font-family: ${props => props.$viewMode === 'normal' ? "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" : "'Share Tech Mono', monospace"};
+  font-size: 0.84rem;
+  font-weight: ${props => props.$active ? '700' : '500'};
+  padding: 7px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: ${props => {
+    if (!props.$active) return 'none';
+    return props.$viewMode === 'normal' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : '0 0 8px rgba(0, 255, 65, 0.3)';
+  }};
+  border: ${props => {
+    if (!props.$active) return '1px solid transparent';
+    return props.$viewMode === 'normal' ? '1px solid #e2e8f0' : '1px solid #00ff41';
+  }};
+
+  &:hover {
+    color: ${props => props.$viewMode === 'normal' ? '#0f172a' : '#00ff41'};
+    background-color: ${props => {
+      if (props.$active) {
+        return props.$viewMode === 'normal' ? '#ffffff' : 'rgba(0, 255, 65, 0.25)';
+      }
+      return props.$viewMode === 'normal' ? '#e2e8f0' : 'rgba(0, 255, 65, 0.08)';
+    }};
+  }
+
+  svg {
+    font-size: 0.95rem;
+  }
+`;
+
+export const LanguagePill = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid ${props => props.$viewMode === 'normal' ? '#cbd5e1' : '#ffb000'};
+  background-color: ${props => props.$viewMode === 'normal' ? '#ffffff' : 'transparent'};
+  color: ${props => props.$viewMode === 'normal' ? '#334155' : '#ffb000'};
+  font-family: ${props => props.$viewMode === 'normal' ? "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" : "'Share Tech Mono', monospace"};
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${props => props.$viewMode === 'normal' ? '#f1f5f9' : 'rgba(255, 176, 0, 0.15)'};
+    border-color: ${props => props.$viewMode === 'normal' ? '#94a3b8' : '#ffb000'};
+    transform: translateY(-1px);
+  }
+`;
+
 export const Gitinfo = styled.div`
   display: flex;
   align-items: center;
@@ -135,34 +215,38 @@ export const Gitinfo = styled.div`
 `;
 
 export const Avatar = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 4px;
-  border: 1px solid ${colors.primary};
-  box-shadow: 0 0 10px ${colors.glassBorder};
-  background-color: #000;
+  width: ${props => props.$viewMode === 'normal' ? '46px' : '50px'};
+  height: ${props => props.$viewMode === 'normal' ? '46px' : '50px'};
+  border-radius: ${props => props.$viewMode === 'normal' ? '50%' : '4px'};
+  border: ${props => props.$viewMode === 'normal' ? '2px solid #2563eb' : `1px solid ${colors.primary}`};
+  box-shadow: ${props => props.$viewMode === 'normal' ? '0 2px 8px rgba(37, 99, 235, 0.15)' : `0 0 10px ${colors.glassBorder}`};
+  background-color: ${props => props.$viewMode === 'normal' ? '#ffffff' : '#000'};
+  object-fit: cover;
   transition: all 0.3s ease;
 
   &:hover {
-    transform: rotate(3deg) scale(1.05);
-    box-shadow: 0 0 15px ${colors.primary};
+    transform: ${props => props.$viewMode === 'normal' ? 'scale(1.06)' : 'rotate(3deg) scale(1.05)'};
+    box-shadow: ${props => props.$viewMode === 'normal' ? '0 4px 12px rgba(37, 99, 235, 0.25)' : `0 0 15px ${colors.primary}`};
   }
 `;
 
 export const Username = styled.h1`
-  font-size: ${fontSizes.h2};
+  font-size: ${props => props.$viewMode === 'normal' ? '1.18rem' : fontSizes.h2};
   margin: 0;
   
   a {
-    color: ${colors.primary};
+    color: ${props => props.$viewMode === 'normal' ? '#0f172a' : colors.primary};
     text-decoration: none;
-    animation: ${textGlow} 3s infinite ease-in-out;
-    letter-spacing: 1px;
+    ${props => props.$viewMode === 'normal'
+      ? css`animation: none;`
+      : css`animation: ${textGlow} 3s infinite ease-in-out;`
+    }
+    letter-spacing: ${props => props.$viewMode === 'normal' ? '-0.01em' : '1px'};
     font-weight: 700;
 
     &:hover {
-      color: #fff;
-      text-shadow: 0 0 15px ${colors.primary}, 0 0 30px ${colors.primary};
+      color: ${props => props.$viewMode === 'normal' ? '#2563eb' : '#fff'};
+      text-shadow: ${props => props.$viewMode === 'normal' ? 'none' : `0 0 15px ${colors.primary}, 0 0 30px ${colors.primary}`};
     }
   }
 `;

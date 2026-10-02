@@ -1,0 +1,43 @@
+{
+  "id": "meu-novo-projeto",
+  "title": "Nome do Projeto",
+  "url": "https://meuprojeto.com.br (ou null se for protótipo)",
+  "github": "https://github.com/lucascardev/meu-repo (ou null)",
+  "status": {
+    "pt": "Em Produção (ou Em Desenvolvimento / Protótipo)",
+    "en": "Production (or In Development / Prototype)"
+  },
+  "tagline": {
+    "pt": "Resumo em uma frase do que a aplicação faz.",
+    "en": "One-line tagline describing the purpose of the application."
+  },
+  "problem": {
+    "pt": "Qual dor ou desafio real do mercado ou de usuários este projeto resolve?",
+    "en": "What real-world pain point or challenge does this project solve?"
+  },
+  "solution": {
+    "pt": "Qual foi a solução de engenharia concebida para endereçar esse problema?",
+    "en": "What engineering solution was designed to solve this challenge?"
+  },
+  "engineeringHighlights": {
+    "pt": [
+      "Destaque arquitetural ou técnico 1 (ex: banco de dados, concorrência, etc)",
+      "Destaque 2 (ex: otimização de performance, segurança, privacidade)",
+      "Destaque 3 (ex: integração com APIs, IA, microsserviços)",
+      "Destaque 4 (ex: CI/CD, testes, deploy automatizado)"
+    ],
+    "en": [
+      "Technical or architectural highlight 1",
+      "Highlight 2 (e.g. performance, security, client-side privacy)",
+      "Highlight 3 (e.g. API integrations, LLMs, microservices)",
+      "Highlight 4 (e.g. CI/CD, testing, cloud deployment)"
+    ]
+  },
+  "technologies": [
+    "React",
+    "TypeScript",
+    "Node.js",
+    "PostgreSQL",
+    "Docker"
+  ]
+}
