@@ -241,13 +241,18 @@ function PosterGridSimulator({ language }) {
 
 function App() {
   const [viewMode, setViewMode] = useState(() => {
-    return localStorage.getItem('lucascardev_view_mode') || 'normal';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('lucascardev_view_mode') || 'normal';
+    }
+    return 'normal';
   });
 
   const handleModeChange = (mode) => {
     setViewMode(mode);
     try {
-      localStorage.setItem('lucascardev_view_mode', mode);
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('lucascardev_view_mode', mode);
+      }
     } catch (e) {
       console.warn('Failed to save view mode in localStorage', e);
     }
@@ -270,7 +275,13 @@ function App() {
   const [githubAvatar, setGithubAvatar] = useState('https://avatars.githubusercontent.com/u/35515714?v=4');
   const [username, setUsername] = useState('lucascardev');
   const [repos, setRepos] = useState([]);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== 'undefined' && window.navigator) {
+      const userLang = window.navigator.language || window.navigator.userLanguage;
+      return userLang && userLang.startsWith('pt') ? 'pt' : 'en';
+    }
+    return 'pt';
+  });
   const [terminalInput, setTerminalInput] = useState('');
   const [history, setHistory] = useState([]);
   const [showPacman, setShowPacman] = useState(false);

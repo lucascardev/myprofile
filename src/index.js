@@ -8,12 +8,23 @@ if (typeof window !== 'undefined' && !window.process) {
   window.process = { env: { NODE_ENV: process.env.NODE_ENV || 'development', PUBLIC_URL: process.env.PUBLIC_URL || '' } };
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const rootElement = document.getElementById('root');
+
+if (rootElement && rootElement.hasChildNodes()) {
+  ReactDOM.hydrate(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    rootElement
+  );
+} else {
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    rootElement
+  );
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
