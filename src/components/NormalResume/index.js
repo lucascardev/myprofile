@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   FaGithub,
   FaLinkedin,
@@ -16,7 +16,9 @@ import {
   FaBrain,
   FaCheckCircle,
   FaCode,
-  FaTerminal
+  FaTerminal,
+  FaChevronLeft,
+  FaChevronRight
 } from 'react-icons/fa';
 
 import {
@@ -34,7 +36,16 @@ import {
   SectionHeader,
   Card,
   AboutContent,
-  ProjectsGrid,
+  ProjectsHeaderRow,
+  CarouselNavControls,
+  CarouselCounter,
+  CarouselNavBtn,
+  CarouselContainer,
+  CarouselTrack,
+  CarouselSlide,
+  CarouselPagination,
+  CarouselDot,
+  SwipeHint,
   ProjectCard,
   SkillsGrid,
   SkillCategoryCard,
@@ -67,6 +78,140 @@ export default function NormalResume({
     } else if (avatarSrc === githubLocalPhoto) {
       setAvatarSrc(githubAvatar);
     }
+  };
+
+  // Carousel state and responsive navigation logic
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined' && typeof window.innerWidth === 'number') {
+      return window.innerWidth <= 768;
+    }
+    return false;
+  });
+  const trackRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const itemsPerPage = isMobile ? 1 : 2;
+  const totalPages = Math.ceil(projectsData.length / itemsPerPage);
+
+  const handleScroll = () => {
+    if (!trackRef.current) return;
+    const container = trackRef.current;
+    const scrollLeft = container.scrollLeft;
+    const containerLeft = container.getBoundingClientRect().left;
+    const slides = container.children;
+    if (!slides || slides.length === 0) return;
+
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    if (scrollLeft >= maxScroll - 15) {
+      setCurrentPage(totalPages - 1);
+      return;
+    }
+
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    for (let i = 0; i < slides.length; i++) {
+      const slideLeft = slides[i].getBoundingClientRect().left;
+      const distance = Math.abs(slideLeft - containerLeft);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = i;
+      }
+    }
+
+    const computedPage = Math.floor(closestIndex / itemsPerPage);
+    setCurrentPage(Math.min(computedPage, totalPages - 1));
+  };
+
+  const goToPage = (pageIndex) => {
+    if (!trackRef.current) return;
+    const clampedPage = Math.min(Math.max(0, pageIndex), totalPages - 1);
+    const targetSlideIndex = Math.min(clampedPage * itemsPerPage, projectsData.length - 1);
+    const targetSlide = trackRef.current.children[targetSlideIndex];
+    if (targetSlide) {
+      const track = trackRef.current;
+      const targetScroll =
+        targetSlide.offsetParent === track
+          ? targetSlide.offsetLeft
+          : targetSlide.offsetLeft - track.offsetLeft;
+
+      track.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+      setCurrentPage(clampedPage);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 0) {
+      goToPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages - 1) {
+      goToPage(currentPage + 1);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      handlePrev();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      handleNext();
+    }
+  };
+
+  const getCounterText = () => {
+    const total = projectsData.length;
+    if (total === 0) return null;
+    if (isMobile) {
+      const current = Math.min(currentPage + 1, total);
+      return language === 'pt' ? (
+        <>
+          Projeto <span className="highlight">{current}</span> de {total}
+        </>
+      ) : (
+        <>
+          Project <span className="highlight">{current}</span> of {total}
+        </>
+      );
+    }
+    const start = currentPage * 2 + 1;
+    const end = Math.min((currentPage + 1) * 2, total);
+    if (start === end) {
+      return language === 'pt' ? (
+        <>
+          Projeto <span className="highlight">{start}</span> de {total}
+        </>
+      ) : (
+        <>
+          Project <span className="highlight">{start}</span> of {total}
+        </>
+      );
+    }
+    return language === 'pt' ? (
+      <>
+        Projetos <span className="highlight">{start}–{end}</span> de {total}
+      </>
+    ) : (
+      <>
+        Projects <span className="highlight">{start}–{end}</span> of {total}
+      </>
+    );
   };
 
   const renderCleanContributions = () => {
@@ -389,116 +534,193 @@ export default function NormalResume({
 
         {/* PROJECT-BASED PORTFOLIO (INTELI INSPIRATION) */}
         <Section>
-          <SectionHeader>
-            <div className="subtitle">
-              <FaLayerGroup /> {language === 'pt' ? 'Aprendizado Baseado em Projetos Reais' : 'Project-Based Engineering'}
+          <ProjectsHeaderRow>
+            <div className="header-left">
+              <SectionHeader style={{ marginBottom: 0 }}>
+                <div className="subtitle">
+                  <FaLayerGroup /> {language === 'pt' ? 'Aprendizado Baseado em Projetos Reais' : 'Project-Based Engineering'}
+                </div>
+                <h2>{language === 'pt' ? 'Projetos em Produção' : 'Production Projects'}</h2>
+                <p>
+                  {language === 'pt'
+                    ? 'Sistemas concebidos do zero com foco na resolução de dores reais, arquitetura escalável e entrega de valor em produção.'
+                    : 'Systems engineered from concept to production to solve real-world problems with scalable architectures.'}
+                </p>
+              </SectionHeader>
             </div>
-            <h2>{language === 'pt' ? 'Projetos em Produção' : 'Production Projects'}</h2>
-            <p>
-              {language === 'pt'
-                ? 'Sistemas concebidos do zero com foco na resolução de dores reais, arquitetura escalável e entrega de valor em produção.'
-                : 'Systems engineered from concept to production to solve real-world problems with scalable architectures.'}
-            </p>
-          </SectionHeader>
 
-          <ProjectsGrid>
-            {projectsData.map((project) => {
-              const statusText = project.status
-                ? (typeof project.status === 'object' ? (project.status[language] || project.status.pt || project.status.en) : project.status)
-                : (language === 'pt' ? 'Em Produção' : 'Production');
-              
-              const taglineText = project.tagline
-                ? (typeof project.tagline === 'object' ? (project.tagline[language] || project.tagline.pt || project.tagline.en) : project.tagline)
-                : '';
+            {totalPages > 1 && (
+              <CarouselNavControls>
+                <CarouselCounter>
+                  {getCounterText()}
+                </CarouselCounter>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <CarouselNavBtn
+                    type="button"
+                    onClick={handlePrev}
+                    disabled={currentPage === 0}
+                    aria-label={language === 'pt' ? 'Projetos anteriores' : 'Previous projects'}
+                    title={language === 'pt' ? 'Projetos anteriores' : 'Previous projects'}
+                  >
+                    <FaChevronLeft />
+                  </CarouselNavBtn>
+                  <CarouselNavBtn
+                    type="button"
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages - 1}
+                    aria-label={language === 'pt' ? 'Próximos projetos' : 'Next projects'}
+                    title={language === 'pt' ? 'Próximos projetos' : 'Next projects'}
+                  >
+                    <FaChevronRight />
+                  </CarouselNavBtn>
+                </div>
+              </CarouselNavControls>
+            )}
+          </ProjectsHeaderRow>
 
-              const problemText = project.problem
-                ? (typeof project.problem === 'object' ? (project.problem[language] || project.problem.pt || project.problem.en) : project.problem)
-                : null;
+          <CarouselContainer
+            tabIndex="0"
+            onKeyDown={handleKeyDown}
+            role="region"
+            aria-roledescription="carousel"
+            aria-label={language === 'pt' ? 'Carrossel de projetos em produção' : 'Production projects carousel'}
+          >
+            <CarouselTrack ref={trackRef} onScroll={handleScroll}>
+              {projectsData.map((project, index) => {
+                const statusText = project.status
+                  ? (typeof project.status === 'object' ? (project.status[language] || project.status.pt || project.status.en) : project.status)
+                  : (language === 'pt' ? 'Em Produção' : 'Production');
+                
+                const taglineText = project.tagline
+                  ? (typeof project.tagline === 'object' ? (project.tagline[language] || project.tagline.pt || project.tagline.en) : project.tagline)
+                  : '';
 
-              const solutionText = project.solution
-                ? (typeof project.solution === 'object' ? (project.solution[language] || project.solution.pt || project.solution.en) : project.solution)
-                : null;
+                const problemText = project.problem
+                  ? (typeof project.problem === 'object' ? (project.problem[language] || project.problem.pt || project.problem.en) : project.problem)
+                  : null;
 
-              const highlights = project.engineeringHighlights
-                ? (Array.isArray(project.engineeringHighlights)
-                    ? project.engineeringHighlights
-                    : (project.engineeringHighlights[language] || project.engineeringHighlights.pt || project.engineeringHighlights.en || []))
-                : [];
+                const solutionText = project.solution
+                  ? (typeof project.solution === 'object' ? (project.solution[language] || project.solution.pt || project.solution.en) : project.solution)
+                  : null;
 
-              const techs = project.technologies || [];
+                const highlights = project.engineeringHighlights
+                  ? (Array.isArray(project.engineeringHighlights)
+                      ? project.engineeringHighlights
+                      : (project.engineeringHighlights[language] || project.engineeringHighlights.pt || project.engineeringHighlights.en || []))
+                  : [];
 
-              return (
-                <ProjectCard key={project.id || project.title}>
-                  <div className="project-header">
-                    <h3 className="project-title">{project.title}</h3>
-                    <span className="project-status">
-                      ● {statusText}
-                    </span>
-                  </div>
+                const techs = project.technologies || [];
 
-                  {taglineText && <p className="project-tagline">{taglineText}</p>}
-
-                  {/* Inteli Problem & Solution blocks */}
-                  {problemText && (
-                    <div className="inteli-block">
-                      <div className="label">
-                        <span>⚡</span> {language === 'pt' ? 'Desafio / Problema Real' : 'Real-World Challenge'}
-                      </div>
-                      <p className="desc">{problemText}</p>
-                    </div>
-                  )}
-
-                  {solutionText && (
-                    <div className="inteli-block" style={{ borderLeftColor: '#10b981' }}>
-                      <div className="label" style={{ color: '#047857' }}>
-                        <span>🎯</span> {language === 'pt' ? 'Solução de Engenharia' : 'Engineering Solution'}
-                      </div>
-                      <p className="desc">{solutionText}</p>
-                    </div>
-                  )}
-
-                  {highlights.length > 0 && (
-                    <>
-                      <div className="highlights-title">
-                        {language === 'pt' ? 'Destaques Técnicos & Arquitetura:' : 'Technical & Architecture Highlights:'}
-                      </div>
-                      <ul className="highlights-list">
-                        {highlights.map((highlight, hIdx) => (
-                          <li key={hIdx}>{highlight}</li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-
-                  {techs.length > 0 && (
-                    <div className="tech-pills">
-                      {techs.map((tech, tIdx) => (
-                        <span key={tIdx} className="tech-pill">
-                          {tech}
+                return (
+                  <CarouselSlide
+                    key={project.id || project.title}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${index + 1} / ${projectsData.length}`}
+                  >
+                    <ProjectCard>
+                      <div className="project-header">
+                        <h3 className="project-title">{project.title}</h3>
+                        <span className="project-status">
+                          ● {statusText}
                         </span>
-                      ))}
-                    </div>
-                  )}
+                      </div>
 
-                  <div className="card-actions">
-                    {project.url && (
-                      <PrimaryButton href={project.url} target="_blank" rel="noreferrer">
-                        <FaExternalLinkAlt />
-                        {language === 'pt' ? 'Acessar Aplicação' : 'Open Live App'}
-                      </PrimaryButton>
-                    )}
+                      {taglineText && <p className="project-tagline">{taglineText}</p>}
 
-                    {project.github && (
-                      <SecondaryButton href={project.github} target="_blank" rel="noreferrer">
-                        <FaGithub />
-                        {language === 'pt' ? 'Código no GitHub' : 'GitHub Repository'}
-                      </SecondaryButton>
-                    )}
-                  </div>
-                </ProjectCard>
-              );
-            })}
-          </ProjectsGrid>
+                      {/* Inteli Problem & Solution blocks */}
+                      {problemText && (
+                        <div className="inteli-block">
+                          <div className="label">
+                            <span>⚡</span> {language === 'pt' ? 'Desafio / Problema Real' : 'Real-World Challenge'}
+                          </div>
+                          <p className="desc">{problemText}</p>
+                        </div>
+                      )}
+
+                      {solutionText && (
+                        <div className="inteli-block" style={{ borderLeftColor: '#10b981' }}>
+                          <div className="label" style={{ color: '#047857' }}>
+                            <span>🎯</span> {language === 'pt' ? 'Solução de Engenharia' : 'Engineering Solution'}
+                          </div>
+                          <p className="desc">{solutionText}</p>
+                        </div>
+                      )}
+
+                      {highlights.length > 0 && (
+                        <>
+                          <div className="highlights-title">
+                            {language === 'pt' ? 'Destaques Técnicos & Arquitetura:' : 'Technical & Architecture Highlights:'}
+                          </div>
+                          <ul className="highlights-list">
+                            {highlights.map((highlight, hIdx) => (
+                              <li key={hIdx}>{highlight}</li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+
+                      {techs.length > 0 && (
+                        <div className="tech-pills">
+                          {techs.map((tech, tIdx) => (
+                            <span key={tIdx} className="tech-pill">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="card-actions">
+                        {project.url && (
+                          <PrimaryButton href={project.url} target="_blank" rel="noreferrer">
+                            <FaExternalLinkAlt />
+                            {language === 'pt' ? 'Acessar Aplicação' : 'Open Live App'}
+                          </PrimaryButton>
+                        )}
+
+                        {project.github && (
+                          <SecondaryButton href={project.github} target="_blank" rel="noreferrer">
+                            <FaGithub />
+                            {language === 'pt' ? 'Código no GitHub' : 'GitHub Repository'}
+                          </SecondaryButton>
+                        )}
+                      </div>
+                    </ProjectCard>
+                  </CarouselSlide>
+                );
+              })}
+            </CarouselTrack>
+
+            {totalPages > 1 && (
+              <>
+                <CarouselPagination>
+                  {Array.from({ length: totalPages }).map((_, idx) => (
+                    <CarouselDot
+                      key={idx}
+                      $active={currentPage === idx}
+                      onClick={() => goToPage(idx)}
+                      type="button"
+                      aria-label={
+                        language === 'pt'
+                          ? `Ir para a página ${idx + 1}`
+                          : `Go to page ${idx + 1}`
+                      }
+                      title={
+                        language === 'pt'
+                          ? `Página ${idx + 1}`
+                          : `Page ${idx + 1}`
+                      }
+                    />
+                  ))}
+                </CarouselPagination>
+                <SwipeHint>
+                  {language === 'pt'
+                    ? '← Deslize para navegar pelos projetos →'
+                    : '← Swipe to browse projects →'}
+                </SwipeHint>
+              </>
+            )}
+          </CarouselContainer>
         </Section>
 
         {/* CORE COMPETENCIES / TECHNICAL SKILLS */}

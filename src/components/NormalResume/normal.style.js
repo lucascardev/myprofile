@@ -344,6 +344,192 @@ export const ProjectsGrid = styled.div`
   }
 `;
 
+export const ProjectsHeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  .header-left {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  @media (max-width: 680px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+
+    .header-left {
+      min-width: 100%;
+    }
+  }
+`;
+
+export const CarouselNavControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+
+  @media (max-width: 680px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
+export const CarouselCounter = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  white-space: nowrap;
+
+  .highlight {
+    color: #2563eb;
+    font-weight: 700;
+  }
+`;
+
+export const CarouselNavBtn = styled.button`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+
+  &:hover:not(:disabled) {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+    box-shadow: none;
+  }
+
+  svg {
+    font-size: 0.95rem;
+  }
+`;
+
+export const CarouselContainer = styled.div`
+  position: relative;
+  width: 100%;
+  outline: none;
+`;
+
+export const CarouselTrack = styled.div`
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 4px 16px 4px;
+  scrollbar-width: none;
+  position: relative;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    padding: 6px 2px 14px 2px;
+  }
+`;
+
+export const CarouselSlide = styled.div`
+  flex: 0 0 calc(50% - 12px);
+  min-width: calc(50% - 12px);
+  max-width: calc(50% - 12px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    flex: 0 0 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  > div {
+    width: 100%;
+  }
+`;
+
+export const CarouselPagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+`;
+
+export const CarouselDot = styled.button`
+  height: 8px;
+  width: ${(props) => (props.$active ? '28px' : '8px')};
+  border-radius: 4px;
+  background: ${(props) => (props.$active ? '#2563eb' : '#cbd5e1')};
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: ${(props) => (props.$active ? '#1d4ed8' : '#94a3b8')};
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+`;
+
+export const SwipeHint = styled.div`
+  display: none;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 10px;
+  font-weight: 500;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+
 export const ProjectCard = styled(Card)`
   display: flex;
   flex-direction: column;
