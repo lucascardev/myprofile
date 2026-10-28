@@ -419,29 +419,29 @@ export default function NormalResume({
             <div className="name-row">
               <h1>Lucas Matheus Cardoso</h1>
               <span className="experience-badge">
-                {language === 'pt' ? '+6 Anos de Experiência' : '+6 Years Experience'}
+                {language === 'pt' ? '+7 Anos de Experiência' : '+7 Years Experience'}
               </span>
             </div>
 
             <div className="headline">
               {language === 'pt'
-                ? 'Engenheiro de Software Fullstack | Especialista em NodeJS, React, Next.js, Cloud & IA'
-                : 'Fullstack Software Engineer | NodeJS, React, Next.js, Cloud & AI Specialist'}
+                ? 'Engenheiro de Software Sênior | B2B SaaS, Fintech, Healthtech & AI'
+                : 'Senior Software Engineer | B2B SaaS, Fintech, Healthtech & AI'}
             </div>
 
             <div className="location-row">
               <span>
                 <FaMapMarkerAlt /> Salvador - BA, Brasil
               </span>
-              <span>
+              {/* <span>
                 <FaBriefcase /> Fullstack & DevOps
               </span>
               <span>
                 <FaCode /> {repos.length} {language === 'pt' ? 'Repositórios Públicos' : 'Public Repos'}
-              </span>
+              </span> */}
             </div>
 
-            <ActionButtonsRow>
+            {/* <ActionButtonsRow>
               <PrimaryButton
                 href="https://wa.me/5571992931330?text=Ol%C3%A1%20Lucas!%20Encontrei%20seu%20perfil%20profissional%20e%20gostaria%20de%20conversar."
                 target="_blank"
@@ -451,7 +451,7 @@ export default function NormalResume({
                 {language === 'pt' ? 'Conversar no WhatsApp' : 'Chat on WhatsApp'}
               </PrimaryButton>
 
-              <SecondaryButton
+            <SecondaryButton
                 href={`${process.env.PUBLIC_URL}/assets/lucascardev-cv-pt.pdf`}
                 download="LucasCardoso-Curriculo-PT.pdf"
               >
@@ -465,8 +465,8 @@ export default function NormalResume({
               >
                 <FaDownload />
                 {language === 'pt' ? 'Baixar CV (Inglês)' : 'Download CV (EN)'}
-              </SecondaryButton>
-            </ActionButtonsRow>
+              </SecondaryButton> 
+            </ActionButtonsRow> */}
 
             <ContactChipsList>
               <ContactChip
@@ -476,17 +476,14 @@ export default function NormalResume({
               >
                 <FaWhatsapp style={{ color: '#059669' }} /> WhatsApp: +55 (71) 99293-1330
               </ContactChip>
-              <ContactChip href="mailto:lucasmatheussc97@gmail.com">
-                <FaEnvelope /> lucasmatheussc97@gmail.com
+              <ContactChip href="mailto:lukemattsc@gmail.com">
+                <FaEnvelope /> lukemattsc@gmail.com
               </ContactChip>
               <ContactChip href="https://www.linkedin.com/in/lucascardev" target="_blank" rel="noreferrer">
                 <FaLinkedin /> LinkedIn: /in/lucascardev
               </ContactChip>
               <ContactChip href="https://github.com/lucascardev" target="_blank" rel="noreferrer">
                 <FaGithub /> GitHub: @{username}
-              </ContactChip>
-              <ContactChip href="https://www.instagram.com/lucas_mtheus/" target="_blank" rel="noreferrer">
-                <FaInstagram /> @lucas_mtheus
               </ContactChip>
             </ContactChipsList>
           </HeroInfo>
@@ -506,25 +503,25 @@ export default function NormalResume({
               {language === 'pt' ? (
                 <>
                   <p>
-                    Com mais de <strong>6 anos de experiência sólida em desenvolvimento de software</strong>, atuo na concepção, arquitetura e entrega contínua de aplicações web modernas, escaláveis e resilientes. Minha especialidade concentra-se no ecossistema <strong>JavaScript/TypeScript</strong>, combinando interfaces de alta performance em <strong>React e Next.js</strong> a backends robustos orientados a microsserviços em <strong>Node.js, Express e Prisma</strong>.
+                    Sou <strong>Engenheiro de Software Sênior com mais de 7 anos de experiência em desenvolvimento backend e full-stack</strong>, especializado em aplicações B2B SaaS, Fintech, Healthtech e soluções baseadas em Inteligência Artificial.
                   </p>
                   <p>
-                    Minha abordagem de desenvolvimento é orientada à <strong>resolução de problemas reais com impacto direto em produção</strong>, unindo Clean Code, modelagem relacional em PostgreSQL e esteiras de automação DevOps (Kubernetes, Docker e CI/CD). Desenvolvo e mantenho plataformas em operação ativa com milhares de acessos, como o <strong>PrintMyPoster (printmyposter.art)</strong> e o <strong>PsyReport Auto</strong>, prezando sempre por segurança, privacidade client-side e excelência em experiência do usuário (UX).
+                    Minha expertise técnica inclui <strong>TypeScript, JavaScript, Node.js, React, Next.js, Python, PostgreSQL e MongoDB</strong>, além de arquitetura de microsserviços, APIs REST e infraestrutura em nuvem com <strong>AWS, GCP, Docker e Kubernetes</strong>.
                   </p>
                   <p>
-                    Atualmente, tenho direcionado meus estudos e aprofundamento técnico com foco prioritário em <strong>arquitetura e engenharia de software</strong>. Compreendo que, no cenário onde a <strong>Inteligência Artificial se consolida como ferramenta catalisadora de desenvolvimento</strong>, o domínio de fundamentos sólidos, modularidade, padrões de projeto e pensamento crítico estrutural tornam-se ainda mais cruciais para projetar sistemas verdadeiramente escaláveis, resilientes e sustentáveis a longo prazo.
+                    Meu foco é construir sistemas <strong>escaláveis, seguros e confiáveis</strong>, modernizar aplicações legadas, integrar serviços e otimizar desempenho. Sigo boas práticas de engenharia, incluindo Clean Code, princípios SOLID, testes automatizados e CI/CD. Sou apaixonado por entregar soluções de software de impacto, colaborar com equipes internacionais e melhorar continuamente produtos digitais.
                   </p>
                 </>
               ) : (
                 <>
                   <p>
-                    With over <strong>6 years of robust professional experience in software engineering</strong>, I specialize in architecting, building, and deploying scalable, high-performance web applications. My core expertise is centered around the <strong>JavaScript/TypeScript</strong> ecosystem, uniting modern frontends in <strong>React and Next.js</strong> with distributed, reliable backends in <strong>Node.js, Express, and Prisma</strong>.
+                    I'm a <strong>Senior Software Engineer with 7+ years of experience in backend and full-stack development</strong>, specializing in B2B SaaS, Fintech, Healthtech, and AI-powered applications.
                   </p>
                   <p>
-                    My methodology is guided by <strong>project-based engineering addressing real-world operational challenges</strong>. I combine Clean Code principles, relational database design in PostgreSQL, and cloud-native DevOps pipelines (Kubernetes, Docker, CI/CD). I build and operate live production platforms such as <strong>PrintMyPoster (printmyposter.art)</strong> and <strong>PsyReport Auto</strong>, emphasizing client-side privacy, algorithmic performance, and refined user experience.
+                    My technical expertise includes <strong>TypeScript, JavaScript, Node.js, React, Next.js, Python, PostgreSQL, and MongoDB</strong>, along with microservices architecture, REST APIs, and cloud infrastructure using <strong>AWS, GCP, Docker, and Kubernetes</strong>.
                   </p>
                   <p>
-                    Currently, my technical studies and deep dives are focused on <strong>software architecture and systems engineering</strong>. As <strong>Artificial Intelligence solidifies as a powerful catalyst for modern software development</strong>, mastering core architectural foundations, modularity, and strategic design patterns is more essential than ever to build systems that remain genuinely scalable, resilient, and maintainable.
+                    I focus on building <strong>scalable, secure, and reliable systems</strong>, modernizing legacy applications, integrating services, and optimizing performance. I follow engineering best practices, including Clean Code, SOLID principles, automated testing, and CI/CD. I'm passionate about delivering impactful software solutions, collaborating with international teams, and continuously improving digital products.
                   </p>
                 </>
               )}
@@ -916,9 +913,9 @@ export default function NormalResume({
                 <FaGraduationCap />
               </div>
               <div className="edu-info">
-                <h3>{language === 'pt' ? 'Análise e Desenvolvimento de Sistemas' : 'Systems Analysis and Development'}</h3>
-                <div className="institution">Universidade Estácio de Sá</div>
-                <div className="period">2025 – 2027 (Em andamento)</div>
+                <h3>{language === 'pt' ? 'Ciência da computação' : 'Computer Science'}</h3>
+                <div className="institution">USP Universidade de São Paulo</div>
+                <div className="period">2015 – 2019 </div>
                 <p className="details">
                   {language === 'pt'
                     ? 'Formação com ênfase em engenharia de requisitos, arquitetura de sistemas, estruturas de dados, segurança da informação e desenvolvimento ágil.'
@@ -993,7 +990,7 @@ export default function NormalResume({
             </button>
           </div>
           <p>
-            Lucas Matheus Cardoso &bull; {language === 'pt' ? 'Engenheiro de Software Fullstack' : 'Fullstack Software Engineer'}
+            Lucas Matheus Cardoso &bull; {language === 'pt' ? 'Engenheiro de Software' : 'Software Engineer'}
           </p>
           <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
             Portfólio Profissional v{version} &bull; Hospedado no GitHub Pages &bull; {new Date().getFullYear()}

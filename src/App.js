@@ -343,34 +343,39 @@ function App() {
     if (lang === 'pt') {
       return [
         'Nome: Lucas Matheus Cardoso',
-        'Formação: Pós-Graduação em Desenvolvimento Full Stack (Descomplica) | ADS (Estácio)',
+        'Formação: Pós-Graduação em Desenvolvimento Full Stack (Descomplica) | Cumputer Science ( USP )',
         `Projetos Públicos no GitHub: ${totalRepos} repositórios`,
         `Foco Tecnológico: TypeScript (${tsRepos} projetos) & JavaScript (${jsRepos} projetos)`,
         'Biografia:',
-        '  Desenvolvedor Fullstack com +6 anos de experiência consolidada criando aplicações',
-        '  web escaláveis e de alta performance. Especialista no ecossistema JavaScript/TypeScript,',
-        '  com foco em arquiteturas robustas em React/Next.js no frontend e Node.js no backend.',
-        '  Proficiente em modelagem de APIs multi-tenant, integração de microsserviços e',
-        '  aplicações modernas de alta performance como o PrintMyPoster (printmyposter.art). Praticante de',
-        '  Clean Code, DevOps (Kubernetes/Cloud) e metodologias ágeis.',
-        '  Atualmente direciona estudos avançados em arquitetura e engenharia de software,',
-        '  reconhecendo o papel fundamental de bases estruturais sólidas na era do desenvolvimento impulsionado por IA.'
+        '  Engenheiro de Software Sênior com mais de 7 anos de experiência em desenvolvimento',
+        '  backend e full-stack, especializado em B2B SaaS, Fintech, Healthtech e aplicações',
+        '  baseadas em Inteligência Artificial.',
+        '  Minha expertise inclui TypeScript, JavaScript, Node.js, React, Next.js, Python,',
+        '  PostgreSQL e MongoDB, além de arquitetura de microsserviços, APIs REST e infraestrutura',
+        '  em nuvem com AWS, GCP, Docker e Kubernetes.',
+        '  Foco na construção de sistemas escaláveis, seguros e confiáveis, modernização de aplicações',
+        '  legadas, integração de serviços e otimização de desempenho. Sigo boas práticas como Clean',
+        '  Code, princípios SOLID, testes automatizados e CI/CD.',
+        '  Apaixonado por entregar soluções de software de impacto, colaborar com equipes internacionais',
+        '  e melhorar continuamente produtos digitais.'
       ];
     }
     return [
       'Name: Lucas Matheus Cardoso',
-      'Education: Postgraduate in Full Stack Development (Descomplica) | Systems Analysis (Estácio)',
+      'Education: Postgraduate in Full Stack Development (Descomplica) | Computer Science ( USP )',
       `Public GitHub Projects: ${totalRepos} repositories`,
       `Core Tech Stack: TypeScript (${tsRepos} projects) & JavaScript (${jsRepos} projects)`,
       'Biography:',
-      '  Fullstack Software Engineer with +6 years of professional experience building',
-      '  scalable, high-performance web applications. Specialized in the JavaScript/TypeScript',
-      '  ecosystem, designing robust architectures with React/Next.js on the frontend',
-      '  and Node.js on the backend. Experienced in multi-tenant system design, microservices',
-      '  integration, and modern applications like PrintMyPoster (printmyposter.art).',
-      '  Dedicated to Clean Code principles, DevOps, and agile practices.',
-      '  Currently advancing studies in software architecture and systems engineering,',
-      '  emphasizing robust structural design in an AI-assisted development era.'
+      '  Senior Software Engineer with 7+ years of experience in backend and full-stack development,',
+      '  specializing in B2B SaaS, Fintech, Healthtech, and AI-powered applications.',
+      '  My technical expertise includes TypeScript, JavaScript, Node.js, React, Next.js, Python,',
+      '  PostgreSQL, and MongoDB, along with microservices architecture, REST APIs, and cloud',
+      '  infrastructure using AWS, GCP, Docker, and Kubernetes.',
+      '  I focus on building scalable, secure, and reliable systems, modernizing legacy applications',
+      '  integrating services, and optimizing performance. I follow engineering best practices,',
+      '  including Clean Code, SOLID principles, automated testing, and CI/CD.',
+      '  I\'m passionate about delivering impactful software solutions, collaborating with international',
+      '  teams, and continuously improving digital products.'
     ];
   };
 
@@ -539,7 +544,7 @@ function App() {
           { type: 'info', text: 'Digite "ajuda" para listar os comandos disponíveis.' },
           { type: 'output', text: '------------------------------------------------------------' },
           { type: 'output', text: 'LUCAS MATHEUS // DESENVOLVEDOR FULLSTACK' },
-          { type: 'output', text: 'Mais de 6 anos de experiência codificando soluções inovadoras.' },
+          { type: 'output', text: 'Mais de 7 anos de experiência codificando soluções inovadoras.' },
           { type: 'output', text: '------------------------------------------------------------' },
         ]
       : [
@@ -548,7 +553,7 @@ function App() {
           { type: 'info', text: 'Type "help" to list all available commands.' },
           { type: 'output', text: '------------------------------------------------------------' },
           { type: 'output', text: 'LUCAS MATHEUS // FULLSTACK SOFTWARE DEVELOPER' },
-          { type: 'output', text: 'Over 6 years of experience coding innovative digital systems.' },
+          { type: 'output', text: 'Over 7 years of experience coding innovative digital systems.' },
           { type: 'output', text: '------------------------------------------------------------' },
         ];
   };
@@ -687,7 +692,7 @@ function App() {
       outputLines = [
         { type: 'output', text: 'CONTACT_NODES // OPEN CHANNELS:' },
         { type: 'output', text: '---------------------------------------' },
-        { type: 'output', text: '  Email:       lucasmatheussc97@gmail.com' },
+        { type: 'output', text: '  Email:       lukemattsc@gmail.com' },
         {
           type: 'output',
           text: (
@@ -870,7 +875,7 @@ function App() {
                 <b>WPP:</b> <a href="https://wa.me/5571992931330?text=Olá!%20Achei%20seu%20contato%20através%20do%20seu%20portfólio." target="_blank" rel="noreferrer">+55 (71) 99293-1330</a>
               </p>
               <p>
-                <b>EMAIL:</b> <a href="mailto:lucasmatheussc97@gmail.com">lucasmatheussc97@gmail.com</a>
+                <b>EMAIL:</b> <a href="mailto:lukemattsc@gmail.com">lukemattsc@gmail.com</a>
               </p>
             </Contact>
 
